@@ -1,6 +1,5 @@
 #pragma once
 
-#include "BackgroundLoaderThreadPool.h"
 #include "ObjectDatabaseEntry.h"
 #include "ObjectDatabaseLevel.h"
 
@@ -22,7 +21,6 @@ namespace IED
 
 		enum class ObjectLoadResult
 		{
-			kPending,
 			kFailed,
 			kSuccess
 		};
@@ -30,14 +28,13 @@ namespace IED
 		[[nodiscard]] ObjectLoadResult GetModel(
 			const char*          a_path,
 			ObjectDatabaseEntry& a_outEntry,
-			NiPointer<NiNode>*   a_cloneResult = nullptr,
+			NiPointer<NiNode>*   a_cloneResult        = nullptr,
 			float                a_colliderScale      = 1.0f,
 			bool                 a_forceImmediateLoad = false) noexcept;
 
 		static bool ValidateObject(const char* a_path, NiAVObject* a_object) noexcept;
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept;
 
-		void PreODBCleanup() noexcept;
 		void RunObjectCleanup() noexcept;
 		void QueueDatabaseCleanup() noexcept;
 
@@ -54,14 +51,6 @@ namespace IED
 		[[nodiscard]] std::size_t GetODBUnusedObjectCount() const noexcept;
 
 		void ClearObjectDatabase();
-
-		void StartObjectLoaderWorkerThreads(std::uint32_t a_numThreads);
-
-		inline void RequestCleanup() noexcept
-		{
-			bool expected = false;
-			m_wantCleanup.compare_exchange_strong(expected, true);
-		}
 
 		FN_NAMEPROC("ObjectDatabase");
 
@@ -89,9 +78,6 @@ namespace IED
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;
 		container_type           m_data;
-
-		std::unique_ptr<BackgroundLoaderThreadPool> m_threadPool;
-		std::atomic_bool                            m_wantCleanup{ false };
 
 		//stl::vector<std::pair<stl::fixed_string, long long>> m_scc;
 	};

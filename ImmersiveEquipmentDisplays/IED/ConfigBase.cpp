@@ -228,12 +228,15 @@ namespace IED
 				return false;
 			}
 
-			if (a_match.questCondType == Data::QuestConditionType::kComplete)
+			switch (a_match.questCondType)
 			{
-				return form->questData.flags.test_any(TESQuest::QuestFlag::kCompleted);
-			}
-			else
-			{
+			case Data::QuestConditionType::kComplete:
+				return form->IsCompleted();
+			case Data::QuestConditionType::kRunning:
+				return !form->IsStopped() && form->IsRunning();
+			case Data::QuestConditionType::kEnabled:
+				return form->IsEnabled();
+			default:
 				return false;
 			}
 		}

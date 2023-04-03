@@ -113,17 +113,17 @@ namespace IED
 
 		::Util::Stream::NiStreamWrapper stream;
 
-		if (!stream->LoadStream(std::addressof(binaryStream)))
+		if (!stream->Load1(std::addressof(binaryStream)))
 		{
 			return;
 		}
 
-		if (!stream->m_rootObjects.initialized())
+		if (!stream->topObjects.initialized())
 		{
 			return;
 		}
 
-		for (const auto& e : stream->m_rootObjects)
+		for (const auto& e : stream->topObjects)
 		{
 			if (!e)
 			{

@@ -176,9 +176,6 @@ namespace IED
 		m_clearRPCOnSceneMove           = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
 		m_interiorAmbientLightThreshold = static_cast<float>(reader.GetDoubleValue(SECT_MISCELLANEOUS, "InteriorAmbientLightThreshold", 0.35f));
 
-		m_backgroundObjectLoader = reader.GetBoolValue(SECT_OBJECTDB, "BackgroundLoader", false);
-		m_objectLoaderThreads = static_cast<std::uint32_t>(std::max(reader.GetLongValue(SECT_OBJECTDB, "WorkerThreads", 0), 0l));
-
 		m_loaded = reader.is_loaded();
 
 		return m_loaded;

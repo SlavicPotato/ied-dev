@@ -285,10 +285,30 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
 			{
 				if (ImGui::RadioButton(
-						UIL::LS(CommonStrings::Complete, "qts"),
+						UIL::LS(CommonStrings::Running, "qts_r"),
+						e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kRunning))
+				{
+					e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kRunning;
+					result                            = true;
+				}
+				
+				ImGui::SameLine();
+
+				if (ImGui::RadioButton(
+						UIL::LS(CommonStrings::Complete, "qts_c"),
 						e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kComplete))
 				{
 					e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kComplete;
+					result                            = true;
+				}
+				
+				ImGui::SameLine();
+
+				if (ImGui::RadioButton(
+						UIL::LS(CommonStrings::Enabled, "qts_e"),
+						e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kEnabled))
+				{
+					e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kEnabled;
 					result                            = true;
 				}
 

@@ -23,54 +23,28 @@ namespace IED
 			return ObjectLoadResult::kFailed;
 		}
 
-		stl::fixed_string spath(path);
-
-		const auto r = m_data.try_emplace(spath);
+		const auto r = m_data.try_emplace(path);
 
 		auto& entry = r.first->second;
 
-		if (m_threadPool && !a_forceImmediateLoad)
+		if (r.second)
 		{
-			if (r.second)
-			{
-				entry = stl::make_smart_for_overwrite<ObjectDatabaseEntryData>();
-				m_threadPool->Push(path, entry);
-			}
-		}
-		else
-		{
-			if (r.second)
-			{
-				entry = stl::make_smart_for_overwrite<ObjectDatabaseEntryData>();
-			}
-
-			if (entry->try_acquire_for_load())
-			{
-				auto object = LoadImpl(path);
-
-				if (object)
-				{
-					entry->object = std::move(object);
-					entry->loadState.store(ODBEntryLoadState::kLoaded);
-				}
-				else
-				{
-					entry->loadState.store(ODBEntryLoadState::kError);
-				}
-
-				QueueDatabaseCleanup();
-			}
+			entry = stl::make_smart_for_overwrite<ObjectDatabaseEntryData>();
 		}
 
-		switch (entry->loadState.load())
+		if (entry->loadState == ODBEntryLoadState::kPending)
 		{
-		case ODBEntryLoadState::kPending:
-		case ODBEntryLoadState::kProcessing:
+			entry->object = LoadImpl(path);
 
-			a_outEntry = entry;
+			entry->loadState = entry->object.get() ?
+			                       ODBEntryLoadState::kLoaded :
+			                       ODBEntryLoadState::kError;
 
-			return ObjectLoadResult::kPending;
+			QueueDatabaseCleanup();
+		}
 
+		switch (entry->loadState)
+		{
 		case ODBEntryLoadState::kLoaded:
 
 			entry->accessed = IPerfCounter::Query();
@@ -114,15 +88,6 @@ namespace IED
 		});
 
 		return r == VisitorControl::kStop;
-	}
-
-	void ObjectDatabase::PreODBCleanup() noexcept
-	{
-		bool e = true;
-		if (m_wantCleanup.compare_exchange_strong(e, false))
-		{
-			QueueDatabaseCleanup();
-		}
 	}
 
 	void ObjectDatabase::RunObjectCleanup() noexcept
@@ -214,19 +179,6 @@ namespace IED
 	{
 		m_data.clear();
 		m_cleanupDeadline.reset();
-	}
-
-	void ObjectDatabase::StartObjectLoaderWorkerThreads(std::uint32_t a_numThreads)
-	{
-		if (!a_numThreads)
-		{
-			return;
-		}
-
-		Message("Spinning up %u object loader thread(s)..", a_numThreads);
-
-		m_threadPool = std::make_unique<BackgroundLoaderThreadPool>(*this);
-		m_threadPool->Start(a_numThreads);
 	}
 
 	NiPointer<NiNode> ObjectDatabase::LoadImpl(const char* a_path)

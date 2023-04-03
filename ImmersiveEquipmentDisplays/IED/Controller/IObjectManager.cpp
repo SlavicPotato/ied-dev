@@ -548,22 +548,14 @@ namespace IED
 				*state->colliderScale :
 				1.0f);
 
-		switch (odbResult)
+		if (odbResult != ObjectLoadResult::kSuccess)
 		{
-		case ObjectLoadResult::kFailed:
-
 			Error(
 				"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_modelForm->formID.get(),
 				modelParams.path);
-
-			return false;
-
-		case ObjectLoadResult::kPending:
-
-			a_params.objects.AddQueuedModel(std::move(dbentry));
 
 			return false;
 		}
@@ -881,7 +873,6 @@ namespace IED
 			kNone = 0,
 
 			kHasLoaded  = 1ui8 << 0,
-			kHasPending = 1ui8 << 1,
 		};
 
 		stl::flag<ModelLoadStatus> status{
@@ -906,7 +897,7 @@ namespace IED
 
 				break;
 
-			case ObjectLoadResult::kFailed:
+			default:
 
 				Warning(
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -916,19 +907,10 @@ namespace IED
 					e.params.path);
 
 				break;
-
-			case ObjectLoadResult::kPending:
-
-				a_params.objects.AddQueuedModel(std::move(dbEntry));
-
-				status.set(ModelLoadStatus::kHasPending);
-
-				break;
 			}
 		}
 
-		if (!status.test(ModelLoadStatus::kHasLoaded) || 
-			status.test(ModelLoadStatus::kHasPending))
+		if (!status.test(ModelLoadStatus::kHasLoaded))
 		{
 			return false;
 		}

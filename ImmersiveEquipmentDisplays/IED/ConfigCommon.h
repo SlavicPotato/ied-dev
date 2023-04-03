@@ -272,6 +272,8 @@ namespace IED
 			kNone = static_cast<std::underlying_type_t<QuestConditionType>>(-1),
 
 			kComplete = 0,
+			kRunning  = 1,
+			kEnabled  = 2,
 		};
 
 		enum class ExtraConditionType : std::uint32_t

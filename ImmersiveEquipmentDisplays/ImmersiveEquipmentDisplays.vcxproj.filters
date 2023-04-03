@@ -1955,9 +1955,6 @@
     <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitFormListParser.h">
       <Filter>Source\IED\OM\JSONParsers</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\BackgroundLoaderThreadPool.h">
-      <Filter>Source\IED\Controller\ObjectManager</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Controller\ObjectDatabaseEntry.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
@@ -3123,9 +3120,6 @@
     </ClCompile>
     <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitFormListParser.cpp">
       <Filter>Source\IED\OM\JSONParsers</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Controller\BackgroundLoaderThreadPool.cpp">
-      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UIGeneralInfo.cpp">
       <Filter>Source\IED\UI</Filter>
