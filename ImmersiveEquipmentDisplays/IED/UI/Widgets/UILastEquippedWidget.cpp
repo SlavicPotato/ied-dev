@@ -74,7 +74,7 @@ namespace IED
 						result |= ImGui::CheckboxFlagsT(
 							UIL::LS(UICustomEditorString::PrioritizeRecentSlots, "2"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::LastEquippedFlags::kPrioritizeRecentSlots));
+							stl::underlying(Data::LastEquippedFlags::kPrioritizeRecentBipedSlots));
 
 						ImGui::NextColumn();
 
@@ -85,7 +85,7 @@ namespace IED
 						result |= ImGui::CheckboxFlagsT(
 							UIL::LS(UICustomEditorString::SkipOccupiedSlots, "3"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::LastEquippedFlags::kSkipOccupiedSlots));
+							stl::underlying(Data::LastEquippedFlags::kSkipOccupiedBipedSlots));
 
 						UICommon::PopDisabled(d);
 
@@ -111,7 +111,30 @@ namespace IED
 			{
 				if (DrawObjectSlotListTree(
 						"esl_tree",
-						a_data.slots))
+						a_data.slots,
+						[&] {
+							bool result = false;
+
+							ImGui::Columns(2, nullptr, false);
+
+							result |= ImGui::CheckboxFlagsT(
+								UIL::LS(UICustomEditorString::PrioritizeRecentSlots, "1"),
+								stl::underlying(std::addressof(a_data.flags.value)),
+								stl::underlying(Data::LastEquippedFlags::kPrioritizeRecentDisplaySlots));
+
+							ImGui::NextColumn();
+
+							result |= ImGui::CheckboxFlagsT(
+								UIL::LS(UICustomEditorString::SkipOccupiedSlots, "2"),
+								stl::underlying(std::addressof(a_data.flags.value)),
+								stl::underlying(Data::LastEquippedFlags::kSkipOccupiedDisplaySlots));
+
+							ImGui::Columns();
+
+							ImGui::Spacing();
+
+							return result;
+						}))
 				{
 					a_updateFunc();
 				}

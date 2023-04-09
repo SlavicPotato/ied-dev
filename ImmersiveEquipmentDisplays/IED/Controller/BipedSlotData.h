@@ -40,6 +40,7 @@ namespace IED
 		{
 			DataVersion1 = 1,
 			DataVersion2 = 2,
+			DataVersion3 = 3,
 		};
 
 		void insert_last_slotted(
@@ -49,6 +50,7 @@ namespace IED
 		Data::configFormZeroMissing_t                    lastEquipped;
 		stl::boost_vector<Data::configFormZeroMissing_t> lastSlotted;
 		std::uint64_t                                    lastSeenEquipped{ 0 };
+		std::uint64_t                                    lastOccupied{ 0 };
 
 	private:
 		template <class Archive>
@@ -57,6 +59,7 @@ namespace IED
 			a_ar& lastEquipped;
 			a_ar& lastSlotted;
 			a_ar& lastSeenEquipped;
+			a_ar& lastOccupied;
 		}
 
 		template <class Archive>
@@ -80,6 +83,11 @@ namespace IED
 			}
 
 			a_ar& lastSeenEquipped;
+
+			if (a_version >= DataVersion3)
+			{
+				a_ar& lastOccupied;
+			}
 		}
 
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -156,7 +164,7 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::DisplaySlotCacheEntry,
-	::IED::DisplaySlotCacheEntry::Serialization::DataVersion2);
+	::IED::DisplaySlotCacheEntry::Serialization::DataVersion3);
 
 BOOST_CLASS_VERSION(
 	::IED::BipedSlotData,

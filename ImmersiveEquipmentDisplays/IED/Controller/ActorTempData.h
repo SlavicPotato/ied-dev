@@ -6,6 +6,7 @@
 namespace IED
 {
 	struct BipedSlotCacheEntry;
+	struct ObjectEntrySlot;
 
 	struct ActorTempData
 	{
@@ -18,5 +19,6 @@ namespace IED
 		UseCountContainer                                      uc;
 		stl::cache_aligned::vector<const BipedSlotCacheEntry*> le;
 		stl::cache_aligned::vector<Game::FormID>               fl;
+		stl::cache_aligned::vector<const ObjectEntrySlot*>     sl;
 	};
 }

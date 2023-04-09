@@ -19,17 +19,17 @@ namespace IED
 
 	auto IEquipment::CreateEquippedItemInfo(
 		const ActorProcessManager* const a_pm) noexcept
-		-> equippedItemInfo_t
+		-> EquippedItemInfo
 	{
 		const auto formLeft  = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
 		const auto formRight = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Right];
 
-		return equippedItemInfo_t{
+		return EquippedItemInfo{
 			formRight,
 			formLeft,
 			formRight ?
 				ItemData::GetObjectSlotNoBound(formRight) :
-			ObjectSlot::kMax,
+				ObjectSlot::kMax,
 			formLeft ?
 				ItemData::GetObjectSlotLeftNoBound(formLeft) :
 				ObjectSlot::kMax,
@@ -41,7 +41,7 @@ namespace IED
 		const Data::configSlot_t& a_config,
 		SlotItemCandidates&       a_candidates,
 		const ObjectEntrySlot&    a_slot) noexcept
-		-> selectedItem_t
+		-> SelectedItem
 	{
 		if (a_candidates.empty())
 		{
@@ -100,7 +100,7 @@ namespace IED
 			a_candidates.begin(),
 			a_candidates.end(),
 			[&](const auto& a_item) [[msvc::forceinline]] {
-				auto item = a_item.item;
+				const auto* const item = a_item.item;
 
 				if (checkCannotWear && item->cannot_wear())
 				{
@@ -129,7 +129,7 @@ namespace IED
 		}
 	}
 
-	static constexpr bool is_non_shield_armor(TESForm* a_form) noexcept
+	static constexpr bool is_non_shield_armor(const TESForm* a_form) noexcept
 	{
 		if (auto armor = a_form->As<TESObjectARMO>())
 		{
@@ -147,7 +147,7 @@ namespace IED
 		const configCustom_t&          a_config,
 		bool&                          a_hasMinCount) noexcept
 	{
-		const auto form = a_itemData.form;
+		const auto* const form = a_itemData.form;
 
 		if (form->formID.IsTemporary())
 		{
@@ -215,13 +215,13 @@ namespace IED
 		return true;
 	}
 
-	CollectorData::container_type::iterator IEquipment::CustomEntrySelectInventoryFormGroup(
+	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormGroup(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
 		bool&                       a_hasMinCount) noexcept
 	{
-		auto& formData = a_params.collector.data.forms;
+		const auto& formData = a_params.collector.data.forms;
 
 		if (const auto& fid = a_config.form.get_id())
 		{
@@ -242,14 +242,14 @@ namespace IED
 	}
 
 	template <class Tf>
-	CollectorData::container_type::iterator IEquipment::CustomEntrySelectInventoryFormDefault(
+	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormDefault(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
 		bool&                       a_hasMinCount,
 		Tf                          a_filter) noexcept
 	{
-		auto& formData = a_params.collector.data.forms;
+		const auto& formData = a_params.collector.data.forms;
 
 		if (a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
 		    !a_config.extraItems.empty())
@@ -286,13 +286,13 @@ namespace IED
 			tmp.assign(a_config.extraItems.begin(), a_config.extraItems.end());
 			tmp.emplace_back(a_config.form.get_id());
 
-			while (tmp.begin() != tmp.end())
+			while (tmp.cbegin() != tmp.cend())
 			{
 				using diff_type = configFormList_t::difference_type;
 
-				RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.begin(), tmp.end()) - 1);
+				RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.cbegin(), tmp.cend()) - 1);
 
-				auto ite = tmp.begin() + rng.Get(m_rng);
+				const auto ite = tmp.cbegin() + rng.Get(m_rng);
 
 				if (const auto& fid = *ite)
 				{
@@ -342,7 +342,7 @@ namespace IED
 					continue;
 				}
 
-				auto it = formData.find(e);
+				const auto it = formData.find(e);
 				if (it == formData.end())
 				{
 					continue;
@@ -367,7 +367,7 @@ namespace IED
 		return formData.end();
 	}
 
-	CollectorData::container_type::iterator IEquipment::CustomEntrySelectInventoryForm(
+	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryForm(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry,
@@ -375,10 +375,10 @@ namespace IED
 	{
 		if (a_config.customFlags.test(CustomFlags::kLastEquippedMode))
 		{
-			auto it = DoLastEquippedSelection(
+			const auto it = DoLastEquippedSelection(
 				a_params,
 				a_config.lastEquipped,
-				[&](auto& a_itemEntry) noexcept {
+				[&](const auto& a_itemEntry) noexcept {
 					return CustomEntryValidateInventoryForm(
 						a_params,
 						a_itemEntry.second,
@@ -397,7 +397,7 @@ namespace IED
 					a_config,
 					a_objectEntry,
 					a_hasMinCount,
-					[&](auto& a_item) noexcept {
+					[&](const auto& a_item) noexcept {
 						return configBase_t::do_match_sfp(
 							a_config.lastEquipped.filterConditions,
 							{ a_item.form },
@@ -425,10 +425,12 @@ namespace IED
 		}
 	}
 
-	void IEquipment::selectedItem_t::consume(
+	void IEquipment::SelectedItem::consume(
 		SlotItemCandidates& a_candidates) const  //
-		noexcept(std::is_nothrow_move_assignable_v<SlotItemCandidates::value_type>)
+		noexcept(noexcept(SlotItemCandidates().erase(SlotItemCandidates::iterator())))
 	{
+		assert(item.has_value());
+
 		auto& it = *item;
 
 		if (it->extra == 0)

@@ -11,10 +11,12 @@ namespace IED
 		{
 			kNone = 0,
 
-			kPrioritizeRecentSlots = 1u << 0,
-			kDisableIfSlotOccupied = 1u << 1,
-			kSkipOccupiedSlots     = 1u << 2,
-			kFallBackToSlotted     = 1u << 3,
+			kPrioritizeRecentBipedSlots   = 1u << 0,
+			kDisableIfSlotOccupied        = 1u << 1,
+			kSkipOccupiedBipedSlots       = 1u << 2,
+			kFallBackToSlotted            = 1u << 3,
+			kPrioritizeRecentDisplaySlots = 1u << 4,
+			kSkipOccupiedDisplaySlots     = 1u << 5,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(LastEquippedFlags);
@@ -25,7 +27,8 @@ namespace IED
 
 		public:
 			static constexpr auto DEFAULT_FLAGS =
-				LastEquippedFlags::kPrioritizeRecentSlots |
+				LastEquippedFlags::kPrioritizeRecentBipedSlots |
+				LastEquippedFlags::kPrioritizeRecentDisplaySlots |
 				LastEquippedFlags::kDisableIfSlotOccupied;
 
 			enum Serialization : unsigned int

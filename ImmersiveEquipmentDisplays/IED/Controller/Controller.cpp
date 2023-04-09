@@ -2679,6 +2679,8 @@ namespace IED
 						objectEntry.data.state->form->formID,
 						m_bipedCache.max_forms());
 
+					objectEntry.slotState.lastOccupied = GetCounterValue();
+
 					if (visible)
 					{
 						itemData->consume_one();
@@ -3741,7 +3743,7 @@ namespace IED
 
 		auto& data = a_holder.m_slotCache->biped;
 
-		auto& biped = a_params.actor->GetBiped1(false);
+		auto biped = a_params.get_biped();
 		if (!biped)
 		{
 			std::for_each(
@@ -3754,7 +3756,7 @@ namespace IED
 			return;
 		}
 
-		auto skin = a_params.get_actor_skin();
+		const auto skin = a_params.get_actor_skin();
 
 		using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
@@ -3783,6 +3785,12 @@ namespace IED
 					{
 						f.forms.pop_back();
 					}
+
+					f.seen = GetCounterValue();
+				}
+				else if (!f.occupied)
+				{
+					f.seen = GetCounterValue();
 				}
 
 				f.seen     = GetCounterValue();
