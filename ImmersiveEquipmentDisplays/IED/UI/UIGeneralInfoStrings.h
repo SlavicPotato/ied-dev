@@ -28,6 +28,7 @@ namespace IED
 			GlobalTimeMultiplier      = 8218,
 			WorldTimeMultiplier       = 8219,
 			Timing                    = 8220,
+			GameRuntime               = 8221,
 		};
 	}
 }

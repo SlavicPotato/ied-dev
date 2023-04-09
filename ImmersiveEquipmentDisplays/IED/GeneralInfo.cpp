@@ -67,5 +67,7 @@ namespace IED
 			worldTimeMultiplier  = s->GetWorldTimeMultiplier();
 			playerTimeMultiplier = s->GetPlayerTimeMultiplier();
 		}
+
+		gameRuntime = *Game::g_gameRuntimeMS;
 	}
 }

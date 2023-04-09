@@ -154,6 +154,7 @@ namespace IED
 					draw_row(UIGeneralInfoStrings::GlobalTimeMultiplier, "%f", data.globalTimeMultiplier);
 					draw_row(UIGeneralInfoStrings::WorldTimeMultiplier, "%f", data.worldTimeMultiplier);
 					draw_row(UIGeneralInfoStrings::PlayerTimeMultiplier, "%f", data.playerTimeMultiplier);
+					draw_row(UIGeneralInfoStrings::GameRuntime, "%d", data.gameRuntime);
 
 					ImGui::EndTable();
 				}

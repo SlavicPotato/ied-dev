@@ -26,10 +26,11 @@ namespace IED
 		float             daysPassed{ 0.0f };
 		float             timescale{ 0.0f };
 
-		float frameTimer{ 0.0f };
-		float frameTimerSlow{ 0.0f };
-		float globalTimeMultiplier{ 0.0f };
-		float worldTimeMultiplier{ 0.0f };
-		float playerTimeMultiplier{ 0.0f };
+		float        frameTimer{ 0.0f };
+		float        frameTimerSlow{ 0.0f };
+		float        globalTimeMultiplier{ 0.0f };
+		float        worldTimeMultiplier{ 0.0f };
+		float        playerTimeMultiplier{ 0.0f };
+		std::int32_t gameRuntime{ 0 };
 	};
 }
