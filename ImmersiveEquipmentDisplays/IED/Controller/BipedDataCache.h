@@ -83,7 +83,8 @@ namespace IED
 
 		inline void clear()
 		{
-			return m_data.clear();
+			m_playerEntry = {};
+			m_data.clear();
 		}
 
 		constexpr void SetMaxSize(std::uint32_t a_newSize) noexcept
