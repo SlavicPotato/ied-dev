@@ -21,6 +21,11 @@ namespace IED
 				a_out.signatures.emplace(f.asUInt64());
 			}
 
+			if (auto& d = a_in["any"])
+			{
+				a_out.matchAny = d.asBool();
+			}
+
 			return true;
 		}
 
