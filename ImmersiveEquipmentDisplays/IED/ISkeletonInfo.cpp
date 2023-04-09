@@ -9,7 +9,7 @@ namespace IED
 	void ISkeletonInfo::QueueSkeletonInfoLookup(
 		Game::FormID             a_actor,
 		bool                     a_firstPerson,
-		bool                     a_loadSkeleton,
+		bool                     a_loadedSkeleton,
 		SkeletonInfoLookupResult a_result)
 	{
 		if (!a_result)
@@ -21,7 +21,7 @@ namespace IED
 			SkeletonInfoLookupImpl(
 				a_actor,
 				a_firstPerson,
-				a_loadSkeleton,
+				a_loadedSkeleton,
 				a_result);
 		});
 	}
@@ -29,7 +29,7 @@ namespace IED
 	void ISkeletonInfo::SkeletonInfoLookupImpl(
 		Game::FormID                    a_actor,
 		bool                            a_firstPerson,
-		bool                            a_loadSkeleton,
+		bool                            a_loadedSkeleton,
 		const SkeletonInfoLookupResult& a_result)
 	{
 		const stl::lock_guard lock(a_result->lock);
@@ -42,7 +42,7 @@ namespace IED
 				CreateSkeletonTree(
 					a_actor,
 					a_firstPerson,
-					a_loadSkeleton,
+					a_loadedSkeleton,
 					*a_result);
 	}
 
@@ -76,7 +76,7 @@ namespace IED
 	bool ISkeletonInfo::CreateSkeletonTree(
 		Game::FormID a_actor,
 		bool         a_firstPerson,
-		bool         a_loadSkeleton,
+		bool         a_loadedSkeleton,
 		SI_Root&     a_root)
 	{
 		auto actor = a_actor.As<Actor>();
@@ -88,7 +88,7 @@ namespace IED
 		auto root = GetSkeletonRoot(
 			actor,
 			a_firstPerson,
-			a_loadSkeleton,
+			a_loadedSkeleton,
 			a_root);
 
 		if (!root)
@@ -124,10 +124,10 @@ namespace IED
 	NiPointer<NiAVObject> ISkeletonInfo::GetSkeletonRoot(
 		TESObjectREFR* a_refr,
 		bool           a_firstPerson,
-		bool           a_loadSkeleton,
+		bool           a_loadedSkeleton,
 		SI_Root&       a_root)
 	{
-		if (a_loadSkeleton)
+		if (a_loadedSkeleton)
 		{
 			a_root.path.clear();
 
@@ -148,12 +148,8 @@ namespace IED
 			}
 
 			char        buffer[MAX_PATH];
-			const char* out;
 
-			if (!::Util::Model::MakePath("meshes", path, buffer, out))
-			{
-				return nullptr;
-			}
+			const auto out = ::Util::Model::MakePath("meshes", path, buffer);
 
 			auto result = LoadSkeletonRoot(out);
 			if (result)
@@ -173,38 +169,18 @@ namespace IED
 	NiPointer<NiAVObject> ISkeletonInfo::LoadSkeletonRoot(
 		const char* a_path)
 	{
-		BSResourceNiBinaryStream binaryStream(a_path);
-		if (!binaryStream.IsValid())
+		RE::BSModelDB::ModelLoadParams params(3, false, true);
+
+		RE::BSModelDB::ModelEntryAuto entry;
+
+		if (::Util::Model::ModelLoader::NativeLoad(a_path, params, entry))
 		{
-			return nullptr;
+			return entry->object;
 		}
-
-		::Util::Stream::NiStreamWrapper stream;
-
-		if (!stream->Load1(std::addressof(binaryStream)))
+		else
 		{
-			return nullptr;
+			return {};
 		}
-
-		if (!stream->topObjects.initialized())
-		{
-			return nullptr;
-		}
-
-		for (const auto& e : stream->topObjects)
-		{
-			if (!e)
-			{
-				continue;
-			}
-
-			if (auto object = NRTTI<NiAVObject>()(e.get()))
-			{
-				return object;
-			}
-		}
-
-		return nullptr;
 	}
 
 	void ISkeletonInfo::FillObjectData(

@@ -12,26 +12,26 @@ namespace IED
 		static void QueueSkeletonInfoLookup(
 			Game::FormID             a_actor,
 			bool                     a_firstPerson,
-			bool                     a_loadSkeleton,
+			bool                     a_loadedSkeleton,
 			SkeletonInfoLookupResult a_result);
 
 	private:
 		static void SkeletonInfoLookupImpl(
 			Game::FormID                    a_actor,
 			bool                            a_firstPerson,
-			bool                            a_loadSkeleton,
+			bool                            a_loadedSkeleton,
 			const SkeletonInfoLookupResult& a_result);
 
 		static bool CreateSkeletonTree(
 			Game::FormID a_actor,
 			bool         a_firstPerson,
-			bool         a_loadSkeleton,
+			bool         a_loadedSkeleton,
 			SI_Root&     a_root);
 
 		static NiPointer<NiAVObject> GetSkeletonRoot(
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson,
-			bool           a_loadSkeleton,
+			bool           a_loadedSkeleton,
 			SI_Root&       a_root);
 
 		static NiPointer<NiAVObject> LoadSkeletonRoot(
