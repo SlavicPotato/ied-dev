@@ -406,7 +406,7 @@ namespace IED
 			const stl::list<Data::configExtraNodeList_t>& a_data);
 
 		void AddNodeMonitorData(
-			const stl::list<Data::configNodeMonitorEntryList_t>& a_data);
+			stl::list<Data::configNodeMonitorEntryList_t>&& a_data);
 
 		void AddConvertNodesData(
 			const stl::list<Data::configConvertNodesList_t>& a_data);

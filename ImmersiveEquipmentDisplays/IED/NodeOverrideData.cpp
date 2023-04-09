@@ -647,7 +647,7 @@ namespace IED
 		stl::list<Data::configNodeMonitorEntryList_t> data;
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
-			m_Instance->AddNodeMonitorData(data);
+			m_Instance->AddNodeMonitorData(std::move(data));
 		}
 	}
 
@@ -882,31 +882,31 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddNodeMonitorData(
-		const stl::list<Data::configNodeMonitorEntryList_t>& a_data)
+		stl::list<Data::configNodeMonitorEntryList_t>&& a_data)
 	{
 		for (auto& e : a_data)
 		{
 			for (auto& f : e)
 			{
-				if (f.uid == 0)
+				if (f.data.uid == 0)
 				{
 					Warning(
 						"%s: [%s] - invalid uid",
 						__FUNCTION__,
-						f.description.c_str());
+						f.data.description.c_str());
 
 					continue;
 				}
 
-				auto r = m_nodeMonEntries.try_emplace(f.uid, f);
+				const auto r = m_nodeMonEntries.try_emplace(f.data.uid, std::move(f));
 
 				if (!r.second)
 				{
 					Warning(
 						"%s: %u [%s] - duplicate entry",
 						__FUNCTION__,
-						f.uid,
-						f.description.c_str());
+						r.first->second.data.uid,
+						r.first->second.data.description.c_str());
 
 					continue;
 				}

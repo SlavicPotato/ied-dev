@@ -6,15 +6,29 @@ namespace IED
 {
 	using namespace ::Util::Node;
 
-	static constexpr bool find_visible_geometry(
-		NiAVObject* a_object) noexcept
+	static constexpr bool HasGeometry(
+		NiAVObject*                             a_object,
+		const Data::configNodeMonitorEntryBS_t& a_entry) noexcept
 	{
-		return HasVisibleGeometry(a_object);
+		const auto result = Traverse(
+			a_object,
+			[&](NiAVObject* a_object) noexcept [[msvc::forceinline]] {
+				if (!a_entry.check_visibility(a_object))
+				{
+					return VisitorControl::kSkip;
+				}
+
+				return static_cast<bool>(a_object->AsGeometry()) ?
+			               VisitorControl::kStop :
+			               VisitorControl::kContinue;
+			});
+
+		return result == VisitorControl::kStop;
 	}
 
-	static constexpr bool HasVisibleChildObject(
-		NiNode*              a_node,
-		const BSFixedString& a_name) noexcept
+	static constexpr bool HasChildObject(
+		NiNode*                                 a_node,
+		const Data::configNodeMonitorEntryBS_t& a_entry) noexcept
 	{
 		for (const auto& object : a_node->m_children)
 		{
@@ -23,8 +37,8 @@ namespace IED
 				continue;
 			}
 
-			if (object->m_name == a_name &&
-			    object->IsVisible())
+			if (a_entry.has_subject(object->m_name) &&
+			    a_entry.check_visibility(object))
 			{
 				return true;
 			}
@@ -33,9 +47,9 @@ namespace IED
 		return false;
 	}
 
-	static constexpr bool HasVisibleChildNode(
-		NiNode*              a_node,
-		const BSFixedString& a_name) noexcept
+	static constexpr bool HasChildNode(
+		NiNode*                                 a_node,
+		const Data::configNodeMonitorEntryBS_t& a_entry) noexcept
 	{
 		for (const auto& object : a_node->m_children)
 		{
@@ -44,8 +58,8 @@ namespace IED
 				continue;
 			}
 
-			if (object->m_name == a_name &&
-			    object->IsVisible() &&
+			if (a_entry.has_subject(object->m_name) &&
+			    a_entry.check_visibility(object) &&
 			    static_cast<bool>(object->AsNode()))
 			{
 				return true;
@@ -55,9 +69,9 @@ namespace IED
 		return false;
 	}
 
-	static constexpr bool HasVisibleChildGeometry(
-		NiNode*              a_node,
-		const BSFixedString& a_name) noexcept
+	static constexpr bool HasChildGeometry(
+		NiNode*                                 a_node,
+		const Data::configNodeMonitorEntryBS_t& a_entry) noexcept
 	{
 		for (const auto& object : a_node->m_children)
 		{
@@ -66,8 +80,8 @@ namespace IED
 				continue;
 			}
 
-			if (object->m_name == a_name &&
-			    find_visible_geometry(object))
+			if (a_entry.has_subject(object->m_name) &&
+			    HasGeometry(object, a_entry))
 			{
 				return true;
 			}
@@ -76,9 +90,9 @@ namespace IED
 		return false;
 	}
 
-	static constexpr bool HasVisibleChildNodeWithGeometryChild(
-		NiNode*              a_node,
-		const BSFixedString& a_name) noexcept
+	static constexpr bool HasChildNodeWithGeometryChild(
+		NiNode*                                 a_node,
+		const Data::configNodeMonitorEntryBS_t& a_entry) noexcept
 	{
 		for (const auto& object : a_node->m_children)
 		{
@@ -87,8 +101,8 @@ namespace IED
 				continue;
 			}
 
-			if (object->m_name == a_name &&
-			    object->IsVisible())
+			if (a_entry.has_subject(object->m_name) &&
+			    a_entry.check_visibility(object))
 			{
 				if (const auto node = object->AsNode())
 				{
@@ -99,7 +113,7 @@ namespace IED
 							continue;
 						}
 
-						if (find_visible_geometry(e))
+						if (HasGeometry(e, a_entry))
 						{
 							return true;
 						}
@@ -139,19 +153,19 @@ namespace IED
 			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
-					if (a_object->IsHidden())
+					if (!m_config.check_visibility(a_object))
 					{
 						return VisitorControl::kSkip;
 					}
 
-					return a_object->m_name == m_config.subject ?
+					return m_config.has_subject(a_object->m_name) ?
 					           VisitorControl::kStop :
 					           VisitorControl::kContinue;
 				});
 			}
 			else
 			{
-				n = HasVisibleChildObject(m_parent, m_config.subject);
+				n = HasChildObject(m_parent, m_config);
 			}
 
 			break;
@@ -161,12 +175,12 @@ namespace IED
 			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
-					if (a_object->IsHidden())
+					if (!m_config.check_visibility(a_object))
 					{
 						return VisitorControl::kSkip;
 					}
 
-					return (a_object->m_name == m_config.subject &&
+					return (m_config.has_subject(a_object->m_name) &&
 					        static_cast<bool>(a_object->AsNode())) ?
 					           VisitorControl::kStop :
 					           VisitorControl::kContinue;
@@ -174,7 +188,7 @@ namespace IED
 			}
 			else
 			{
-				n = HasVisibleChildNode(m_parent, m_config.subject);
+				n = HasChildNode(m_parent, m_config);
 			}
 
 			break;
@@ -184,20 +198,20 @@ namespace IED
 			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
-					if (a_object->IsHidden())
+					if (!m_config.check_visibility(a_object))
 					{
 						return VisitorControl::kSkip;
 					}
 
-					return (a_object->m_name == m_config.subject &&
-					        find_visible_geometry(a_object)) ?
+					return (m_config.has_subject(a_object->m_name) &&
+					        HasGeometry(a_object, m_config)) ?
 					           VisitorControl::kStop :
 					           VisitorControl::kContinue;
 				});
 			}
 			else
 			{
-				n = HasVisibleChildGeometry(m_parent, m_config.subject);
+				n = HasChildGeometry(m_parent, m_config);
 			}
 
 			break;
@@ -207,12 +221,12 @@ namespace IED
 			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
-					if (a_object->IsHidden())
+					if (!m_config.check_visibility(a_object))
 					{
 						return VisitorControl::kSkip;
 					}
 
-					if (a_object->m_name != m_config.subject)
+					if (!m_config.has_subject(a_object->m_name))
 					{
 						return VisitorControl::kContinue;
 					}
@@ -226,7 +240,7 @@ namespace IED
 								continue;
 							}
 
-							if (find_visible_geometry(e))
+							if (HasGeometry(e, m_config))
 							{
 								return VisitorControl::kStop;
 							}
@@ -238,7 +252,7 @@ namespace IED
 			}
 			else
 			{
-				n = HasVisibleChildNodeWithGeometryChild(m_parent, m_config.subject);
+				n = HasChildNodeWithGeometryChild(m_parent, m_config);
 			}
 
 			break;
