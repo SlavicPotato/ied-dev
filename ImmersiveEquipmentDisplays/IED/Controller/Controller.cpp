@@ -1858,8 +1858,6 @@ namespace IED
 
 		m_actorBlockList.playerToggle = !m_actorBlockList.playerToggle;
 
-		if (!GetSettings().data.toggleKeepLoaded)
-		{
 			if (m_actorBlockList.playerToggle)
 			{
 				AddActorBlock(
@@ -1871,20 +1869,6 @@ namespace IED
 				RemoveActorBlock(player->formID, StringHolder::GetSingleton().IED);
 			}
 		}
-		else
-		{
-			if (!m_actorBlockList.playerToggle)
-			{
-				RemoveActorBlock(player->formID, StringHolder::GetSingleton().IED);
-			}
-
-			auto it = m_actorMap.find(player->formID);
-			if (it != m_actorMap.end())
-			{
-				EvaluateImpl(it->second, ControllerUpdateFlags::kSoundAll);
-			}
-		}
-	}
 
 	bool Controller::IsActorBlocked(Game::FormID a_actor) const
 	{
@@ -2816,13 +2800,6 @@ namespace IED
 		processParams_t&     a_params) noexcept
 	{
 		if (a_flags.test(BaseFlags::kInvisible))
-		{
-			return false;
-		}
-
-		if (a_actor == *g_thePlayer &&
-		    GetSettings().data.toggleKeepLoaded &&
-		    m_actorBlockList.playerToggle)
 		{
 			return false;
 		}
@@ -3793,7 +3770,6 @@ namespace IED
 					f.seen = GetCounterValue();
 				}
 
-				f.seen     = GetCounterValue();
 				f.occupied = true;
 			}
 			else
@@ -5129,9 +5105,9 @@ namespace IED
 	}
 
 	void Controller::SaveLastEquippedItems(
-		processParams_t&          a_params,
-		const equippedItemInfo_t& a_info,
-		ActorObjectHolder&        a_objectHolder) noexcept
+		processParams_t&        a_params,
+		const EquippedItemInfo& a_info,
+		ActorObjectHolder&      a_objectHolder) noexcept
 	{
 		const auto c = IncrementCounter();
 

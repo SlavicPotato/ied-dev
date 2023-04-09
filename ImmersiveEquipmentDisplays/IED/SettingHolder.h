@@ -224,7 +224,6 @@ namespace IED
 				Data::ConfigSound<Game::FormID> sound;
 
 				bool hideEquipped{ false };
-				bool toggleKeepLoaded{ false };
 				bool disableNPCSlots{ false };
 				bool removeFavRestriction{ false };
 				bool enableXP32AA{ false };

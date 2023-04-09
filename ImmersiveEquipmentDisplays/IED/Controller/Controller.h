@@ -784,9 +784,9 @@ namespace IED
 		void ProcessCustom(processParams_t& a_params) noexcept;
 
 		void SaveLastEquippedItems(
-			processParams_t&          a_params,
-			const equippedItemInfo_t& a_info,
-			ActorObjectHolder&        a_objectHolder) noexcept;
+			processParams_t&        a_params,
+			const EquippedItemInfo& a_info,
+			ActorObjectHolder&      a_objectHolder) noexcept;
 
 		bool GetVisibilitySwitch(
 			Actor*                     a_actor,

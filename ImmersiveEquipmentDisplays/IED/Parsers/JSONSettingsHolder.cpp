@@ -49,7 +49,6 @@ namespace IED
 				return false;
 			}
 
-			a_out.toggleKeepLoaded                    = data.get("toggle_keep_loaded", false).asBool();
 			a_out.hideEquipped                        = data.get("hide_equipped", false).asBool();
 			a_out.disableNPCSlots                     = data.get("disable_npc_slots", false).asBool();
 			a_out.removeFavRestriction                = data.get("remove_fav_restriction", false).asBool();
@@ -75,7 +74,7 @@ namespace IED
 			}
 
 			a_out.odbLevel = static_cast<ObjectDatabaseLevel>(
-				data.get("odb_level", stl::underlying(ObjectDatabaseLevel::kLow)).asUInt());
+				data.get("odb_level", stl::underlying(ObjectDatabaseLevel::kMedium)).asUInt());
 
 			if (a_out.odbLevel == ObjectDatabaseLevel::kDisabled)
 			{
@@ -107,7 +106,6 @@ namespace IED
 
 			soundParser.Create(a_data.sound, data["sound"]);
 
-			data["toggle_keep_loaded"]      = a_data.toggleKeepLoaded;
 			data["hide_equipped"]           = a_data.hideEquipped;
 			data["disable_npc_slots"]       = a_data.disableNPCSlots;
 			data["remove_fav_restriction"]  = a_data.removeFavRestriction;
