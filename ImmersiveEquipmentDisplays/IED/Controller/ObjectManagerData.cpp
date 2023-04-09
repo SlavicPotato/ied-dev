@@ -73,6 +73,18 @@ namespace IED
 		}
 	}
 
+	std::size_t ObjectManagerData::GetNumQueuedModels() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& e : m_actorMap)
+		{
+			result += e.second.GetNumQueuedModels();
+		}
+
+		return result;
+	}
+
 	void ObjectManagerData::RequestLFEvaluateAll(
 		Game::FormID a_skip) const noexcept
 	{

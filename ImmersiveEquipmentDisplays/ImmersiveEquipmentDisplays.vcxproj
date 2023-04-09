@@ -766,6 +766,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ObjectLight.h" />
     <ClInclude Include="IED\Controller\ObjectSound.h" />
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h" />
+    <ClInclude Include="IED\Controller\QueuedModel.h" />
     <ClInclude Include="IED\Controller\SoundDescriptor.h" />
     <ClInclude Include="IED\Controller\WeaponNodeEntry.h" />
     <ClInclude Include="IED\ConvertNodes.h" />
@@ -1307,6 +1308,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\IRNG.cpp" />
     <ClCompile Include="IED\Controller\ObjectEntryBase.cpp" />
     <ClCompile Include="IED\Controller\ObjectLight.cpp" />
+    <ClCompile Include="IED\Controller\QueuedModel.cpp" />
     <ClCompile Include="IED\Controller\WeaponNodeEntry.cpp" />
     <ClCompile Include="IED\ConvertNodes.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />

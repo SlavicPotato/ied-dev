@@ -3,12 +3,15 @@
 namespace IED
 {
 	class ObjectDatabase;
+	class QueuedModel;
 
-	enum class ODBEntryLoadState
+	enum class ODBEntryLoadState : std::uint32_t
 	{
-		kPending    = 0,
-		kError      = 1,
-		kLoaded     = 2
+		kPending = 0,
+		kQueued  = 1,
+		kLoading = 2,
+		kError   = 3,
+		kLoaded  = 4
 	};
 
 	struct ObjectDatabaseEntryData :
@@ -33,9 +36,35 @@ namespace IED
 		{
 		}
 
+		[[nodiscard]] inline bool try_acquire_for_load() noexcept
+		{
+			auto expected = ODBEntryLoadState::kPending;
+			if (loadState.compare_exchange_strong(expected, ODBEntryLoadState::kLoading))
+			{
+				return true;
+			}
+
+			return expected == ODBEntryLoadState::kQueued ?
+			           loadState.compare_exchange_strong(expected, ODBEntryLoadState::kLoading) :
+			           false;
+		}
+
+		[[nodiscard]] inline bool try_acquire_queued_for_load() noexcept
+		{
+			auto expected = ODBEntryLoadState::kQueued;
+			return loadState.compare_exchange_strong(expected, ODBEntryLoadState::kLoading);
+		}
+
+		[[nodiscard]] inline bool try_acquire_for_queuing() noexcept
+		{
+			auto expected = ODBEntryLoadState::kPending;
+			return loadState.compare_exchange_strong(expected, ODBEntryLoadState::kQueued);
+		}
+
 		NiPointer<NiNode>              object;
+		RE::BSModelDB::ModelEntryAuto  holder;
 		volatile long long             accessed{ 0 };
-		ODBEntryLoadState              loadState{ ODBEntryLoadState::kPending };
+		std::atomic<ODBEntryLoadState> loadState{ ODBEntryLoadState::kPending };
 	};
 
 	using ObjectDatabaseEntry = stl::smart_ptr<ObjectDatabaseEntryData>;

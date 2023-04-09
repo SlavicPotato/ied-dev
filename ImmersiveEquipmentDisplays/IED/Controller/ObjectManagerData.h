@@ -139,6 +139,8 @@ namespace IED
 		void RequestEvaluateAll() const noexcept;
 		void RequestLFEvaluateAll() const noexcept;
 
+		[[nodiscard]] std::size_t GetNumQueuedModels() const noexcept;
+
 	private:
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept = 0;
 		virtual bool WantGlobalVariableUpdateOnAddRemove() const noexcept = 0;

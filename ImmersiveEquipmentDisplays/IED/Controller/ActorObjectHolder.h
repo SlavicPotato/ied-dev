@@ -95,8 +95,7 @@ namespace IED
 
 	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
 
-	class ActorObjectHolder  // :
-							 //public BSTEventSink<BSAnimationGraphEvent>
+	class ActorObjectHolder
 	{
 		friend class IObjectManager;
 		friend class IEquipment;
@@ -347,10 +346,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit(Tf a_func)  //
-										 /*noexcept(
-				std::is_nothrow_invocable_v<Tf, ObjectEntrySlot&>&&
-					std::is_nothrow_invocable_v<Tf, ObjectEntryCustom&>)*/
+		constexpr void visit(Tf a_func) 
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -370,10 +366,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit(Tf a_func) const  //
-											   /* noexcept(
-				std::is_nothrow_invocable_v<Tf, const ObjectEntrySlot&>&&
-					std::is_nothrow_invocable_v<Tf, const ObjectEntryCustom&>)*/
+		constexpr void visit(Tf a_func) const
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -493,30 +486,6 @@ namespace IED
 			return static_cast<Data::ConfigSex>(IsFemale());
 		}
 
-		/*[[nodiscard]] constexpr bool IsAnimEventForwardingEnabled() const noexcept
-		{
-			return m_enableAnimEventForwarding;
-		}*/
-
-		//void ReSinkAnimationGraphs();
-
-		/*void RegisterWeaponAnimationGraphManagerHolder(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
-			bool                                      a_forward);
-
-		void UnregisterWeaponAnimationGraphManagerHolder(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);*/
-
-		/*[[nodiscard]] constexpr auto& GetAnimationUpdateList() noexcept
-		{
-			return m_animationUpdateList;
-		}
-
-		[[nodiscard]] constexpr auto& GetAnimationUpdateList() const noexcept
-		{
-			return m_animationUpdateList;
-		}*/
-
 		[[nodiscard]] constexpr bool HasHumanoidSkeleton() const noexcept
 		{
 			return m_flags.test(ActorObjectHolderFlags::kHumanoidSkeleton);
@@ -573,20 +542,6 @@ namespace IED
 		{
 			return m_currentParams;
 		}
-
-		/*[[nodiscard]] std::optional<conditionalVariableStorage_t> GetVariable(
-			const stl::fixed_string& a_name) const
-		{
-			auto it = m_variables.find(a_name);
-			if (it != m_variables.end())
-			{
-				return it->second;
-			}
-			else
-			{
-				return {};
-			}
-		}*/
 
 		[[nodiscard]] constexpr auto& GetVariables() const noexcept
 		{
@@ -679,6 +634,23 @@ namespace IED
 			m_lastQueuedOutfitEquipFrame = a_value;
 		}
 
+		constexpr void AddQueuedModel(ObjectDatabaseEntry&& a_entry) noexcept
+		{
+			m_queuedModels.emplace(std::move(a_entry));
+		}
+
+		bool ProcessQueuedModels() noexcept;
+
+		[[nodiscard]] constexpr auto GetNumQueuedModels() const noexcept
+		{
+			return m_queuedModels.size();
+		}
+
+		[[nodiscard]] constexpr auto HasQueuedModels() const noexcept
+		{
+			return !m_queuedModels.empty();
+		}
+
 	private:
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,
@@ -687,17 +659,10 @@ namespace IED
 
 		void ApplyXP32NodeTransformOverrides() const noexcept;
 
-		/*EventResult ReceiveEvent(
-			const BSAnimationGraphEvent*           a_event,
-			BSTEventSource<BSAnimationGraphEvent>* a_eventSource) override;*/
-
-		//std::optional<ActiveActorAnimation> GetNewActiveAnimation(const BSAnimationGraphEvent* a_event) const;
-
 		CachedActorData m_state;
 
 		mutable bool m_wantLFUpdate{ false };
 		mutable bool m_wantHFUpdate{ false };
-		//bool m_wantLFVarUpdate{ false };
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
@@ -746,6 +711,8 @@ namespace IED
 		std::unique_ptr<ActorTempData> m_temp;
 
 		stl::unordered_map<luid_tag, float> m_rpc;
+
+		stl::flat_set<ObjectDatabaseEntry> m_queuedModels;
 
 		std::uint32_t m_lastQueuedOutfitEquipFrame{ 0 };
 

@@ -721,6 +721,34 @@ namespace IED
 		a_sc.reset();
 	}
 
+	bool ActorObjectHolder::ProcessQueuedModels() noexcept
+	{
+		bool result = false;
+
+		for (auto it = m_queuedModels.begin(); it != m_queuedModels.end();)
+		{
+			const auto loadState = (*it)->loadState.load();
+
+			if (loadState > ODBEntryLoadState::kLoading)
+			{
+				it = m_queuedModels.erase(it);
+
+				result = true;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		if (result)
+		{
+			RequestEval();
+		}
+
+		return result;
+	}
+
 	void ActorObjectHolder::CreateExtraCopyNode(
 		const SkeletonCache::ActorEntry&              a_sc,
 		NiNode*                                       a_npcroot,
@@ -767,114 +795,5 @@ namespace IED
 	{
 		SkeletonExtensions::ApplyXP32NodeTransformOverrides(m_npcroot.get(), m_skeletonID);
 	}
-
-	/*EventResult ActorObjectHolder::ReceiveEvent(
-		const BSAnimationGraphEvent*           a_event,
-		BSTEventSource<BSAnimationGraphEvent>* a_eventSource)
-	{
-		if (a_event)
-		{
-			auto sh = BSStringHolder::GetSingleton();
-
-			if (a_event->tag == sh->m_graphDeleting)
-			{
-				m_owner.QueueReSinkAnimationGraphs(m_actorid);
-			}
-			else
-			{
-				if (auto newAA = GetNewActiveAnimation(a_event))
-				{
-					if (m_activeAnimation.load() != newAA.value())
-					{
-						m_activeAnimation = newAA.value();
-
-						m_owner.QueueRequestEvaluate(m_actorid, true, true);
-					}
-				}
-			}
-		}
-
-		return EventResult::kContinue;
-	}*/
-
-	/*std::optional<ActiveActorAnimation> ActorObjectHolder::GetNewActiveAnimation(
-		const BSAnimationGraphEvent* a_event) const
-	{
-		auto sh = BSStringHolder::GetSingleton();
-
-		ActiveActorAnimation current;
-
-		if (a_event->tag == sh->m_animObjectDraw)
-		{
-			if (a_event->payload == sh->m_animObjectLute)
-			{
-				current = ActiveActorAnimation::kLute;
-			}
-			else
-			{
-				current = ActiveActorAnimation::kNone;
-			}
-		}
-		else if (a_event->tag == sh->m_animObjectUnequip)
-		{
-			current = ActiveActorAnimation::kNone;
-		}
-		else
-		{
-			return {};
-		}
-
-		return { current };
-	}*/
-
-	/*void ActorObjectHolder::ReSinkAnimationGraphs()
-	{
-		RE::BSAnimationGraphManagerPtr agm;
-		if (m_actor->GetAnimationGraphManagerImpl(agm))
-		{
-			if (!agm->graphs.empty())
-			{
-				for (auto& e : agm->graphs)
-				{
-					if (e)
-					{
-						e->RemoveEventSink(this);
-					}
-				}
-
-				if (auto& e = agm->graphs.front())
-				{
-					e->AddEventSink(this);
-				}
-			}
-		}
-	}*/
-
-	/*void ActorObjectHolder::RegisterWeaponAnimationGraphManagerHolder(
-		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
-		bool                                      a_forward)
-	{*/
-	/*if (a_forward && m_enableAnimEventForwarding)
-		{
-			m_animEventForwardRegistrations.Add(a_ptr);
-		}*/
-
-	//m_animationUpdateList.Add(a_ptr);
-
-	//_DMESSAGE("reg %p", a_ptr.get());
-	//}
-
-	/*void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
-		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
-	{*/
-	/*if (m_enableAnimEventForwarding)
-		{
-			m_animEventForwardRegistrations.Remove(a_ptr);
-		}*/
-
-	//m_animationUpdateList.Remove(a_ptr);
-
-	//_DMESSAGE("unreg %p", a_ptr.get());
-	//}
 
 }

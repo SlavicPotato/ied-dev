@@ -76,6 +76,11 @@ namespace IED
 				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
 
+				if (m_controller.ODBGetBackgroundLoadingEnabled())
+				{
+					ImGui::TextUnformatted("Queued models:");
+				}
+
 				if (i3di)
 				{
 					if (i3di->GetCommonData())
@@ -123,12 +128,14 @@ namespace IED
 					ImGui::Text("%zu", AnimationUpdateController::GetSingleton().GetNumObjects());
 				}
 
-				//auto steps = Game::Unk2f6b948::GetStepMultipliers();
-
-				//ImGui::Text("%f / %f | %f / %f", *Game::g_frameTimer, *Game::g_frameTimerSlow, steps.player, steps.npc);
 				ImGui::Text("%llu", m_controller.GetCounterValue());
 				ImGui::Text("%llu", m_controller.GetEvalCounter());
 
+				if (m_controller.ODBGetBackgroundLoadingEnabled())
+				{
+					ImGui::Text("%zu", m_controller.GetNumQueuedModels());
+				}
+				
 				if (i3di)
 				{
 					if (auto& i3diCommonData = i3di->GetCommonData())

@@ -45,6 +45,8 @@ namespace IED
 			a_config->m_bipedSlotCacheMaxSize,
 			a_config->m_bipedSlotCacheMaxForms)
 	{
+		ODBSetUseNativeModelDB(a_config->m_odbNativeLoader);
+		ODBEnableBackgroundLoading(a_config->m_odbBackgroundLoading);
 	}
 
 	void Controller::SinkInputEvents()
@@ -539,6 +541,11 @@ namespace IED
 		{
 			Debug("IFPV detector plugin found");
 		}
+
+		Debug(
+			"ODB: native: %hhu, background load: %hhu",
+			ODBGetUseNativeModelDB(),
+			ODBGetBackgroundLoadingEnabled());
 
 		SetProcessorTaskRunState(true);
 
@@ -1858,17 +1865,17 @@ namespace IED
 
 		m_actorBlockList.playerToggle = !m_actorBlockList.playerToggle;
 
-			if (m_actorBlockList.playerToggle)
-			{
-				AddActorBlock(
-					player->formID,
-					StringHolder::GetSingleton().IED);
-			}
-			else
-			{
-				RemoveActorBlock(player->formID, StringHolder::GetSingleton().IED);
-			}
+		if (m_actorBlockList.playerToggle)
+		{
+			AddActorBlock(
+				player->formID,
+				StringHolder::GetSingleton().IED);
 		}
+		else
+		{
+			RemoveActorBlock(player->formID, StringHolder::GetSingleton().IED);
+		}
+	}
 
 	bool Controller::IsActorBlocked(Game::FormID a_actor) const
 	{
@@ -4140,7 +4147,9 @@ namespace IED
 			{
 				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}
-			else if (!a_node.parent_has_visible_geometry())
+			else if (
+				!a_params.objects.HasQueuedModels() &&
+				!a_node.parent_has_visible_geometry())
 			{
 				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}

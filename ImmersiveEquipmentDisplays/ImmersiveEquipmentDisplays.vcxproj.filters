@@ -1979,6 +1979,9 @@
     <ClInclude Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.h">
       <Filter>Source\IED\UI\KeyBind\Profile</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\QueuedModel.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3135,6 +3138,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.cpp">
       <Filter>Source\IED\UI\KeyBind\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\QueuedModel.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

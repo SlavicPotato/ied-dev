@@ -165,6 +165,8 @@ namespace IED
 
 		ALD::SetInteriorAmbientLightThreshold(config->m_interiorAmbientLightThreshold);
 
+		SkeletonCache::GetSingleton().EnableNativeLoader(config->m_scNativeLoader);
+
 		m_done = true;
 
 		return true;

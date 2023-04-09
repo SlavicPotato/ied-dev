@@ -2,8 +2,13 @@
 
 #include "ObjectDatabase.h"
 
+#include "QueuedModel.h"
+
+#include <ext/BackgroundProcessThread.h>
+
 namespace IED
 {
+	using namespace ::Util::Model;
 
 	auto ObjectDatabase::GetModel(
 		const char*          a_path,
@@ -13,38 +18,53 @@ namespace IED
 		bool                 a_forceImmediateLoad) noexcept
 		-> ObjectLoadResult
 	{
-		using namespace ::Util::Model;
+		char path_buffer[MAX_PATH];
 
-		char        path_buffer[MAX_PATH];
-		const char* path;
-
-		if (!MakePath("meshes", a_path, path_buffer, path))
-		{
-			return ObjectLoadResult::kFailed;
-		}
+		const auto path = MakePath("meshes", a_path, path_buffer);
 
 		const auto r = m_data.try_emplace(path);
 
-		auto& entry = r.first->second;
+		auto& entry = r.first->second.entry;
 
-		if (r.second)
+		if (ODBGetBackgroundLoadingEnabled() && !a_forceImmediateLoad)
 		{
-			entry = stl::make_smart_for_overwrite<ObjectDatabaseEntryData>();
+			if (entry->try_acquire_for_queuing())
+			{
+				if (const auto thrd = RE::BackgroundProcessThread::GetSingleton())
+				{
+					thrd->QueueTask<QueuedModel>(entry, path, *this);
+				}
+				else
+				{
+					entry->loadState.store(ODBEntryLoadState::kError);
+				}
+			}
+		}
+		else
+		{
+			if (entry->try_acquire_for_load())
+			{
+				const bool result = LoadModel(path, entry);
+
+				entry->loadState.store(
+					result ?
+						ODBEntryLoadState::kLoaded :
+						ODBEntryLoadState::kError);
+
+				QueueDatabaseCleanup();
+			}
 		}
 
-		if (entry->loadState == ODBEntryLoadState::kPending)
+		switch (entry->loadState.load())
 		{
-			entry->object = LoadImpl(path);
+		case ODBEntryLoadState::kPending:
+		case ODBEntryLoadState::kQueued:
+		case ODBEntryLoadState::kLoading:
 
-			entry->loadState = entry->object.get() ?
-			                       ODBEntryLoadState::kLoaded :
-			                       ODBEntryLoadState::kError;
+			a_outEntry = entry;
 
-			QueueDatabaseCleanup();
-		}
+			return ObjectLoadResult::kPending;
 
-		switch (entry->loadState)
-		{
 		case ODBEntryLoadState::kLoaded:
 
 			entry->accessed = IPerfCounter::Query();
@@ -65,7 +85,6 @@ namespace IED
 	}
 
 	bool ObjectDatabase::ValidateObject(
-		const char* a_path,
 		NiAVObject* a_object) noexcept
 	{
 		return !HasBSDismemberSkinInstance(a_object);
@@ -90,6 +109,15 @@ namespace IED
 		return r == VisitorControl::kStop;
 	}
 
+	void ObjectDatabase::PreODBCleanup() noexcept
+	{
+		bool e = true;
+		if (m_wantCleanup.compare_exchange_strong(e, false))
+		{
+			QueueDatabaseCleanup();
+		}
+	}
+
 	void ObjectDatabase::RunObjectCleanup() noexcept
 	{
 		if (!m_cleanupDeadline)
@@ -108,7 +136,7 @@ namespace IED
 		{
 			for (auto it = m_data.begin(); it != m_data.end();)
 			{
-				if (it->second.use_count() <= 1)
+				if (it->second.entry.use_count() <= 1)
 				{
 					it = m_data.erase(it);
 				}
@@ -136,7 +164,7 @@ namespace IED
 
 		for (auto it = vec.begin(); it != vec.end();)
 		{
-			if ((*it)->second.use_count() > 1)
+			if ((*it)->second.entry.use_count() > 1)
 			{
 				++it;
 			}
@@ -166,7 +194,7 @@ namespace IED
 
 		for (auto& e : m_data)
 		{
-			if (e.second.use_count() <= 1)
+			if (e.second.entry.use_count() <= 1)
 			{
 				total++;
 			}
@@ -181,23 +209,72 @@ namespace IED
 		m_cleanupDeadline.reset();
 	}
 
-	NiPointer<NiNode> ObjectDatabase::LoadImpl(const char* a_path)
+	bool ObjectDatabase::LoadImpl(
+		const char*        a_path,
+		NiPointer<NiNode>& a_nodeOut)
 	{
-		NiPointer<NiNode> result;
+		NiPointer<NiAVObject> result;
 
-		::Util::Model::ModelLoader loader;
+		RE::BSModelDB::ModelLoadParams params(
+			3,
+			false,
+			true);
 
-		if (!loader.LoadObject(a_path, result))
+		if (!ModelLoader::Load(a_path, params, result))
 		{
-			return {};
+			return false;
 		}
 
-		if (!ValidateObject(a_path, result))
+		const auto node = result->AsNode();
+
+		if (!node)
 		{
-			return {};
+			return false;
 		}
 
-		return result;
+		if (!ValidateObject(result))
+		{
+			return false;
+		}
+
+		a_nodeOut = node;
+
+		return true;
+	}
+
+	bool ObjectDatabase::LoadImpl(
+		const char*                    a_path,
+		NiPointer<NiNode>&             a_nodeOut,
+		RE::BSModelDB::ModelEntryAuto& a_entryOut)
+	{
+		RE::BSModelDB::ModelEntryAuto result;
+
+		RE::BSModelDB::ModelLoadParams params(
+			3,
+			false,
+			true);
+
+		if (!ModelLoader::NativeLoad(a_path, params, result))
+		{
+			return false;
+		}
+
+		const auto node = result->object->AsNode();
+
+		if (!node)
+		{
+			return false;
+		}
+
+		if (!ValidateObject(node))
+		{
+			return false;
+		}
+
+		a_entryOut = std::move(result);
+		a_nodeOut  = node;
+
+		return true;
 	}
 
 	NiNode* ObjectDatabase::CreateClone(
@@ -214,4 +291,21 @@ namespace IED
 		return static_cast<NiNode*>(result);
 	}
 
+	bool ObjectDatabase::LoadModel(
+		const char*                a_path,
+		const ObjectDatabaseEntry& a_entry)
+	{
+		bool result;
+
+		if (ODBGetUseNativeModelDB())
+		{
+			result = LoadImpl(a_path, a_entry->object, a_entry->holder);
+		}
+		else
+		{
+			result = LoadImpl(a_path, a_entry->object);
+		}
+
+		return result;
+	}
 }
