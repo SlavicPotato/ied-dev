@@ -13,13 +13,13 @@ namespace IED
 			void AbortPopupWrite(const char* a_message)
 			{
 				gLog.FatalError("%s", a_message);
-				WinApi::MessageBoxError(PLUGIN_NAME, a_message);
+				WinApi::MessageBoxError(PLUGIN_NAME_FULL, a_message);
 				std::_Exit(1);
 			}
 
 			void AbortPopup(const char* a_message)
 			{
-				WinApi::MessageBoxErrorLog(PLUGIN_NAME, a_message);
+				WinApi::MessageBoxErrorLog(PLUGIN_NAME_FULL, a_message);
 				std::_Exit(1);
 			}
 		}

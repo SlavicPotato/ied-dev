@@ -62,9 +62,9 @@ namespace IED
 
 			constexpr void move_legacy_flags_to_le() noexcept
 			{
-				lastEquipped.flags.set(LastEquippedFlags::kPrioritizeRecentSlots, customFlags.consume(CustomFlags::kUnused1));
+				lastEquipped.flags.set(LastEquippedFlags::kPrioritizeRecentBipedSlots, customFlags.consume(CustomFlags::kUnused1));
 				lastEquipped.flags.set(LastEquippedFlags::kDisableIfSlotOccupied, customFlags.consume(CustomFlags::kUnused2));
-				lastEquipped.flags.set(LastEquippedFlags::kSkipOccupiedSlots, customFlags.consume(CustomFlags::kUnused3));
+				lastEquipped.flags.set(LastEquippedFlags::kSkipOccupiedBipedSlots, customFlags.consume(CustomFlags::kUnused3));
 			}
 
 			stl::flag<CustomFlags>  customFlags{ DEFAULT_CUSTOM_FLAGS };

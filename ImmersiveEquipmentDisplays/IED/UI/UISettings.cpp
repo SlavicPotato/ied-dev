@@ -262,15 +262,6 @@ namespace IED
 						data.playerBlockKeys.mark(true);
 					}
 
-					ImGui::Spacing();
-
-					if (settings.mark_if(ImGui::Checkbox(
-							UIL::LS(UISettingsStrings::KeepLoadedWhenToggledOff, "3"),
-							std::addressof(data.toggleKeepLoaded))))
-					{
-						m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
-					}
-
 					ImGui::TreePop();
 				}
 

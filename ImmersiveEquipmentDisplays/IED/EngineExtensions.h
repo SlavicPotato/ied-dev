@@ -16,7 +16,7 @@ namespace IED
 		struct hkaGetSkeletonNodeResult
 		{
 			NiNode*       root;   // 00
-			std::uint32_t unk08;  // 08 - index?
+			std::uint32_t index;  // 08
 			std::uint32_t pad1C;  // 1C
 		};
 		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
@@ -57,7 +57,6 @@ namespace IED
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
-		inline static const auto m_gameRuntimeMS = IAL::Address<std::int32_t*>(523662, 410201);
 		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 		inline static const auto ShouldDefer3DTaskImpl = IAL::Address<unk63F810_t>(38079, 39033);
 
@@ -226,6 +225,7 @@ namespace IED
 		inline static const auto m_Actor_Update_Actor_GetExtraLight_a = IAL::Address<std::uintptr_t>(36357, 37348);
 		inline static const auto m_ShaderReferenceEffect_Resume_a     = IAL::Address<std::uintptr_t>(34114, 34916);
 		inline static const auto m_setupEventSinks_a                  = IAL::Address<std::uintptr_t>(35622, 36632, 0x2D7, 0x2D4);
+		//inline static const auto m_taskPoolProcExit_a                 = IAL::Address<std::uintptr_t>(35916, 36891, 0x168, 0x2AE);
 
 		inline static const auto m_vtblActor_ActorValueOwner           = IAL::Address<std::uintptr_t>(260543, 207521);
 		inline static const auto m_vtblCharacter_ActorValueOwner       = IAL::Address<std::uintptr_t>(261402, 207896);

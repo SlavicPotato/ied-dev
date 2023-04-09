@@ -62,7 +62,7 @@ namespace IED
 			{
 				if (e.flags.test(Data::ConditionalVariableFlags::kIsGroup))
 				{
-					if (auto result = GetOverrideVariable(a_params, e.group))
+					if (const auto result = GetOverrideVariable(a_params, e.group))
 					{
 						return result;
 					}
@@ -90,7 +90,7 @@ namespace IED
 
 		controller.RunUpdateBipedSlotCache(a_params);
 
-		auto it = controller.DoLastEquippedSelection(
+		const auto it = controller.DoLastEquippedSelection(
 			a_params,
 			a_data.lastEquipped,
 			[](const auto& a_itemEntry) noexcept [[msvc::forceinline]] {
@@ -99,7 +99,7 @@ namespace IED
 
 		if (it != a_params.collector.data.forms.end())
 		{
-			const auto r = a_params.useCount.emplace(it->first, 0);
+			const auto r = a_params.useCount.emplace(it->first, 0u);
 
 			r.first->second++;
 
@@ -146,8 +146,6 @@ namespace IED
 			{
 				const auto v = GetLastEquippedForm(a_params, a_src);
 
-				//_DMESSAGE("le: %X", v);
-
 				if (v == a_dst.form.get_id())
 				{
 					return;
@@ -166,6 +164,10 @@ namespace IED
 			}
 
 			break;
+
+		default:
+
+			return;
 		}
 
 		a_modified = true;

@@ -9,6 +9,8 @@ static bool Initialize(const SKSEInterface* a_skse)
 {
 	auto& skse = ISKSE::GetSingleton();
 
+	bool result = false;
+
 	try
 	{
 		gLog.Debug("Querying SKSE interfaces..");
@@ -19,7 +21,7 @@ static bool Initialize(const SKSEInterface* a_skse)
 			return false;
 		}
 
-		const auto result = IED::Initializer::GetSingleton().Run(a_skse);
+		result = IED::Initializer::GetSingleton().Run(a_skse);
 
 		if (result)
 		{
@@ -37,26 +39,22 @@ static bool Initialize(const SKSEInterface* a_skse)
 					IAL::GetLoadEnd()) /
 					1000ll);
 		}
-
-		return result;
 	}
 	catch (const std::exception& e)
 	{
-		WinApi::MessageBoxErrorFmtLog(
-			PLUGIN_NAME,
+		stl::report_and_fail(
+			PLUGIN_NAME_FULL,
 			"An exception occured during initialization:\n\n%s",
 			e.what());
-
-		return false;
 	}
 	catch (...)
 	{
-		WinApi::MessageBoxErrorFmtLog(
-			PLUGIN_NAME,
+		stl::report_and_fail(
+			PLUGIN_NAME_FULL,
 			"An exception occured during initialization");
-
-		return false;
 	}
+
+	return result;
 }
 
 extern "C"
@@ -127,7 +125,7 @@ extern "C"
 		if (!IAL::IsLoaded())
 		{
 			WinApi::MessageBoxErrorLog(
-				PLUGIN_NAME,
+				PLUGIN_NAME_FULL,
 				"Could not load the address library");
 			return false;
 		}
@@ -135,7 +133,7 @@ extern "C"
 		if (IAL::HasBadQuery())
 		{
 			WinApi::MessageBoxErrorLog(
-				PLUGIN_NAME,
+				PLUGIN_NAME_FULL,
 				"One or more addresses could not be retrieved from the address library");
 			return false;
 		}
@@ -145,7 +143,7 @@ extern "C"
 		if (!ret)
 		{
 			WinApi::MessageBoxError(
-				PLUGIN_NAME,
+				PLUGIN_NAME_FULL,
 				"Plugin initialization failed, see log for more info");
 		}
 

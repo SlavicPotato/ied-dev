@@ -19,7 +19,7 @@
 
 #define UNWRAP(...) __VA_ARGS__
 #define VALIDATE_MEMORY(addr, bytes_se, bytes_ae) \
-	stl::validate_memory_with_report_and_fail(addr, UNWRAP bytes_se, UNWRAP bytes_ae, PLUGIN_NAME)
+	stl::validate_memory_with_report_and_fail(addr, UNWRAP bytes_se, UNWRAP bytes_ae, PLUGIN_NAME_FULL)
 
 namespace IED
 {
@@ -941,7 +941,7 @@ namespace IED
 		}
 
 		if (!a_hkaSkeleton.name ||
-		    _stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) != 0)
+		    ::_stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) != 0)
 		{
 			return false;
 		}
@@ -968,7 +968,7 @@ namespace IED
 			return false;
 		}
 
-		if (_strnicmp(parent1->m_name.data(), "MOV ", 4) != 0)
+		if (::_strnicmp(parent1->m_name.data(), "MOV ", 4) != 0)
 		{
 			return false;
 		}
@@ -979,7 +979,7 @@ namespace IED
 			return false;
 		}
 
-		if (_strnicmp(parent2->m_name.data(), "CME ", 4) != 0)
+		if (::_strnicmp(parent2->m_name.data(), "CME ", 4) != 0)
 		{
 			return false;
 		}
@@ -996,7 +996,7 @@ namespace IED
 		if (hkaShouldBlockNode(a_root, a_name, a_hkaSkeleton))
 		{
 			a_result.root  = nullptr;
-			a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
+			a_result.index = std::numeric_limits<std::uint32_t>::max();
 
 			return false;
 		}

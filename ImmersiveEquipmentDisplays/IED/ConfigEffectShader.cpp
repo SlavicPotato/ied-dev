@@ -66,21 +66,18 @@ namespace IED
 			if (a_in.fbf.selected == EffectShaderSelectedTexture::Custom &&
 			    !a_in.path.empty())
 			{
-				char        path_buffer[MAX_PATH];
-				const char* path;
+				char path_buffer[MAX_PATH];
 
-				if (Util::Model::MakePath(
-						"textures",
-						a_in.path.c_str(),
-						path_buffer,
-						path))
-				{
-					LoadTexture(
-						path,
-						std::uint8_t(1),
-						a_out,
-						false);
-				}
+				const auto path = Util::Model::MakePath(
+					"textures",
+					a_in.path.c_str(),
+					path_buffer);
+
+				LoadTexture(
+					path,
+					std::uint8_t(1),
+					a_out,
+					false);
 			}
 
 			if (!a_out)

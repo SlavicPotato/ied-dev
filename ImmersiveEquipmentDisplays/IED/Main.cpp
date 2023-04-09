@@ -127,7 +127,7 @@ namespace IED
 				config->m_enableUI = false;
 
 				WinApi::MessageBoxErrorLog(
-					PLUGIN_NAME,
+					PLUGIN_NAME_FULL,
 					"Failed initializing render driver, UI disabled");
 			}
 		}

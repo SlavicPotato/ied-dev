@@ -63,11 +63,7 @@ namespace IED
 
 			if (FAILED(swapChain->GetDesc(std::addressof(m_swapChainDesc))))
 			{
-				constexpr auto error_msg = "IDXGISwapChain::GetDesc failed";
-
-				Error(error_msg);
-				WinApi::MessageBoxError(PLUGIN_NAME, error_msg);
-
+				WinApi::MessageBoxErrorLog(PLUGIN_NAME_FULL, "IDXGISwapChain::GetDesc failed");
 				return;
 			}
 

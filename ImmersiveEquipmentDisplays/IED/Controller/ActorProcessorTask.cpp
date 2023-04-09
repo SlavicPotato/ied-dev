@@ -422,14 +422,15 @@ namespace IED
 		}
 
 		const auto actor = refr->As<Actor>();
-		if (!Util::Common::IsREFRValid(actor))
+
+		if (!Util::Common::IsREFRValid(actor) ||
+		    a_holder.m_actor.get() != actor)  // ??
 		{
-			state.active = false;
-			return;
+			if constexpr (_Par)
+		{
+				ITaskPool::AddPriorityTask([r = std::move(refr)] {});
 		}
 
-		if (actor != a_holder.m_actor)  // ??
-		{
 			state.active = false;
 			return;
 		}
