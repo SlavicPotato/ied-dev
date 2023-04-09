@@ -7,6 +7,9 @@
 
 namespace IED
 {
+	using namespace ::Util::Model;
+	using namespace ::Util::Node;
+
 	SkeletonCache SkeletonCache::m_Instance;
 
 	auto SkeletonCache::Get(
@@ -15,9 +18,9 @@ namespace IED
 		-> ActorEntry
 	{
 		const auto key = make_key(a_refr, a_firstPerson);
-		if (!key.empty())
+		if (!key.first.empty())
 		{
-			if (auto result = try_get(key))
+			if (auto result = try_get(key.first))
 			{
 				return result;
 			}
@@ -53,36 +56,35 @@ namespace IED
 		return result;
 	}
 
-	stl::fixed_string SkeletonCache::make_key(
+	auto SkeletonCache::make_key(
 		TESObjectREFR* a_refr,
 		bool           a_firstPerson)
+		-> KeyPathPair
 	{
-		auto path = ::Util::Model::Get3DPath(a_refr, a_firstPerson);
+		auto path = Get3DPath(a_refr, a_firstPerson);
 		if (!path || *path == 0)
 		{
 			return {};
 		}
 
-		char        buffer[MAX_PATH];
-		const char* out;
+		char buffer[MAX_PATH];
 
-		if (::Util::Model::MakePath("meshes", path, buffer, out))
-		{
-			return out;
-		}
-		else
-		{
-			return {};
-		}
+		path = MakePath("meshes", path, buffer);
+
+		return KeyPathPair(path, path);
 	}
 
 	auto SkeletonCache::get_or_create(
-		const stl::fixed_string& a_key)
+		const KeyPathPair& a_key)
 		-> ActorEntry
 	{
 		const stl::write_lock_guard lock(m_lock);
 
-		return m_data.try_emplace(a_key, a_key).first->second;
+		return m_data.try_emplace(
+						 a_key.first,
+						 m_useNativeLoader.load(std::memory_order_relaxed),
+						 a_key.second.c_str())
+		    .first->second;
 	}
 
 	auto SkeletonCache::try_get(
@@ -103,56 +105,53 @@ namespace IED
 	}
 
 	SkeletonCache::actor_entry_data::actor_entry_data(
-		const stl::fixed_string& a_key)
+		bool        a_nativeLoader,
+		const char* a_modelPath)
 	{
-		BSResourceNiBinaryStream binaryStream(a_key.c_str());
-		if (!binaryStream.IsValid())
-		{
-			return;
-		}
+		RE::BSModelDB::ModelLoadParams params(3, false, true);
 
-		::Util::Stream::NiStreamWrapper stream;
+		NiPointer<NiAVObject>         object;
+		RE::BSModelDB::ModelEntryAuto entry;
 
-		if (!stream->Load1(std::addressof(binaryStream)))
-		{
-			return;
-		}
+		bool result;
 
-		if (!stream->topObjects.initialized())
+		if (a_nativeLoader)
 		{
-			return;
-		}
+			result = ModelLoader::NativeLoad(a_modelPath, params, entry);
 
-		for (const auto& e : stream->topObjects)
-		{
-			if (!e)
+			if (result)
 			{
-				continue;
+				object = entry->object;
 			}
-
-			if (auto object = ::NRTTI<NiAVObject>()(e.get()))
-			{
-				::Util::Node::Traverse(
-					object,
-					[&](const NiAVObject* a_object) [[msvc::forceinline]] {
-						const auto& name = a_object->m_name;
-
-						if (!name.empty())
-						{
-							data.emplace(name.data(), a_object->m_localTransform);
-						}
-
-						return ::Util::Node::VisitorControl::kContinue;
-					});
-			}
-
-			break;
 		}
+		else
+		{
+			result = ModelLoader::Load(a_modelPath, params, object);
+		}
+
+		if (!result)
+		{
+			return;
+		}
+
+		Traverse(
+			object,
+			[&](const NiAVObject* a_object) [[msvc::forceinline]] {
+				const auto& name = a_object->m_name;
+
+				if (!name.empty())
+				{
+					data.emplace(name.data(), a_object->m_localTransform);
+				}
+
+				return ::Util::Node::VisitorControl::kContinue;
+			});
 	}
 
 	SkeletonCache::ActorEntry::ActorEntry(
-		const stl::fixed_string& a_key) :
-		ptr(stl::make_smart<actor_entry_data>(a_key))
+		bool        a_nativeLoader,
+		const char* a_modelPath) :
+		ptr(stl::make_smart<actor_entry_data>(a_nativeLoader, a_modelPath))
 	{
 	}
 

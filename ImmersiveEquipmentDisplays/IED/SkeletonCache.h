@@ -9,19 +9,25 @@ namespace IED
 		{
 			SKMP_REDEFINE_NEW_PREF();
 
-			actor_entry_data(const stl::fixed_string& a_key);
+			actor_entry_data(
+				bool        a_nativeLoader,
+				const char* a_modelPath);
 
 			stl::unordered_map<stl::fixed_string, NiTransform> data;
 		};
 
 	public:
+		using KeyPathPair = std::pair<stl::fixed_string, std::string>;
+
 		class ActorEntry
 		{
 			friend class SkeletonCache;
 
 		public:
 			ActorEntry() = default;
-			ActorEntry(const stl::fixed_string& a_key);
+			ActorEntry(
+				bool        a_nativeLoader,
+				const char* a_modelPath);
 
 			[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 				const stl::fixed_string& a_name) const;
@@ -63,21 +69,28 @@ namespace IED
 		[[nodiscard]] std::size_t GetSize() const;
 		[[nodiscard]] std::size_t GetTotalEntries() const;
 
+		inline void EnableNativeLoader(bool a_switch) noexcept
+		{
+			m_useNativeLoader.store(a_switch, std::memory_order_relaxed);
+		}
+
 	private:
 		SkeletonCache() = default;
 
-		static stl::fixed_string make_key(
+		static KeyPathPair make_key(
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson);
 
 		ActorEntry get_or_create(
-			const stl::fixed_string& a_key);
+			const KeyPathPair& a_key);
 
 		ActorEntry try_get(
 			const stl::fixed_string& a_key) const;
 
-		mutable stl::shared_mutex m_lock;
 		data_type                 m_data;
+		mutable stl::shared_mutex m_lock;
+
+		std::atomic_bool m_useNativeLoader{ false };
 
 		static SkeletonCache m_Instance;
 	};

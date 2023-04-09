@@ -52,6 +52,7 @@ namespace IED
 		static constexpr auto SECT_MISCELLANEOUS  = "Miscellaneous";
 		static constexpr auto SECT_LIGHTS         = "Lights";
 		static constexpr auto SECT_OBJECTDB       = "ObjectDatabase";
+		static constexpr auto SECT_SKELETON_CACHE = "SkeletonCache";
 
 	public:
 		ConfigINI() = default;
@@ -91,6 +92,8 @@ namespace IED
 		bool          m_clearRPCOnSceneMove{ false };
 		bool          m_lightNPCCellAttachFix{ false };
 		bool          m_lightNPCVanillaUpdates{ false };
+		bool          m_scNativeLoader{ false };
+		bool          m_scNativeLoader{ true };
 		std::uint32_t m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t m_bipedSlotCacheMaxForms{ 16 };
 		float         m_introBannerVOffset{ 110.0f };
