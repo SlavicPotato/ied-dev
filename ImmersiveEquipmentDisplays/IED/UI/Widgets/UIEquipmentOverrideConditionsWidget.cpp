@@ -733,6 +733,14 @@ namespace IED
 									result                              = true;
 								}
 							}
+							else
+							{
+								result |= ImGui::CheckboxFlagsT(
+									UIL::LS(UIWidgetCommonStrings::GeometryVisible, "F"),
+									stl::underlying(std::addressof(match->flags.value)),
+									stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag8));
+
+							}
 						}
 
 						ImGui::Separator();

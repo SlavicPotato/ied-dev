@@ -1132,6 +1132,14 @@ namespace IED
 					return false;
 				}
 
+				if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag8))
+				{
+					if (!e.object || !e.object->IsVisible())
+					{
+						return false;
+					}
+				}
+
 				return form == a_checkForm.form;
 			}
 		}
