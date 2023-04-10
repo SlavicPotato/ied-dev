@@ -3847,20 +3847,10 @@ namespace IED
 			}
 			else
 			{
-				INode::UpdateRootIfGamePaused(a_params.root);
+				INode::UpdateRootConditional(a_params.actor, a_params.root);
 			}
 
 			a_params.state.flags.clear(ProcessStateUpdateFlags::kUpdateMask);
-
-			/*if (a_params.state.flags.test_any(ProcessStateUpdateFlags::kWantDeferredTransformUpdate) && 
-				!a_params.flags.test(ControllerUpdateFlags::kImmediateTransformUpdate))
-			{
-				a_params.objects.RequestTransformUpdateDefer();
-			}
-			else
-			{
-				a_params.objects.RequestTransformUpdate();
-			}*/
 		}
 	}
 
@@ -3912,15 +3902,6 @@ namespace IED
 		EvaluateImpl(actor, handle, a_holder, a_flags);
 	}
 
-	/*void Controller::EvaluateTransformsImpl(Game::FormID a_actor)
-	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
-		{
-			EvaluateTransformsImpl(it->second);
-		}
-	}*/
-
 	void Controller::EvaluateTransformsImpl(
 		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
@@ -3936,10 +3917,10 @@ namespace IED
 					a_holder,
 					a_flags))
 			{
-				INode::UpdateRootIfGamePaused(params->root);
+				INode::UpdateRootConditional(params->actor, params->root);
 			}
 		}
-		else if (auto info = LookupCachedActorInfo(a_holder))
+		else if (const auto info = LookupCachedActorInfo(a_holder))
 		{
 			if (ProcessTransformsImpl(
 					info->root,
@@ -3950,7 +3931,7 @@ namespace IED
 					a_holder,
 					a_flags))
 			{
-				INode::UpdateRootIfGamePaused(info->root);
+				INode::UpdateRootConditional(info->actor, info->root);
 			}
 		}
 	}
@@ -4335,63 +4316,6 @@ namespace IED
 	{
 		RemoveActorGear(a_actor, a_handle, a_holder, a_flags);
 		EvaluateImpl(a_actor, a_handle, a_holder, a_flags);
-	}
-
-	void Controller::UpdateTransformSlotImpl(
-		Game::FormID a_actor,
-		ObjectSlot   a_slot)
-	{
-		auto it = m_actorMap.find(a_actor);
-		if (it != m_actorMap.end())
-		{
-			UpdateTransformSlotImpl(it->second, a_slot);
-		}
-	}
-
-	void Controller::UpdateTransformSlotImpl(
-		ActorObjectHolder& a_record,
-		ObjectSlot         a_slot)
-	{
-		auto info = LookupCachedActorInfo(a_record);
-		if (!info)
-		{
-			return;
-		}
-
-		if (a_slot < ObjectSlot::kMax)
-		{
-			auto& objectEntry = a_record.GetSlot(a_slot);
-			if (!objectEntry.data.state)
-			{
-				return;
-			}
-
-			configStoreSlot_t::holderCache_t hc;
-
-			auto config = GetActiveConfig().slot.GetActor(
-				info->actor->formID,
-				info->npcOrTemplate->formID,
-				info->race->formID,
-				a_slot,
-				hc);
-
-			if (config)
-			{
-				auto& conf = GetConfigForActor(
-					*info,
-					config->get(info->sex),
-					objectEntry);
-
-				objectEntry.data.state->transform.Update(conf);
-
-				INode::UpdateObjectTransform(
-					objectEntry.data.state->transform,
-					objectEntry.data.state->commonNodes.rootNode,
-					objectEntry.data.state->ref);
-
-				INode::UpdateRootIfGamePaused(info->root);
-			}
-		}
 	}
 
 	inline auto make_process_params(

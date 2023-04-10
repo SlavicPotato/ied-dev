@@ -599,14 +599,6 @@ namespace IED
 			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		void UpdateTransformSlotImpl(
-			Game::FormID     a_actor,
-			Data::ObjectSlot a_slot);
-
-		void UpdateTransformSlotImpl(
-			ActorObjectHolder& a_record,
-			Data::ObjectSlot   a_slot);
-
 		const Data::configBaseValues_t& GetConfigForActor(
 			const cachedActorInfo_t&    a_info,
 			const Data::configCustom_t& a_config,

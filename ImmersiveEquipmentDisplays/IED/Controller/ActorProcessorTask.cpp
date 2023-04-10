@@ -79,7 +79,7 @@ namespace IED
 
 			if (result)
 			{
-				INode::UpdateRootIfGamePaused(info->root);
+				INode::UpdateRootConditional(a_record.m_actor, info->root);
 			}
 		}
 		else
@@ -611,7 +611,7 @@ namespace IED
 			}
 		}
 
-		if (a_updateEffects)
+		if (a_updateEffects && actor->IsAIEnabled())
 		{
 			RunEffectUpdates(a_interval, a_stepMuls, a_physUpdData, a_holder);
 		}

@@ -73,7 +73,7 @@ namespace IED
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 
-		static void UpdateRootIfGamePaused(NiNode* a_root) noexcept;
+		static void UpdateRootConditional(Actor *a_actor, NiNode* a_root) noexcept;
 
 	protected:
 	private:

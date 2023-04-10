@@ -110,9 +110,9 @@ namespace IED
 		}
 	}
 
-	void INode::UpdateRootIfGamePaused(NiNode* a_root) noexcept
+	void INode::UpdateRootConditional(Actor* a_actor, NiNode* a_root) noexcept
 	{
-		bool update = Game::Main::GetSingleton()->freezeTime;
+		bool update = !a_actor->IsAIEnabled() || Game::Main::GetSingleton()->freezeTime;
 
 		if (!update)
 		{
@@ -137,11 +137,6 @@ namespace IED
 		{
 			UpdateRoot(a_root);
 		}
-
-		/*if (Game::IsPaused())
-		{
-			EngineExtensions::UpdateRoot(a_root);
-		}*/
 	}
 
 	auto INode::FindNodes(
