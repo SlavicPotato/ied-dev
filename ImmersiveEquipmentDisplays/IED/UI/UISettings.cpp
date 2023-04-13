@@ -436,7 +436,7 @@ namespace IED
 							UIL::LS(UISettingsStrings::MaxDiff, "3"),
 							std::addressof(data.physics.maxDiff),
 							ImGui::GetIO().KeyShift ? 0.0005f : 0.25f,
-							128.0f,
+							512.0f,
 							8192.0f,
 							"%.2f",
 							ImGuiSliderFlags_AlwaysClamp)))
