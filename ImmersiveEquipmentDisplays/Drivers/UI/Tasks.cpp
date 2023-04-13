@@ -61,6 +61,14 @@ namespace IED
 				{
 					return false;
 				}
+
+				if (const auto mm = MenuManager::GetSingleton())
+				{
+					if (mm->IsMenuOpen("CustomMenu"))
+					{
+						return false;
+					}
+				}
 			}
 
 			if (m_options.enableChecks)
