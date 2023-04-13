@@ -94,7 +94,7 @@ namespace IED
 		bool          m_lightNPCVanillaUpdates{ false };
 		bool          m_odbNativeLoader{ false };
 		bool          m_odbBackgroundLoading{ false };
-		bool          m_scNativeLoader{ true };
+		bool          m_scNativeLoader{ false };
 		std::uint32_t m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t m_bipedSlotCacheMaxForms{ 16 };
 		float         m_introBannerVOffset{ 110.0f };

@@ -171,15 +171,15 @@ namespace IED
 	{
 		RE::BSModelDB::ModelLoadParams params(3, false, true);
 
-		RE::BSModelDB::ModelEntryAuto entry;
+		NiPointer<NiAVObject> result;
 
-		if (::Util::Model::ModelLoader::NativeLoad(a_path, params, entry))
+		if (::Util::Model::ModelLoader::Load(a_path, params, result))
 		{
-			return entry->object;
+			return result;
 		}
 		else
 		{
-			return {};
+			return nullptr;
 		}
 	}
 

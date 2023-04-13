@@ -18,6 +18,12 @@ namespace IED
 		SetPriority(a_priority);
 	}
 
+	QueuedModel::~QueuedModel()
+	{
+		_entry.reset();
+		_owner.RequestCleanup(); // must be called after entry decref
+	}
+
 	void QueuedModel::Unk_01()
 	{
 	}
@@ -35,17 +41,11 @@ namespace IED
 				_entry->accessed = IPerfCounter::Query();
 
 				_entry->loadState.store(ODBEntryLoadState::kLoaded);
-
-				//_DMESSAGE("%s", _path.c_str());
 			}
 			else
 			{
 				_entry->loadState.store(ODBEntryLoadState::kError);
-
-				//_DMESSAGE("ERROR: %s", _path.c_str());
 			}
-
-			_owner.RequestCleanup();
 		}
 
 		return false;

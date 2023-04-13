@@ -18,7 +18,7 @@ namespace IED
 			ObjectDatabase&            a_owner,
 			std::uint8_t               a_priority = 3);
 
-		~QueuedModel() override = default;
+		~QueuedModel() override;
 
 		void Unk_01() override;
 		void Unk_02() override;
