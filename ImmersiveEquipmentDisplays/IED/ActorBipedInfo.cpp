@@ -10,40 +10,52 @@ namespace IED
 	{
 		const auto& biped = a_actor->GetBiped1(false);
 
-		using enum_type = std::underlying_type_t<BIPED_OBJECT>;
-		for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
+		if (!biped)
 		{
-			auto& e = biped->objects[i];
-			auto& f = data[i];
-
-			if (e.item)
+			data.reset();
+		}
+		else
+		{
+			if (!data)
 			{
-				f.item =  e.item->formID;
-			}
-			else
-			{
-				f.item = {};
+				data.emplace();
 			}
 
-			if (e.addon)
+			using enum_type = std::underlying_type_t<BIPED_OBJECT>;
+			for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 			{
-				f.addon = e.addon->formID;
-			}
-			else
-			{
-				f.addon = {};
-			}
+				auto& e = biped->objects[i];
+				auto& f = (*data)[i];
 
-			if (e.object)
-			{
-				f.geometry = {
-					e.object->m_name.data(),
-					e.object->IsVisible()
-				};
-			}
-			else
-			{
-				f.geometry = {};
+				if (e.item)
+				{
+					f.item = e.item->formID;
+				}
+				else
+				{
+					f.item = {};
+				}
+
+				if (e.addon)
+				{
+					f.addon = e.addon->formID;
+				}
+				else
+				{
+					f.addon = {};
+				}
+
+				if (e.object)
+				{
+					f.geometry = {
+						e.object->m_name.data(),
+						e.object->IsVisible()
+					};
+				}
+				else
+				{
+					f.geometry = {};
+				}
 			}
 		}
 	}

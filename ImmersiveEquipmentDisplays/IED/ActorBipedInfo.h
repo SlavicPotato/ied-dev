@@ -13,6 +13,6 @@ namespace IED
 
 		void Update(Actor* a_actor);
 
-		std::array<Entry, stl::underlying(BIPED_OBJECT::kTotal)> data;
+		std::optional<std::array<Entry, stl::underlying(BIPED_OBJECT::kTotal)>> data;
 	};
 }

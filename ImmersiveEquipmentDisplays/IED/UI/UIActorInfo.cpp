@@ -1590,6 +1590,12 @@ namespace IED
 			Game::FormID              a_handle,
 			const ActorInfoAggregate& a_data)
 		{
+			auto& data = a_data.biped.data;
+			if (!data)
+			{
+				return;
+			}
+
 			constexpr int NUM_COLUMNS = 6;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
@@ -1623,7 +1629,7 @@ namespace IED
 				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 				{
-					auto& f = a_data.biped.data[i];
+					auto& f = (*data)[i];
 
 					ImGui::TableNextRow();
 
