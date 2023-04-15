@@ -11,6 +11,7 @@
 #include "UILocalizationInterface.h"
 
 #include "IED/ActorActiveEffectInfo.h"
+#include "IED/ActorBipedInfo.h"
 #include "IED/ActorFactionInfo.h"
 #include "IED/ActorInventoryInfo.h"
 #include "IED/ActorPerkInfo.h"
@@ -42,6 +43,7 @@ namespace IED
 			actorPerkInfo_t         perks;
 			actorValueInfo_t        actorValues;
 			actorWeaponNodeInfo_t   weaponNodes;
+			actorBipedInfo_t        biped;
 		};
 
 		struct ActorInfoData
@@ -73,7 +75,9 @@ namespace IED
 				kVariables,
 				kActorState,
 				kPerks,
-				kActorValues
+				kActorValues,
+				kSkeleton,
+				kBiped
 			};
 
 		public:
@@ -115,6 +119,10 @@ namespace IED
 				const ActorInfoData& a_data);
 
 			void DrawSkeletonTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawBipedTabItem(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
@@ -170,6 +178,10 @@ namespace IED
 			void DrawSkeletonTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
+			
+			void DrawBipedTreeContents(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
 
 			void DrawInventoryTreeContents(
 				Game::FormID         a_handle,
@@ -204,6 +216,10 @@ namespace IED
 			void DrawSkeletonEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
+			
+			void DrawBipedEntries(
+				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
 
 			void DrawSkeletonWeaponNodeTab(
 				const char*               a_strid,
@@ -213,7 +229,7 @@ namespace IED
 				const char*               a_strid,
 				const ActorObjectHolder&  a_holder,
 				const ActorInfoAggregate& a_data);
-			
+
 			void DrawSkeletonMOVNodeTab(
 				const char*               a_strid,
 				const ActorObjectHolder&  a_holder,

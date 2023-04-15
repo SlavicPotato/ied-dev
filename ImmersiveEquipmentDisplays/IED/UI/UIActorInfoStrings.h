@@ -105,6 +105,8 @@ namespace IED
 			CMENodes      = 6986,
 			MOVNodes      = 6987,
 			NumChildNodes = 6988,
+
+			BipedData = 6989,
 		};
 	}
 }

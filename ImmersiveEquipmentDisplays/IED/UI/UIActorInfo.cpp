@@ -5,6 +5,7 @@
 #include "UIActorInfoStrings.h"
 #include "UIActorValueStrings.h"
 
+#include "IED/UI/Widgets/UIBipedObjectSelectorWidget.h"
 #include "IED/UI/Widgets/UIVariableTypeSelectorWidget.h"
 
 #include "IED/Controller/Controller.h"
@@ -145,6 +146,7 @@ namespace IED
 				DrawPerkTabItem(a_handle, a_data);
 				DrawAVTabItem(a_handle, a_data);
 				DrawSkeletonTabItem(a_handle, a_data);
+				DrawBipedTabItem(a_handle, a_data);
 
 				ImGui::EndTabBar();
 			}
@@ -259,12 +261,33 @@ namespace IED
 			if (ImGui::BeginTabItem(
 					UIL::LS<UIActorInfoStrings, 3>(UIActorInfoStrings::Skeleton3D, "8")))
 			{
-				m_currentTab = TabItem::kActorValues;
+				m_currentTab = TabItem::kSkeleton;
 
 				ImGui::Spacing();
 				ImGui::PushID("8");
 
 				DrawSkeletonTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawBipedTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			if (ImGui::BeginTabItem(
+					UIL::LS<UIActorInfoStrings, 3>(UIActorInfoStrings::BipedData, "9")))
+			{
+				m_currentTab = TabItem::kBiped;
+
+				ImGui::Spacing();
+				ImGui::PushID("9");
+
+				DrawBipedTreeContents(a_handle, a_data);
 
 				ImGui::PopID();
 				ImGui::Spacing();
@@ -969,6 +992,27 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
+		void UIActorInfo::DrawBipedTreeContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, -offsetY },
+					false))
+			{
+				DrawBipedEntries(a_handle, *a_data.data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryTreeContents(
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
@@ -1540,6 +1584,79 @@ namespace IED
 
 				ImGui::EndTabBar();
 			}
+		}
+
+		void UIActorInfo::DrawBipedEntries(
+			Game::FormID              a_handle,
+			const ActorInfoAggregate& a_data)
+		{
+			constexpr int NUM_COLUMNS = 6;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_ScrollY |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, -ImGui::GetStyle().ItemInnerSpacing.y }))
+			{
+				ImGui::TableSetupScrollFreeze(0, 1);
+
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Slot));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Item));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Addon));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Object));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Visibility));
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
+				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
+				{
+					auto& f = a_data.biped.data[i];
+
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%u", i);
+					
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%s", UIBipedObjectSelectorWidget::GetBipedSlotDesc(static_cast<BIPED_OBJECT>(i)));
+
+					ImGui::TableSetColumnIndex(2);
+					DrawFormWithInfo(f.item);
+
+					ImGui::TableSetColumnIndex(3);
+					DrawFormWithInfo(f.addon);
+
+					ImGui::TableSetColumnIndex(4);
+					if (f.geometry)
+					{
+						ImGui::Text("%s", f.geometry->first.c_str());
+
+						ImGui::TableSetColumnIndex(5);
+						ImGui::Text("%s", f.geometry->second ? UIL::LS(CommonStrings::Yes) : UIL::LS(CommonStrings::No));
+					}
+					else
+					{
+						ImGui::Text(UIL::LS(CommonStrings::None));
+					}
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
 		}
 
 		void UIActorInfo::DrawSkeletonWeaponNodeTab(
@@ -2457,7 +2574,7 @@ namespace IED
 				const stl::lock_guard lock(controller.GetLock());
 				const stl::lock_guard datalock(data->lock);
 
-				if (auto actor = handle.As<Actor>())
+				if (NiPointer actor = handle.As<Actor>())
 				{
 					controller.FillActorInfoEntry(actor, data->entry, true);
 
@@ -2479,6 +2596,9 @@ namespace IED
 					{
 					case TabItem::kActorValues:
 						data->actorValues.Update(actor);
+						break;
+					case TabItem::kBiped:
+						data->biped.Update(actor);
 						break;
 					}
 

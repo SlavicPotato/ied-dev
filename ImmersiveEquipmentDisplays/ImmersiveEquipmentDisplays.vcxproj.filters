@@ -1982,6 +1982,9 @@
     <ClInclude Include="IED\Controller\QueuedModel.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ActorBipedInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3141,6 +3144,9 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\QueuedModel.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorBipedInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -279,5 +279,7 @@ namespace IED
 		Month           = 350,
 		Year            = 351,
 		Running         = 352,
+		Addon           = 353,
+		Object          = 354,
 	};
 }
