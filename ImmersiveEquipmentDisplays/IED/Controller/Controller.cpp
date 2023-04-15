@@ -45,7 +45,7 @@ namespace IED
 			a_config->m_bipedSlotCacheMaxSize,
 			a_config->m_bipedSlotCacheMaxForms)
 	{
-		ODBSetUseNativeModelDB(a_config->m_odbNativeLoader);
+		//ODBSetUseNativeModelDB(a_config->m_odbNativeLoader);
 		ODBEnableBackgroundLoading(a_config->m_odbBackgroundLoading);
 	}
 
@@ -270,11 +270,9 @@ namespace IED
 	{
 		assert(m_configData.settings);
 
-		const auto& settings = m_configData.settings->data.sound;
-
 		ClearSounds();
 
-		for (auto& e : settings.data)
+		for (auto& e : m_configData.settings->data.sound.data)
 		{
 			AddSound(e.first, MakeSoundPair(e.second));
 		}
@@ -411,7 +409,7 @@ namespace IED
 	{
 		assert(m_iniconf);
 
-		m_configData.initial = std::make_unique<Data::configStore_t>();
+		m_configData.initial = std::make_unique_for_overwrite<Data::configStore_t>();
 
 		bool defaultConfLoaded = false;
 
@@ -449,6 +447,8 @@ namespace IED
 
 	void Controller::InitializeLocalization()
 	{
+		assert(m_configData.settings);
+
 		auto& settings = *m_configData.settings;
 		auto& clang    = settings.data.language;
 
@@ -481,8 +481,7 @@ namespace IED
 		{
 			try
 			{
-				auto info = ExtractAnimationInfoFromPEX();
-				SetAnimationInfo(info);
+				SetAnimationInfo(ExtractAnimationInfoFromPEX());
 			}
 			catch (const std::exception& e)
 			{
@@ -543,10 +542,10 @@ namespace IED
 		}
 
 		Debug(
-			"ODB: native: %hhu, background load: %hhu",
-			ODBGetUseNativeModelDB(),
+			"ODB: background load: %hhu",
 			ODBGetBackgroundLoadingEnabled());
 
+		StartAPThreadPool();
 		SetProcessorTaskRunState(true);
 
 		m_iniconf.reset();

@@ -13,7 +13,7 @@ namespace IED
 
 	class EffectController
 	{
-	protected:
+	public:
 		struct PhysicsUpdateData
 		{
 			float timeTick;
@@ -22,7 +22,6 @@ namespace IED
 			float timeAccum;
 		};
 
-	public:
 		enum class Flags : std::uint8_t
 		{
 			kNone = 0,
@@ -68,10 +67,10 @@ namespace IED
 			std::optional<PhysicsUpdateData>& a_data) noexcept;
 
 		void RunEffectUpdates(
-			const float                             a_interval,
-			const Game::Unk2f6b948::TimeMultipliers&          a_stepMuls,
-			const std::optional<PhysicsUpdateData>& a_physUpdData,
-			const ActorObjectHolder&                a_holder) noexcept;
+			const float                              a_interval,
+			const Game::Unk2f6b948::TimeMultipliers& a_stepMuls,
+			const std::optional<PhysicsUpdateData>&  a_physUpdData,
+			const ActorObjectHolder&                 a_holder) noexcept;
 
 		static void UpdateShaders(
 			Actor*                   a_actor,

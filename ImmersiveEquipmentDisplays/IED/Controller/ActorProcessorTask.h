@@ -14,12 +14,6 @@ namespace RE
 
 namespace IED
 {
-	/*enum class TransformUpdateFlags : std::uint32_t
-	{
-		kSkipNext = 1u << 0
-	};
-
-	DEFINE_ENUM_CLASS_BITWISE(TransformUpdateFlags);*/
 
 	class Controller;
 	class ActorObjectHolder;
@@ -37,10 +31,83 @@ namespace IED
 			//BSAnimationUpdateData   data;
 		};
 
+		class ThreadPool
+		{
+			friend class ActorProcessorTask;
+
+		private:
+			class Thread :
+				public RE::BSThread
+			{
+				friend class ActorProcessorTask;
+
+			public:
+				Thread(ThreadPool& a_owner);
+
+				Thread(const Thread&)            = delete;
+				Thread& operator=(const Thread&) = delete;
+
+				void wait_until_tasks_complete() noexcept;
+				void notify_tasks_available() noexcept;
+
+				DWORD Run() override;
+
+			private:
+				bool wait_for_signal() noexcept;
+				void reset_state() noexcept;
+
+				stl::vector<ActorObjectHolder*> m_list;
+				stl::fast_spin_lock             m_mutex;
+				std::condition_variable_any     m_cond;
+				std::int32_t                    m_runState{ 0 };
+				ThreadPool&                     m_owner;
+			};
+
+			struct SharedData
+			{
+				float                                                     interval;
+				const Game::Unk2f6b948::TimeMultipliers*                  stepMuls;
+				const std::optional<EffectController::PhysicsUpdateData>* physUpdData;
+				bool                                                      updateEffects;
+			};
+
+		public:
+			ThreadPool(ActorProcessorTask& a_owner);
+			~ThreadPool();
+
+			void Start(std::uint32_t a_numThreads);
+			void Stop();
+
+			[[nodiscard]] constexpr bool IsEnabled() const noexcept
+			{
+				return !m_workers.empty();
+			}
+
+		private:
+			template <class... Args>
+			constexpr void make_shared_data(Args&&... a_args) noexcept
+			{
+				m_shared = { std::forward<Args>(a_args)... };
+			}
+
+			void wait_until_tasks_complete() const noexcept;
+			void notify_tasks_available() const noexcept;
+
+			void allocate_workers(std::size_t a_numTasks) noexcept;
+			void distribute_tasks(const ActorObjectMap::vector_type& a_data) const noexcept;
+
+			using worker_container_type = stl::vector<std::unique_ptr<Thread>>;
+
+			stl::vector<std::unique_ptr<Thread>> m_workers;
+			stl::vector<Thread*>                 m_workersInUse;
+			SharedData                           m_shared{};
+			ActorProcessorTask&                  m_owner;
+		};
+
 	public:
 		ActorProcessorTask();
 
-		[[nodiscard]] constexpr auto NodeProcessorGetTime() const noexcept
+		[[nodiscard]] constexpr auto ActorProcessorGetTime() const noexcept
 		{
 			return m_currentTime;
 		}
@@ -76,6 +143,9 @@ namespace IED
 
 			return *m_globalParams;
 		}
+
+	protected:
+		void StartAPThreadPool();
 
 	private:
 		struct GlobalState
@@ -134,8 +204,6 @@ namespace IED
 			ActorObjectHolder& a_record,
 			ObjectEntryBase&   a_entry) noexcept;
 
-		//const std::optional<animUpdateData_t>& a_animUpdateData);
-
 		void ProcessTransformUpdateRequest(
 			ActorObjectHolder& a_data) noexcept;
 
@@ -144,13 +212,13 @@ namespace IED
 
 		void UpdateGlobalState() noexcept;
 
-		template <bool _Par>
+		template <bool _ParUnsafe>
 		void DoActorUpdate(
-			const float                             a_interval,
-			const Game::Unk2f6b948::TimeMultipliers&          a_stepMuls,
-			const std::optional<PhysicsUpdateData>& a_physUpdData,
-			ActorObjectHolder&                      a_holder,
-			bool                                    a_updateEffects) noexcept;
+			const float                              a_interval,
+			const Game::Unk2f6b948::TimeMultipliers& a_stepMuls,
+			const std::optional<PhysicsUpdateData>&  a_physUpdData,
+			ActorObjectHolder&                       a_holder,
+			bool                                     a_updateEffects) noexcept;
 
 		void RunPreUpdates(bool a_effectUpdates) noexcept;
 
@@ -170,7 +238,7 @@ namespace IED
 			template <class... Args>
 			constexpr decltype(auto) emplace(Args&&... a_args)
 			{
-				stl::lock_guard lock(m_lock);
+				const stl::lock_guard lock(m_lock);
 				return m_queue.emplace_back(std::forward<Args>(a_args)...);
 			}
 
@@ -196,7 +264,9 @@ namespace IED
 			stl::fast_spin_lock           m_lock;
 		};
 
+#if defined(IED_PERF_BUILD)
+		std::unique_ptr<ThreadPool> m_updateProc;
+#endif
 		PostMTTaskQueue<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
 	};
-
 }

@@ -15,7 +15,7 @@
 #elif PLUGIN_VERSION_PRE == 2
 #	define PLUGIN_VERSION_APPEND "b"
 #elif PLUGIN_VERSION_PRE == 1
-#	define PLUGIN_VERSION_APPEND "-RC7"
+#	define PLUGIN_VERSION_APPEND "-RC9"
 #else
 #	define PLUGIN_VERSION_APPEND ""
 #endif

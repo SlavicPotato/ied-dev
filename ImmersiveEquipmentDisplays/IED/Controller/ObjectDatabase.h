@@ -11,7 +11,8 @@ namespace IED
 	class ObjectDatabase :
 		public virtual ILog
 	{
-		static constexpr long long CLEANUP_DELAY = 1000000;
+		static constexpr long long CLEANUP_RUN_DEADLINE_DELTA = 1000000;
+		static constexpr long long CLEANUP_DELAY              = 2000000;
 
 	private:
 		struct Entry
@@ -25,14 +26,14 @@ namespace IED
 			{
 				return entry;
 			}
-			
+
 			constexpr operator auto &() const noexcept
 			{
 				return entry;
 			}
 
 			ObjectDatabaseEntry entry{
-				stl::make_smart_for_overwrite<ObjectDatabaseEntryData>()
+				new ObjectDatabaseEntryData
 			};
 		};
 
@@ -58,7 +59,6 @@ namespace IED
 		static bool ValidateObject(NiAVObject* a_object) noexcept;
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept;
 
-		void PreODBCleanup() noexcept;
 		void RunObjectCleanup() noexcept;
 		void QueueDatabaseCleanup() noexcept;
 
@@ -76,20 +76,20 @@ namespace IED
 
 		void ClearObjectDatabase();
 
-		inline void ODBSetUseNativeModelDB(bool a_switch) noexcept
+		/*inline void ODBSetUseNativeModelDB(bool a_switch) noexcept
 		{
 			m_odbNativeLoader.store(a_switch, std::memory_order_relaxed);
-		}
+		}*/
 
 		inline void ODBEnableBackgroundLoading(bool a_switch) noexcept
 		{
 			m_odbBackgroundLoading.store(a_switch, std::memory_order_relaxed);
 		}
 
-		[[nodiscard]] inline bool ODBGetUseNativeModelDB() const noexcept
+		/*[[nodiscard]] inline bool ODBGetUseNativeModelDB() const noexcept
 		{
 			return m_odbNativeLoader.load(std::memory_order_relaxed);
-		}
+		}*/
 
 		[[nodiscard]] inline bool ODBGetBackgroundLoadingEnabled() const noexcept
 		{
@@ -125,11 +125,15 @@ namespace IED
 		static NiNode* CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept;
 
 	private:
+		void PreODBCleanup() noexcept;
+		void ODBCleanupPass1() noexcept;
+		void ODBCleanupPass2() noexcept;
+
 		bool LoadImpl(const char* a_path, NiPointer<NiNode>& a_nodeOut);
 		bool LoadImpl(const char* a_path, NiPointer<NiNode>& a_nodeOut, RE::BSModelDB::ModelEntryAuto& a_entryOut);
 
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
-		std::atomic_bool         m_odbNativeLoader{ false };
+		//std::atomic_bool         m_odbNativeLoader{ false };
 		std::atomic_bool         m_odbBackgroundLoading{ true };
 		std::atomic_bool         m_wantCleanup{ false };
 		std::optional<long long> m_cleanupDeadline;

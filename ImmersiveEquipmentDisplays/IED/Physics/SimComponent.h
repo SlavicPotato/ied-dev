@@ -52,7 +52,7 @@ namespace IED
 
 		static constexpr void SetMaxDiff(float a_value) noexcept
 		{
-			a_value    = std::clamp(a_value, 128.0f, 32768.0f);
+			a_value    = std::clamp(a_value, 512.0f, 8192.0f);
 			m_maxDiff2 = a_value * a_value;
 		}
 

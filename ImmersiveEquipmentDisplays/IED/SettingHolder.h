@@ -223,7 +223,7 @@ namespace IED
 				stl::optional<ConfigKeyPair>    playerBlockKeys;
 				Data::ConfigSound<Game::FormID> sound;
 
-				bool hideEquipped{ false };
+				bool hideEquipped{ true };
 				bool disableNPCSlots{ false };
 				bool removeFavRestriction{ false };
 				bool enableXP32AA{ false };

@@ -118,7 +118,7 @@ namespace IED
 		}
 	}
 
-	void ObjectDatabase::RunObjectCleanup() noexcept
+	void ObjectDatabase::ODBCleanupPass1() noexcept
 	{
 		if (!m_cleanupDeadline)
 		{
@@ -134,9 +134,11 @@ namespace IED
 
 		if (m_level == ObjectDatabaseLevel::kNone)
 		{
-			for (auto it = m_data.begin(); it != m_data.end();)
+			const auto& vec = m_data.getvec();
+
+			for (auto it = vec.begin(); it != vec.end();)
 			{
-				if (it->second.entry.use_count() <= 1)
+				if ((*it)->second.entry.use_count() == 1)
 				{
 					it = m_data.erase(it);
 				}
@@ -160,15 +162,11 @@ namespace IED
 			return a_lhs->second->accessed < a_rhs->second->accessed;
 		});
 
-		auto& vec = m_data.getvec();
+		const auto& vec = m_data.getvec();
 
 		for (auto it = vec.begin(); it != vec.end();)
 		{
-			if ((*it)->second.entry.use_count() > 1)
-			{
-				++it;
-			}
-			else
+			if ((*it)->second.entry.use_count() == 1)
 			{
 				it = m_data.erase(it);
 
@@ -177,14 +175,30 @@ namespace IED
 					break;
 				}
 			}
+			else
+			{
+				++it;
+			}
 		}
+	}
+
+	void ObjectDatabase::ODBCleanupPass2() noexcept
+	{
+		
+	}
+
+	void ObjectDatabase::RunObjectCleanup() noexcept
+	{
+		PreODBCleanup();
+		ODBCleanupPass1();
+		//ODBCleanupPass2();
 	}
 
 	void ObjectDatabase::QueueDatabaseCleanup() noexcept
 	{
 		if (!m_cleanupDeadline)
 		{
-			m_cleanupDeadline = IPerfCounter::get_tp(CLEANUP_DELAY);
+			m_cleanupDeadline = IPerfCounter::get_tp(CLEANUP_RUN_DEADLINE_DELTA);
 		}
 	}
 
@@ -295,7 +309,7 @@ namespace IED
 		const char*                a_path,
 		const ObjectDatabaseEntry& a_entry)
 	{
-		bool result;
+		/*bool result;
 
 		if (ODBGetUseNativeModelDB())
 		{
@@ -307,5 +321,8 @@ namespace IED
 		}
 
 		return result;
+		*/
+
+		return LoadImpl(a_path, a_entry->object);
 	}
 }

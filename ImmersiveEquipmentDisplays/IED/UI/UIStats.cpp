@@ -92,7 +92,7 @@ namespace IED
 
 				ImGui::NextColumn();
 
-				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
+				ImGui::Text("%lld \xC2\xB5s", m_controller.ActorProcessorGetTime());
 				//ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
 				//ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());

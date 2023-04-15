@@ -92,7 +92,7 @@ namespace IED
 		bool          m_clearRPCOnSceneMove{ false };
 		bool          m_lightNPCCellAttachFix{ false };
 		bool          m_lightNPCVanillaUpdates{ false };
-		bool          m_odbNativeLoader{ false };
+		//bool          m_odbNativeLoader{ false };
 		bool          m_odbBackgroundLoading{ false };
 		bool          m_scNativeLoader{ false };
 		std::uint32_t m_bipedSlotCacheMaxSize{ 2000 };

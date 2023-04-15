@@ -62,7 +62,7 @@ namespace IED
 		}
 
 		NiPointer<NiNode>              object;
-		RE::BSModelDB::ModelEntryAuto  holder;
+		//RE::BSModelDB::ModelEntryAuto  holder;
 		volatile long long             accessed{ 0 };
 		std::atomic<ODBEntryLoadState> loadState{ ODBEntryLoadState::kPending };
 	};

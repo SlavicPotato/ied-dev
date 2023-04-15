@@ -173,10 +173,10 @@ namespace IED
 
 		m_effectShaderFlickerFix = reader.GetBoolValue(SECT_EFFECT_SHADERS, "FlickerFix", false);
 
-		m_odbNativeLoader      = false;  //reader.GetBoolValue(SECT_OBJECTDB, "UseNativeModelLoader", false);
+		//m_odbNativeLoader      =  reader.GetBoolValue(SECT_OBJECTDB, "UseNativeModelLoader", false);
 		m_odbBackgroundLoading = reader.GetBoolValue(SECT_OBJECTDB, "BackgroundLoading", false);
 
-		m_scNativeLoader = false; //reader.GetBoolValue(SECT_SKELETON_CACHE, "UseNativeModelLoader", false);
+		m_scNativeLoader = reader.GetBoolValue(SECT_SKELETON_CACHE, "UseNativeModelLoader", false);
 
 		m_clearRPCOnSceneMove           = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
 		m_interiorAmbientLightThreshold = static_cast<float>(reader.GetDoubleValue(SECT_MISCELLANEOUS, "InteriorAmbientLightThreshold", 0.35f));

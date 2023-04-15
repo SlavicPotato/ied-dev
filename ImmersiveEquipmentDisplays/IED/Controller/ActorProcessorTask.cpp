@@ -16,8 +16,13 @@
 
 namespace IED
 {
+
 	ActorProcessorTask::ActorProcessorTask() :
 		m_globalState(IPerfCounter::Query())
+#if defined(IED_PERF_BUILD)
+		,
+		m_updateProc(std::make_unique<ThreadPool>(*this))
+#endif
 	{
 	}
 
@@ -404,7 +409,7 @@ namespace IED
 		}
 	}
 
-	template <bool _Par>
+	template <bool _ParUnsafe>
 	void ActorProcessorTask::DoActorUpdate(
 		const float                              a_interval,
 		const Game::Unk2f6b948::TimeMultipliers& a_stepMuls,
@@ -434,7 +439,7 @@ namespace IED
 		if (!Util::Common::IsREFRValid(actor) ||
 		    a_holder.m_actor.get() != actor)  // ??
 		{
-			if constexpr (_Par)
+			if constexpr (_ParUnsafe)
 			{
 				ITaskPool::AddPriorityTask([r = std::move(refr)] {});
 			}
@@ -546,7 +551,7 @@ namespace IED
 				return;
 			}
 
-			if constexpr (_Par)
+			if constexpr (_ParUnsafe)
 			{
 				DoObjectRefSyncMTSafe(a_holder, a_v);
 			}
@@ -632,8 +637,30 @@ namespace IED
 
 		const auto& data = GetController().GetActorMap().getvec();
 
-		if (ParallelProcessingEnabled())
+#if defined(IED_PERF_BUILD)
+		const auto updateProc = m_updateProc.get();
+#endif
+
+		if (ParallelProcessingEnabled() &&
+
+#if defined(IED_PERF_BUILD)
+		    updateProc->IsEnabled() &&
+#endif
+		    data.size() > 1)
 		{
+#if defined(IED_PERF_BUILD)
+			updateProc->make_shared_data(
+				interval,
+				std::addressof(stepMuls),
+				std::addressof(physUpdateData),
+				a_effectUpdates);
+
+			updateProc->allocate_workers(data.size());
+			updateProc->distribute_tasks(data);
+			updateProc->notify_tasks_available();
+			updateProc->wait_until_tasks_complete();
+#else
+
 			std::for_each(
 				std::execution::par,
 				data.begin(),
@@ -646,6 +673,7 @@ namespace IED
 						a_e->second,
 						a_effectUpdates);
 				});
+#endif
 
 			m_syncRefParentQueue.process(
 				[this](const auto& a_e) noexcept [[msvc::forceinline]] {
@@ -675,6 +703,24 @@ namespace IED
 		}
 	}
 
+	void ActorProcessorTask::StartAPThreadPool()
+	{
+#if defined(IED_PERF_BUILD)
+		auto& updateProc = m_updateProc;
+
+		if (updateProc->IsEnabled())
+		{
+			return;
+		}
+
+		const auto numThreads = WinApi::GetNumPhysicalCores();
+		if (numThreads >= 2)
+		{
+			updateProc->Start(std::min(numThreads, 12u));
+		}
+#endif
+	}
+
 	void ActorProcessorTask::Run() noexcept
 	{
 		auto& controller = GetController();
@@ -698,17 +744,6 @@ namespace IED
 		RunPreUpdates(notPaused);
 
 		const auto& actorList = controller.GetActorMap().getvec();
-
-		/*if (controller.HasCompletedAsyncLoads())
-		{
-			for (auto& e : actorList)
-			{
-				if (e->second.m_flags.test(ActorObjectHolderFlags::kHasPendingLoads))
-				{
-					e->second.RequestEval();
-				}
-			}
-		}*/
 
 		const auto& cvdata = controller.GetActiveConfig().condvars;
 
@@ -757,7 +792,6 @@ namespace IED
 
 		m_globalParams.reset();
 
-		controller.PreODBCleanup();
 		controller.RunObjectCleanup();
 
 		m_timer.End(m_currentTime);
@@ -771,5 +805,184 @@ namespace IED
 	const Controller& ActorProcessorTask::GetController() const noexcept
 	{
 		return static_cast<const Controller&>(*this);
+	}
+
+	ActorProcessorTask::ThreadPool::Thread::Thread(ThreadPool& a_owner) :
+		RE::BSThread(),
+		m_owner(a_owner)
+	{
+	}
+
+	void ActorProcessorTask::ThreadPool::Thread::wait_until_tasks_complete() noexcept
+	{
+		std::unique_lock lock(m_mutex);
+
+		m_cond.wait(lock, [&] {
+			return m_runState == 0;
+		});
+	}
+
+	void ActorProcessorTask::ThreadPool::Thread::notify_tasks_available() noexcept
+	{
+		{
+			std::unique_lock lock(m_mutex);
+			m_runState = 1;
+		}
+		m_cond.notify_one();
+	}
+
+	DWORD ActorProcessorTask::ThreadPool::Thread::Run()
+	{
+		gLog.Debug("%s: starting %u", __FUNCTION__, threadID);
+
+		while (wait_for_signal())
+		{
+			auto& data = m_owner.m_shared;
+			auto& task = m_owner.m_owner;
+
+			for (auto& e : m_list)
+			{
+				task.DoActorUpdate<true>(
+					data.interval,
+					*data.stepMuls,
+					*data.physUpdData,
+					*e,
+					data.updateEffects);
+			}
+
+			reset_state();
+		}
+
+		gLog.Debug("%s: stopping %u", __FUNCTION__, threadID);
+
+		return 0;
+	}
+
+	bool ActorProcessorTask::ThreadPool::Thread::wait_for_signal() noexcept
+	{
+		std::unique_lock lock(m_mutex);
+		m_cond.wait(lock, [&] {
+			return m_runState != 0;
+		});
+
+		return m_runState != -1;
+	}
+
+	void ActorProcessorTask::ThreadPool::Thread::reset_state() noexcept
+	{
+		{
+			std::unique_lock lock(m_mutex);
+			m_runState = 0;
+		}
+		m_cond.notify_one();
+	}
+
+	ActorProcessorTask::ThreadPool::ThreadPool(
+		ActorProcessorTask& a_owner) :
+		m_owner(a_owner)
+	{
+	}
+
+	ActorProcessorTask::ThreadPool::~ThreadPool()
+	{
+		Stop();
+	}
+
+	void ActorProcessorTask::ThreadPool::Stop()
+	{
+		for (auto& e : m_workers)
+		{
+			{
+				std::unique_lock lock(e->m_mutex);
+				e->m_cond.wait(lock, [&] {
+					return e->m_runState == 0;
+				});
+				e->m_runState = -1;
+			}
+			e->m_cond.notify_all();
+		}
+
+		for (auto& e : m_workers)
+		{
+			e->stop_and_wait_for_thread();
+		}
+
+		m_workers.clear();
+	}
+
+	void ActorProcessorTask::ThreadPool::Start(
+		std::uint32_t a_numThreads)
+	{
+		if (!m_workers.empty())
+		{
+			return;
+		}
+
+		m_workers.reserve(a_numThreads);
+
+		for (std::uint32_t i = 0; i < a_numThreads; ++i)
+		{
+			m_workers.emplace_back(std::make_unique<Thread>(*this));
+		}
+
+		for (auto& e : m_workers)
+		{
+			ASSERT(e->StartThread());
+		}
+	}
+
+	void ActorProcessorTask::ThreadPool::wait_until_tasks_complete() const noexcept
+	{
+		for (auto& e : m_workersInUse)
+		{
+			e->wait_until_tasks_complete();
+		}
+	}
+
+	void ActorProcessorTask::ThreadPool::notify_tasks_available() const noexcept
+	{
+		for (auto& e : m_workersInUse)
+		{
+			e->notify_tasks_available();
+		}
+	}
+
+	void ActorProcessorTask::ThreadPool::allocate_workers(
+		std::size_t a_numTasks) noexcept
+	{
+		const auto n = std::clamp<std::size_t>(a_numTasks / 2, 2, m_workers.size());
+
+		m_workersInUse.clear();
+
+		for (std::size_t i = 0; i < n; i++)
+		{
+			auto& thrd = m_workers[i];
+
+			thrd->m_list.clear();
+			m_workersInUse.emplace_back(thrd.get());
+		}
+	}
+
+	void ActorProcessorTask::ThreadPool::distribute_tasks(
+		const ActorObjectMap::vector_type& a_data) const noexcept
+	{
+		const auto                              maxIndex = m_workersInUse.size() - 1;
+		std::remove_const_t<decltype(maxIndex)> curIndex = 0;
+
+		for (auto& e : a_data)
+		{
+			auto& thrd = m_workersInUse[curIndex];
+
+			thrd->m_list.emplace_back(std::addressof(e->second));
+
+			if (curIndex == maxIndex)
+			{
+				curIndex = 0;
+			}
+			else
+			{
+				++curIndex;
+			}
+		}
 	}
 }

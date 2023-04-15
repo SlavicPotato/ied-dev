@@ -164,8 +164,8 @@ namespace IED
 			Actor*                                   a_actor) noexcept;
 
 		static void TryMakeArrowState(
-			std::unique_ptr<ObjectEntryBase::State>& a_state,
-			NiNode*                                  a_object) noexcept;
+			const std::unique_ptr<ObjectEntryBase::State>& a_state,
+			NiNode*                                        a_object) noexcept;
 
 		static void TryCreatePointLight(
 			Actor*                        a_actor,
@@ -241,6 +241,9 @@ namespace IED
 
 		using stripCollision_t                  = bool (*)(NiAVObject* a_object, bool a_recursive, bool a_ignoreHavokFlag) noexcept;
 		inline static const auto StripCollision = IAL::Address<stripCollision_t>(76037, 77870);
+
+		/*using NiAVObject_unk39_col_t              = bool (*)(NiAVObject* a_object, std::int32_t a_unk1, bool a_recursive, bool a_ignoreHavokFlag, std::uint8_t a_unk4) noexcept;
+		inline static const auto NiAVObject_unk39_col = IAL::Address<NiAVObject_unk39_col_t>(76033, 77866);*/
 
 		static bool RemoveAllChildren(
 			NiNode*              a_object,

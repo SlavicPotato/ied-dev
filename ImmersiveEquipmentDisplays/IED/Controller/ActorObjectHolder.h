@@ -346,7 +346,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit(Tf a_func) 
+		constexpr void visit(Tf a_func)
 		{
 			for (auto& e : m_entriesSlot)
 			{

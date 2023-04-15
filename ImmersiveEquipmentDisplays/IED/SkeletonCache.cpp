@@ -122,6 +122,8 @@ namespace IED
 			if (result)
 			{
 				object = entry->object;
+
+				ASSERT(object->m_parent == nullptr);
 			}
 		}
 		else

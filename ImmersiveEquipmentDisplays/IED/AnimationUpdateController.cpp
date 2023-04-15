@@ -97,7 +97,7 @@ namespace IED
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 
-		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
+		auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(sh->m_bged);
 		if (!bged)
 		{
 			return false;

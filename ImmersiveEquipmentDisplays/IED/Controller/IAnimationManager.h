@@ -86,6 +86,12 @@ namespace IED
 		{
 			m_groupInfo.emplace(a_in);
 		}
+		
+		constexpr void SetAnimationInfo(AnimationGroupInfo&& a_in) noexcept(
+			std::is_nothrow_move_constructible_v<AnimationGroupInfo>)
+		{
+			m_groupInfo.emplace(std::move(a_in));
+		}
 
 		[[nodiscard]] constexpr auto& GetAnimationInfo() const noexcept
 		{

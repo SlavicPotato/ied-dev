@@ -131,6 +131,23 @@ namespace IED
 			{
 			}
 
+			explicit Object(
+				TESForm*              a_modelForm,
+				NiNode*               a_rootNode,
+				NiNode*               a_object,
+				ObjectDatabaseEntry&& a_entry) noexcept :
+				modelForm(a_modelForm),
+				commonNodes(a_rootNode, a_object),
+				dbEntry(std::move(a_entry))
+			{
+			}
+			
+			explicit Object(
+				ObjectDatabaseEntry&& a_entry) noexcept :
+				dbEntry(std::move(a_entry))
+			{
+			}
+
 			void UnregisterFromControllers(Game::FormID a_owner) noexcept;
 			void CleanupObject(Game::ObjectRefHandle a_handle) noexcept;
 
@@ -149,6 +166,11 @@ namespace IED
 			State() noexcept  = default;
 			~State() noexcept = default;
 
+			explicit State(ObjectDatabaseEntry&& a_entry) :
+				Object(std::move(a_entry))
+			{
+			}
+
 			State(const State&)            = delete;
 			State& operator=(const State&) = delete;
 
@@ -160,6 +182,15 @@ namespace IED
 					NiNode*  a_rootNode,
 					NiNode*  a_object) noexcept :
 					Object(a_modelForm, a_rootNode, a_object)
+				{
+				}
+
+				explicit GroupObject(
+					TESForm*              a_modelForm,
+					NiNode*               a_rootNode,
+					NiNode*               a_object,
+					ObjectDatabaseEntry&& a_entry) noexcept :
+					Object(a_modelForm, a_rootNode, a_object, std::move(a_entry))
 				{
 				}
 

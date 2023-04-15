@@ -31,7 +31,7 @@ namespace IED
 				rtti->name);
 		}
 
-		if (auto extra = a_root->GetExtraData<NiIntegerExtraData>(
+		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
 				sh->m_skeletonID))
 		{
 			m_id = extra->m_data;
@@ -41,7 +41,7 @@ namespace IED
 				extra->m_data);
 		}
 
-		if (auto extra = a_root->GetExtraData<NiIntegerExtraData>(
+		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
 				sh->m_bsx))
 		{
 			m_bsx = extra->m_data;
@@ -67,7 +67,7 @@ namespace IED
 
 			if (auto parent = npcRoot->m_parent; parent && parent != a_root)
 			{
-				if (auto extra = parent->GetExtraData<NiFloatExtraData>(
+				if (auto extra = parent->GetExtraDataSafe<NiFloatExtraData>(
 						sh->m_XPMSE))
 				{
 					m_xpmse_version = extra->m_data;
@@ -77,7 +77,7 @@ namespace IED
 						extra->m_data);
 				}
 
-				if (auto extra = parent->GetExtraData<NiStringExtraData>(
+				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_rigVersion);
 				    extra && extra->m_pString)
 				{
@@ -86,7 +86,7 @@ namespace IED
 						extra->m_pString);
 				}
 
-				if (auto extra = parent->GetExtraData<NiStringExtraData>(
+				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_rigPerspective);
 				    extra && extra->m_pString)
 				{
@@ -95,7 +95,7 @@ namespace IED
 						extra->m_pString);
 				}
 
-				if (auto extra = parent->GetExtraData<NiStringExtraData>(
+				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_species);
 				    extra && extra->m_pString)
 				{

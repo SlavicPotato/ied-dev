@@ -529,23 +529,16 @@ namespace IED
 			return false;
 		}
 
-		auto state = std::make_unique_for_overwrite<ObjectEntryBase::State>();
-
 		NiPointer<NiNode>   object;
 		ObjectDatabaseEntry dbentry;
-
-		if (a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider))
-		{
-			state->colliderScale = a_activeConfig.geometryTransform.scale;
-			state->flags.set(ObjectEntryFlags::kHasCollisionObjectScale);
-		}
 
 		const auto odbResult = GetModel(
 			modelParams.path,
 			dbentry,
 			std::addressof(object),
-			state->colliderScale ?
-				*state->colliderScale :
+			a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider) &&
+					a_activeConfig.geometryTransform.scale ?
+				*a_activeConfig.geometryTransform.scale :
 				1.0f);
 
 		switch (odbResult)
@@ -568,20 +561,25 @@ namespace IED
 			return false;
 		}
 
-		state->dbEntry = std::move(dbentry);
+		auto state = std::make_unique<ObjectEntryBase::State>(std::move(dbentry));
+
+		if (a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider))
+		{
+			state->colliderScale = a_activeConfig.geometryTransform.scale;
+			state->flags.set(ObjectEntryFlags::kHasCollisionObjectScale);
+		}
 
 		a_params.SuspendReferenceEffectShaders();
+
+		INode::UpdateObjectTransform(a_activeConfig.geometryTransform, object.get());
+		object->SetVisible(true);
+
+		//NiAVObject_unk39_col(object.get(), 4, true, true, 1ui8);
 
 		if (modelParams.swap)
 		{
 			ApplyTextureSwap(modelParams.swap, object.get());
 		}
-
-		//object->m_localTransform = {};
-
-		INode::UpdateObjectTransform(
-			a_activeConfig.geometryTransform,
-			object.get());
 
 		state->currentGeomTransformTag = a_activeConfig.geometryTransform;
 
@@ -987,6 +985,9 @@ namespace IED
 			}
 
 			e.object->m_localTransform = {};
+			e.object->SetVisible(true);
+
+			//NiAVObject_unk39_col(e.object.get(), 4, true, true, 1ui8);
 
 			if (e.params.swap)
 			{
@@ -1001,13 +1002,9 @@ namespace IED
 											 e.entry->first,
 											 e.form,
 											 itemRoot,
-											 e.object.get())
+											 e.object.get(),
+											 std::move(e.dbEntry))
 			              .first->second;
-
-			if (e.dbEntry)
-			{
-				n.dbEntry = std::move(e.dbEntry);
-			}
 
 			n.transform.Update(e.entry->second.transform);
 
@@ -1188,8 +1185,8 @@ namespace IED
 	}
 
 	void IObjectManager::TryMakeArrowState(
-		std::unique_ptr<ObjectEntryBase::State>& a_state,
-		NiNode*                                  a_object) noexcept
+		const std::unique_ptr<ObjectEntryBase::State>& a_state,
+		NiNode*                                        a_object) noexcept
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 
@@ -1420,7 +1417,7 @@ namespace IED
 
 	BSXFlags* IObjectManager::GetBSXFlags(NiObjectNET* a_object) noexcept
 	{
-		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
+		return a_object->GetExtraDataSafe<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
 	}
 
 	auto IObjectManager::AttachObject(

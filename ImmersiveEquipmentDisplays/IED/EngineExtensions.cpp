@@ -756,6 +756,10 @@ namespace IED
 		{
 			//m_Instance.Debug("%s: release 3D: %X", __FUNCTION__, a_actor->formID);
 
+#if defined(IED_PERF_BUILD)
+			ASSERT(!ITaskPool::IsRunningOnCurrentThread());  // REMOVE ME!!
+#endif
+
 			if (ITaskPool::IsRunningOnCurrentThread())
 			{
 				m_Instance.FailsafeCleanupAndEval(a_actor);

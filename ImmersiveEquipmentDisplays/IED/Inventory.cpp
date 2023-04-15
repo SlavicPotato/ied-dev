@@ -141,7 +141,6 @@ namespace IED
 		}
 
 		const auto typePair   = ItemData::GetItemTypePair(form);
-		const auto countDelta = a_entryData->countDelta;
 
 		auto& entry = data.forms.raw()
 		                  .emplace_back(
@@ -150,7 +149,7 @@ namespace IED
 							  std::forward_as_tuple(
 								  form,
 								  typePair,
-								  countDelta))
+								  a_entryData->countDelta))
 		                  .second;
 
 		if (const auto extraLists = a_entryData->GetExtraDataLists())
