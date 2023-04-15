@@ -1642,7 +1642,7 @@ namespace IED
 					ImGui::TableSetColumnIndex(4);
 					if (f.geometry)
 					{
-						ImGui::Text("%s", f.geometry->first.c_str());
+						TextCopyable("%s", f.geometry->first.c_str());
 
 						ImGui::TableSetColumnIndex(5);
 						ImGui::Text("%s", f.geometry->second ? UIL::LS(CommonStrings::Yes) : UIL::LS(CommonStrings::No));
