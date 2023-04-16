@@ -187,11 +187,11 @@ namespace IED
 					ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.5f);
 					ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.5f);
 
-					draw_row(CommonStrings::Day, "%.4f", data.day);
+					draw_row(CommonStrings::Day, "%.0f", data.day);
 					draw_row(UIGeneralInfoStrings::DayOfWeek, "%d [%s]", data.dayOfWeek, UIDayOfWeekSelectorWidget::day_of_week_to_desc(data.dayOfWeek));
 					draw_row(CommonStrings::Month, "%u", data.month);
 					draw_row(CommonStrings::Year, "%u", data.year);
-					draw_row(UIGeneralInfoStrings::DaysPassed, "%.4f", data.daysPassed);
+					draw_row(UIGeneralInfoStrings::DaysPassed, "%.5f", data.daysPassed);
 					draw_row(UIGeneralInfoStrings::Timescale, "%f", data.timescale);
 
 					ImGui::EndTable();

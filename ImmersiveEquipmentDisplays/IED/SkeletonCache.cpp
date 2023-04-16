@@ -121,9 +121,15 @@ namespace IED
 
 			if (result)
 			{
-				object = entry->object;
-
-				ASSERT(object->m_parent == nullptr);
+				if (entry->object->m_parent != nullptr)
+				{
+					params = RE::BSModelDB::ModelLoadParams(3, false, true);
+					result = ModelLoader::Load(a_modelPath, params, object);
+				}
+				else
+				{
+					object = entry->object;
+				}
 			}
 		}
 		else
