@@ -1985,6 +1985,12 @@
     <ClInclude Include="IED\ActorBipedInfo.h">
       <Filter>Source\IED\ActorInfo</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectCloningTask.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\BackgroundCloneLevel.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3147,6 +3153,9 @@
     </ClCompile>
     <ClCompile Include="IED\ActorBipedInfo.cpp">
       <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ObjectCloningTask.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BackgroundCloneLevel.h"
 #include "ControllerCommon.h"
 #include "IED/ConfigModelGroup.h"
 #include "IED/ConfigStore.h"
@@ -15,6 +16,13 @@
 
 namespace IED
 {
+	enum class AttachObjectResult
+	{
+		kSucceeded,
+		kFailed,
+		kPending
+	};
+
 	class IObjectManager :
 		public ObjectManagerData,
 		public ObjectDatabase,
@@ -106,7 +114,8 @@ namespace IED
 			ObjectEntryBase&                 a_objectEntry,
 			ActorObjectHolder&               a_data,
 			stl::flag<ControllerUpdateFlags> a_flags,
-			bool                             a_defer) noexcept;
+			bool                             a_defer,
+			bool                             a_removeCloningTask = true) noexcept;
 
 		void RemoveActorGear(
 			TESObjectREFR*                   a_actor,
@@ -130,7 +139,7 @@ namespace IED
 			const IModel::modelParams_t& a_params,
 			char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]) noexcept;
 
-		bool LoadAndAttach(
+		AttachObjectResult LoadAndAttach(
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_config,
@@ -142,7 +151,7 @@ namespace IED
 			const bool                      a_disableHavok,
 			const bool                      a_physics) noexcept;
 
-		bool LoadAndAttachGroup(
+		AttachObjectResult LoadAndAttachGroup(
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_baseConfig,
@@ -195,7 +204,27 @@ namespace IED
 			bool                        a_atmReference,
 			const ObjectEntryBase&      a_entry) noexcept;
 
+		constexpr void SetBackgroundCloneLevel(
+			bool                 a_player,
+			BackgroundCloneLevel a_level) noexcept
+		{
+			m_backgroundClone[a_player] = a_level;
+		}
+
+	public:
+		constexpr auto GetBackgroundCloneLevel(
+			bool a_player) noexcept
+		{
+			return m_backgroundClone[a_player];
+		}
+
 	private:
+		AttachObjectResult TryDispatchCloningTask(
+			const ObjectDatabaseEntry&    a_entry,
+			TESModelTextureSwap*          a_textureSwap,
+			float                         a_colliderScale,
+			NiPointer<ObjectCloningTask>& a_out) noexcept;
+
 		struct unks_01
 		{
 			std::uint16_t p1;
@@ -205,9 +234,11 @@ namespace IED
 		using getObjectByName_t                  = NiAVObject* (*)(NiAVObject* a_root, const BSFixedString& a_name, bool a_recursiveLookup) noexcept;
 		inline static const auto GetObjectByName = IAL::Address<getObjectByName_t>(74481, 76207);
 
+	public:
 		using applyTextureSwap_t                  = void (*)(TESModelTextureSwap* a_swap, NiAVObject* a_object) noexcept;
 		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 
+	private:
 		using shrinkToSize_t                  = NiAVObject* (*)(NiNode*) noexcept;
 		inline static const auto ShrinkToSize = IAL::Address<shrinkToSize_t>(15571, 15748);
 
@@ -275,8 +306,9 @@ namespace IED
 		inline static const auto CleanupObjectImpl = IAL::Address<cleanupObject_t>(15495, 15660);
 
 	protected:
-		bool m_playSound{ false };
-		bool m_playSoundNPC{ false };
+		bool                 m_playSound{ false };
+		bool                 m_playSoundNPC{ false };
+		BackgroundCloneLevel m_backgroundClone[2]{ BackgroundCloneLevel::kNone };
 
 		mutable stl::recursive_mutex m_lock;
 	};

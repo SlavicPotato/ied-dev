@@ -2,6 +2,8 @@
 
 #include "NodeOverrideParams.h"
 
+#include "Controller/Controller.h"
+
 namespace IED
 {
 	float nodeOverrideParams_t::get_weapon_adjust() noexcept
@@ -28,6 +30,26 @@ namespace IED
 		}
 
 		return *weaponAdjust;
+	}
+
+	bool nodeOverrideParams_t::has_pending_loads() noexcept
+	{
+		if (!hasPendingLoads)
+		{
+			if (objects.HasQueuedModels())
+			{
+				hasPendingLoads.emplace(true);
+			}
+			else
+			{
+				hasPendingLoads.emplace(
+					controller.GetBackgroundCloneLevel(is_player()) > BackgroundCloneLevel::kNone ?
+						objects.HasQueuedCloningTasks() :
+						false);
+			}
+		}
+
+		return *hasPendingLoads;
 	}
 
 	void nodeOverrideParams_t::make_item_data() noexcept

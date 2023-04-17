@@ -11,6 +11,7 @@
 #include "IED/StringHolder.h"
 #include "IED/Util/Common.h"
 
+#include <ext/BackgroundProcessThread.h>
 #include <ext/Model.h>
 #include <ext/Node.h>
 
@@ -24,11 +25,12 @@ namespace IED
 		ObjectEntryBase&                 a_objectEntry,
 		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags,
-		bool                             a_defer) noexcept
+		bool                             a_defer,
+		bool                             a_removeCloningTask) noexcept
 	{
 		if (auto& state = a_objectEntry.data.state)
 		{
-			if (auto& sc = state->simComponent)
+			if (const auto& sc = state->simComponent)
 			{
 				a_holder.RemoveSimComponent(sc);
 			}
@@ -58,27 +60,13 @@ namespace IED
 			}
 		}
 
-		/*if (a_objectEntry.state->weapAnimGraphManagerHolder)
-		{
-			a_data.UnregisterWeaponAnimationGraphManagerHolder(
-				a_objectEntry.state->weapAnimGraphManagerHolder);
-		}
-
-		for (auto& e : a_objectEntry.state->groupObjects)
-		{
-			if (e.second.weapAnimGraphManagerHolder)
-			{
-				a_data.UnregisterWeaponAnimationGraphManagerHolder(
-					e.second.weapAnimGraphManagerHolder);
-			}
-		}*/
-
 		return a_objectEntry.reset(
 			a_handle,
 			a_holder.m_root,
 			a_holder.m_root1p,
 			*this,
-			a_defer);
+			a_defer,
+			a_removeCloningTask);
 	}
 
 	bool IObjectManager::RemoveActorImpl(
@@ -450,7 +438,7 @@ namespace IED
 		}
 	}
 
-	bool IObjectManager::LoadAndAttach(
+	AttachObjectResult IObjectManager::LoadAndAttach(
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_activeConfig,
 		const Data::configBase_t&       a_baseConfig,
@@ -464,17 +452,17 @@ namespace IED
 	{
 		if (a_objectEntry.data.state)
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (!a_activeConfig.targetNode)
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (a_form->formID.IsTemporary())
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		const auto hasModelForm = static_cast<bool>(a_modelForm);
@@ -483,7 +471,7 @@ namespace IED
 		{
 			if (a_modelForm->formID.IsTemporary())
 			{
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 		}
 		else
@@ -508,7 +496,7 @@ namespace IED
 				a_params.race->formID.get(),
 				a_modelForm->formID.get());
 
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		targetNodes_t targetNodes;
@@ -526,20 +514,39 @@ namespace IED
 				a_modelForm->formID.get(),
 				a_activeConfig.targetNode.name.c_str());
 
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
-		NiPointer<NiNode>   object;
 		ObjectDatabaseEntry dbentry;
+
+		bool backgroundClone;
+
+		switch (GetBackgroundCloneLevel(a_params.is_player()))
+		{
+		case BackgroundCloneLevel::kTexSwap:
+
+			backgroundClone =
+				modelParams.texSwap &&
+				modelParams.texSwap->numAlternateTextures > 0;
+
+			break;
+
+		case BackgroundCloneLevel::kClone:
+
+			backgroundClone = true;
+
+			break;
+
+		default:
+
+			backgroundClone = false;
+
+			break;
+		}
 
 		const auto odbResult = GetModel(
 			modelParams.path,
-			dbentry,
-			std::addressof(object),
-			a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider) &&
-					a_activeConfig.geometryTransform.scale ?
-				*a_activeConfig.geometryTransform.scale :
-				1.0f);
+			dbentry);
 
 		switch (odbResult)
 		{
@@ -552,13 +559,101 @@ namespace IED
 				a_modelForm->formID.get(),
 				modelParams.path);
 
-			return false;
+			return AttachObjectResult::kFailed;
 
 		case ObjectLoadResult::kPending:
 
-			a_params.objects.AddQueuedModel(std::move(dbentry));
+			a_params.objects.AddQueuedModel(dbentry);
 
-			return false;
+			if (!backgroundClone)
+			{
+				return AttachObjectResult::kFailed;
+			}
+
+			break;
+		}
+
+		NiPointer<NiNode> object;
+
+		const auto colScale =
+			a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider) &&
+					a_activeConfig.geometryTransform.scale ?
+				*a_activeConfig.geometryTransform.scale :
+				1.0f;
+
+		if (auto& ct = a_objectEntry.data.cloningTask)
+		{
+			if (ct->GetDBEntry() != dbentry ||
+			    ct->GetSwap() != modelParams.texSwap ||
+			    ct->GetColliderScale() != colScale ||
+			    ct->get_task_state() == ObjectCloningTask::State::kCanceled)
+			{
+				ct->try_cancel_task();
+				ct.reset();
+
+				if (backgroundClone)
+				{
+					return TryDispatchCloningTask(
+						dbentry,
+						modelParams.texSwap,
+						colScale,
+						a_objectEntry.data.cloningTask);
+				}
+				else
+				{
+					ObjectCloningTask::clone_and_apply_texswap(
+						dbentry,
+						modelParams.texSwap,
+						colScale,
+						object);
+				}
+			}
+			else
+			{
+				switch (ct->get_task_state())
+				{
+				case ObjectCloningTask::State::kDone:
+				case ObjectCloningTask::State::kAcquiredForUse:
+
+					object = std::move(ct->GetClone());
+					ct.reset();
+
+					if (!object)
+					{
+						return AttachObjectResult::kFailed;
+					}
+
+					break;
+
+				case ObjectCloningTask::State::kPending:
+				case ObjectCloningTask::State::kProcessing:
+
+					return AttachObjectResult::kPending;
+
+				default:
+
+					return AttachObjectResult::kFailed;
+				}
+			}
+		}
+		else
+		{
+			if (backgroundClone)
+			{
+				return TryDispatchCloningTask(
+					dbentry,
+					modelParams.texSwap,
+					colScale,
+					a_objectEntry.data.cloningTask);
+			}
+			else
+			{
+				ObjectCloningTask::clone_and_apply_texswap(
+					dbentry,
+					modelParams.texSwap,
+					colScale,
+					object);
+			}
 		}
 
 		auto state = std::make_unique<ObjectEntryBase::State>(std::move(dbentry));
@@ -576,9 +671,9 @@ namespace IED
 
 		//NiAVObject_unk39_col(object.get(), 4, true, true, 1ui8);
 
-		if (modelParams.swap)
+		if (modelParams.texSwap && modelParams.texSwap->numAlternateTextures > 0)
 		{
-			ApplyTextureSwap(modelParams.swap, object.get());
+			ApplyTextureSwap(modelParams.texSwap, object.get());
 		}
 
 		state->currentGeomTransformTag = a_activeConfig.geometryTransform;
@@ -758,10 +853,10 @@ namespace IED
 				true);
 		}
 
-		return true;
+		return AttachObjectResult::kSucceeded;
 	}
 
-	bool IObjectManager::LoadAndAttachGroup(
+	AttachObjectResult IObjectManager::LoadAndAttachGroup(
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_activeConfig,
 		const Data::configBase_t&       a_baseConfig,
@@ -775,28 +870,28 @@ namespace IED
 	{
 		if (a_objectEntry.data.state)
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (!a_activeConfig.targetNode)
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (a_form->formID.IsTemporary())
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		auto it = a_group.entries.find(stl::fixed_string());
 		if (it == a_group.entries.end())
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (it->second.form.get_id() != a_form->formID)
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		struct tmpdata_t
@@ -853,7 +948,7 @@ namespace IED
 
 		if (modelParams.empty())
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		targetNodes_t targetNodes;
@@ -871,7 +966,7 @@ namespace IED
 				a_form->formID.get(),
 				a_activeConfig.targetNode.name.c_str());
 
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		enum class ModelLoadStatus : std::uint8_t
@@ -928,7 +1023,7 @@ namespace IED
 		if (!status.test(ModelLoadStatus::kHasLoaded) ||
 		    status.test(ModelLoadStatus::kHasPending))
 		{
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		for (auto& e : modelParams)
@@ -989,9 +1084,9 @@ namespace IED
 
 			//NiAVObject_unk39_col(e.object.get(), 4, true, true, 1ui8);
 
-			if (e.params.swap)
+			if (e.params.texSwap)
 			{
-				ApplyTextureSwap(e.params.swap, e.object);
+				ApplyTextureSwap(e.params.texSwap, e.object);
 			}
 
 			GetNodeName(e.form, e.params, buffer);
@@ -1163,7 +1258,7 @@ namespace IED
 				true);
 		}
 
-		return true;
+		return AttachObjectResult::kSucceeded;
 	}
 
 	void IObjectManager::FinalizeObjectState(
@@ -1370,6 +1465,28 @@ namespace IED
 		}
 
 		return result;
+	}
+
+	AttachObjectResult IObjectManager::TryDispatchCloningTask(
+		const ObjectDatabaseEntry&    a_entry,
+		TESModelTextureSwap*          a_textureSwap,
+		float                         a_colliderScale,
+		NiPointer<ObjectCloningTask>& a_out) noexcept
+	{
+		if (const auto thrd = RE::BackgroundProcessThread::GetSingleton())
+		{
+			a_out = thrd->QueueTask<ObjectCloningTask>(
+				*this,
+				a_entry,
+				a_textureSwap,
+				a_colliderScale);
+
+			return AttachObjectResult::kPending;
+		}
+		else
+		{
+			return AttachObjectResult::kFailed;
+		}
 	}
 
 	bool IObjectManager::RemoveAllChildren(

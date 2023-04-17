@@ -118,8 +118,8 @@ namespace IED
 		static constexpr long long STATE_CHECK_INTERVAL_MH   = 66666;
 		static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
 
-		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
-		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
+		using customEntryMap_t  = stl::cache_aligned::flat_map<stl::fixed_string, ObjectEntryCustom>;
+		using customPluginMap_t = stl::cache_aligned::flat_map<stl::fixed_string, customEntryMap_t>;
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
@@ -638,6 +638,11 @@ namespace IED
 		{
 			m_queuedModels.emplace(std::move(a_entry));
 		}
+		
+		constexpr void AddQueuedModel(const ObjectDatabaseEntry& a_entry) noexcept
+		{
+			m_queuedModels.emplace(a_entry);
+		}
 
 		bool ProcessQueuedModels() noexcept;
 
@@ -650,6 +655,9 @@ namespace IED
 		{
 			return !m_queuedModels.empty();
 		}
+		
+		[[nodiscard]] bool HasQueuedCloningTasks() const noexcept;
+		[[nodiscard]] std::size_t GetNumQueuedCloningTasks() const noexcept;
 
 	private:
 		void CreateExtraCopyNode(

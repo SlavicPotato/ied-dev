@@ -81,6 +81,8 @@ namespace IED
 					ImGui::TextUnformatted("Queued models:");
 				}
 
+				ImGui::TextUnformatted("Queued cloning tasks:");
+
 				if (i3di)
 				{
 					if (i3di->GetCommonData())
@@ -135,6 +137,8 @@ namespace IED
 				{
 					ImGui::Text("%zu", m_controller.GetNumQueuedModels());
 				}
+
+				ImGui::Text("%zu", m_controller.GetNumQueuedCloningTasks());
 				
 				if (i3di)
 				{

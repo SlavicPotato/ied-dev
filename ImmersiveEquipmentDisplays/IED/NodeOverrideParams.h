@@ -148,6 +148,8 @@ namespace IED
 			return false;
 		}
 
+		bool has_pending_loads() noexcept;
+
 	private:
 		void make_item_data() noexcept;
 
@@ -156,6 +158,7 @@ namespace IED
 		std::optional<float> weaponAdjust;
 		std::optional<float> weightAdjust;
 		std::optional<bool>  bipedHasArmor;
+		std::optional<bool>  hasPendingLoads;
 		std::uint64_t        matchedSlotFlags{ 0 };
 	};
 

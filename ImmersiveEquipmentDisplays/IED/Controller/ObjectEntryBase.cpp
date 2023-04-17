@@ -16,7 +16,8 @@ namespace IED
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
 		IObjectManager&          a_db,
-		bool                     a_defer) noexcept
+		bool                     a_defer,
+		bool                     a_removeCloningTask) noexcept
 	{
 		if (!data)
 		{
@@ -55,7 +56,7 @@ namespace IED
 
 					stl::lock_guard lock(m_db.GetLock());
 
-					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
+					m_data.Cleanup(m_handle, m_root, m_root1p, m_db, true);
 				}
 
 				virtual void Dispose() override
@@ -71,6 +72,11 @@ namespace IED
 				IObjectManager&                  m_db;
 			};
 
+			if (data.cloningTask)
+			{
+				data.cloningTask->try_cancel_task();
+			}
+
 			ITaskPool::AddPriorityTask<DisposeStateTask>(
 				std::move(data),
 				a_handle,
@@ -82,7 +88,7 @@ namespace IED
 		{
 			assert(!EngineExtensions::ShouldDefer3DTask());
 
-			data.Cleanup(a_handle, a_root, a_root1p, a_db);
+			data.Cleanup(a_handle, a_root, a_root1p, a_db, a_removeCloningTask);
 		}
 
 		return result;
@@ -296,7 +302,8 @@ namespace IED
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
-		ObjectDatabase&          a_db) noexcept
+		ObjectDatabase&          a_db,
+		bool                     a_removeCloningTask) noexcept
 	{
 		if (effectShaderData)
 		{
@@ -312,6 +319,12 @@ namespace IED
 			state.reset();
 
 			a_db.QueueDatabaseCleanup();
+		}
+
+		if (a_removeCloningTask && cloningTask)
+		{
+			cloningTask->try_cancel_task();
+			cloningTask.reset();
 		}
 	}
 

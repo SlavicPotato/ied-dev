@@ -11,7 +11,7 @@ namespace IED
 		{
 			ModelType            type;
 			const char*          path{ nullptr };
-			TESModelTextureSwap* swap{ nullptr };
+			TESModelTextureSwap* texSwap{ nullptr };
 			TESObjectARMA*       arma{ nullptr };
 		};
 

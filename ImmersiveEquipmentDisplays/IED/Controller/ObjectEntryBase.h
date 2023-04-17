@@ -2,6 +2,7 @@
 
 #include "EffectShaderData.h"
 #include "INode.h"
+#include "ObjectCloningTask.h"
 #include "ObjectDatabase.h"
 #include "ObjectLight.h"
 #include "ObjectManagerCommon.h"
@@ -50,14 +51,17 @@ namespace IED
 		~ObjectEntryBase() noexcept = default;
 
 		ObjectEntryBase(const ObjectEntryBase&)            = delete;
+		ObjectEntryBase(ObjectEntryBase&&)                 = default;
 		ObjectEntryBase& operator=(const ObjectEntryBase&) = delete;
+		ObjectEntryBase& operator=(ObjectEntryBase&&)      = default;
 
 		bool reset(
 			Game::ObjectRefHandle    a_handle,
 			const NiPointer<NiNode>& a_root,
 			const NiPointer<NiNode>& a_root1p,
 			IObjectManager&          a_db,
-			bool                     a_defer) noexcept;
+			bool                     a_defer,
+			bool                     a_removeCloningTask = true) noexcept;
 
 		bool SetObjectVisible(const bool a_switch) const noexcept;
 		bool DeferredHideObject(const std::uint8_t a_delay) const noexcept;
@@ -141,7 +145,7 @@ namespace IED
 				dbEntry(std::move(a_entry))
 			{
 			}
-			
+
 			explicit Object(
 				ObjectDatabaseEntry&& a_entry) noexcept :
 				dbEntry(std::move(a_entry))
@@ -287,6 +291,7 @@ namespace IED
 			{
 				return static_cast<bool>(physics.get());
 			}
+
 			TESForm*                                           form{ nullptr };
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
@@ -310,15 +315,17 @@ namespace IED
 				Game::ObjectRefHandle    a_handle,
 				const NiPointer<NiNode>& a_root,
 				const NiPointer<NiNode>& a_root1p,
-				ObjectDatabase&          a_db) noexcept;
+				ObjectDatabase&          a_db,
+				bool                     a_removeCloningTask) noexcept;
 
 			[[nodiscard]] inline SKMP_143_CONSTEXPR explicit operator bool() const noexcept
 			{
-				return state || effectShaderData;
+				return state || effectShaderData || cloningTask;
 			}
 
 			std::unique_ptr<State>            state;
 			std::unique_ptr<EffectShaderData> effectShaderData;
+			NiPointer<ObjectCloningTask>      cloningTask;
 		};
 
 		SKMP_143_CONSTEXPR void DisableRefSync() noexcept

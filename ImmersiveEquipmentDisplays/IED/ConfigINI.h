@@ -5,6 +5,7 @@
 #include "ConfigParsers.h"
 
 #include "Controller/AnimationGroupInfo.h"
+#include "Controller/BackgroundCloneLevel.h"
 
 #include <ext/INIConfReader.h>
 
@@ -53,6 +54,7 @@ namespace IED
 		static constexpr auto SECT_LIGHTS         = "Lights";
 		static constexpr auto SECT_OBJECTDB       = "ObjectDatabase";
 		static constexpr auto SECT_SKELETON_CACHE = "SkeletonCache";
+		static constexpr auto SECT_OBJECT_MANAGER = "ObjectManager";
 
 	public:
 		ConfigINI() = default;
@@ -68,38 +70,39 @@ namespace IED
 		ConfigKeyCombo m_toggleBlockKeys;
 		ConfigKeyCombo m_UIOpenKeys;
 
-		bool          m_enableUI{ true };
-		bool          m_dpiAwareness{ false };
-		bool          m_forceUIOpenKeys{ false };
-		bool          m_enableUIRestrictions{ false };
-		bool          m_closeLogFile{ false };
-		bool          m_nodeOverrideEnabled{ false };
-		bool          m_nodeOverridePlayerEnabled{ false };
-		bool          m_weaponAdjustDisable{ true };
-		bool          m_weaponAdjustForceDisable{ false };
-		bool          m_weaponAdjustFix{ true };
-		bool          m_forceDefaultConfig{ false };
-		bool          m_disableNPCProcessing{ false };
-		bool          m_immediateFavUpdate{ false };
-		bool          m_disableIntroBanner{ false };
-		bool          m_applyTransformOverrides{ true };
-		bool          m_enableEarlyLoadHooks{ true };
-		bool          m_behaviorGraphAnims{ false };
-		bool          m_forceFlushSaveData{ false };
-		bool          m_enableLights{ true };
-		bool          m_effectShaderFlickerFix{ false };
-		bool          m_enableInMenus{ false };
-		bool          m_clearRPCOnSceneMove{ false };
-		bool          m_lightNPCCellAttachFix{ false };
-		bool          m_lightNPCVanillaUpdates{ false };
-		//bool          m_odbNativeLoader{ false };
-		bool          m_odbBackgroundLoading{ false };
-		bool          m_scNativeLoader{ false };
-		std::uint32_t m_bipedSlotCacheMaxSize{ 2000 };
-		std::uint32_t m_bipedSlotCacheMaxForms{ 16 };
-		float         m_introBannerVOffset{ 110.0f };
-		float         m_interiorAmbientLightThreshold{ 0.35f };
-		LogLevel      m_logLevel{ LogLevel::Message };
+		bool                 m_enableUI{ true };
+		bool                 m_dpiAwareness{ false };
+		bool                 m_forceUIOpenKeys{ false };
+		bool                 m_enableUIRestrictions{ false };
+		bool                 m_closeLogFile{ false };
+		bool                 m_nodeOverrideEnabled{ false };
+		bool                 m_nodeOverridePlayerEnabled{ false };
+		bool                 m_weaponAdjustDisable{ true };
+		bool                 m_weaponAdjustForceDisable{ false };
+		bool                 m_weaponAdjustFix{ true };
+		bool                 m_forceDefaultConfig{ false };
+		bool                 m_disableNPCProcessing{ false };
+		bool                 m_immediateFavUpdate{ false };
+		bool                 m_disableIntroBanner{ false };
+		bool                 m_applyTransformOverrides{ true };
+		bool                 m_enableEarlyLoadHooks{ true };
+		bool                 m_behaviorGraphAnims{ false };
+		bool                 m_forceFlushSaveData{ false };
+		bool                 m_enableLights{ true };
+		bool                 m_effectShaderFlickerFix{ false };
+		bool                 m_enableInMenus{ false };
+		bool                 m_clearRPCOnSceneMove{ false };
+		bool                 m_lightNPCCellAttachFix{ false };
+		bool                 m_lightNPCVanillaUpdates{ false };
+		bool                 m_odbBackgroundLoading{ false };
+		bool                 m_scNativeLoader{ false };
+		BackgroundCloneLevel m_bgClonePlayer{ BackgroundCloneLevel::kNone };
+		BackgroundCloneLevel m_bgCloneNPC{ BackgroundCloneLevel::kNone };
+		std::uint32_t        m_bipedSlotCacheMaxSize{ 2000 };
+		std::uint32_t        m_bipedSlotCacheMaxForms{ 16 };
+		float                m_introBannerVOffset{ 110.0f };
+		float                m_interiorAmbientLightThreshold{ 0.35f };
+		LogLevel             m_logLevel{ LogLevel::Message };
 
 		long               m_agManualMode{ 0 };
 		AnimationGroupInfo m_agInfo;

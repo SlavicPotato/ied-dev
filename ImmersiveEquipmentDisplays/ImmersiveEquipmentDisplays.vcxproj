@@ -737,6 +737,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\ActorObjectHolder.h" />
     <ClInclude Include="IED\Controller\ActorTempData.h" />
+    <ClInclude Include="IED\Controller\BackgroundCloneLevel.h" />
     <ClInclude Include="IED\Controller\IConditionalVariableProcessor.h" />
     <ClInclude Include="IED\Controller\IUINotification.h" />
     <ClInclude Include="IED\Controller\KeyToggleStates.h" />
@@ -760,6 +761,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\BipedSlotData.h" />
     <ClInclude Include="IED\Controller\IRNG.h" />
     <ClInclude Include="IED\Controller\MOVNodeEntry.h" />
+    <ClInclude Include="IED\Controller\ObjectCloningTask.h" />
     <ClInclude Include="IED\Controller\ObjectDatabaseEntry.h" />
     <ClInclude Include="IED\Controller\ObjectEntryBase.h" />
     <ClInclude Include="IED\Controller\ObjectEntryCustom.h" />
@@ -1308,6 +1310,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\IAnimationManager.cpp" />
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
     <ClCompile Include="IED\Controller\IRNG.cpp" />
+    <ClCompile Include="IED\Controller\ObjectCloningTask.cpp" />
     <ClCompile Include="IED\Controller\ObjectEntryBase.cpp" />
     <ClCompile Include="IED\Controller\ObjectLight.cpp" />
     <ClCompile Include="IED\Controller\QueuedModel.cpp" />

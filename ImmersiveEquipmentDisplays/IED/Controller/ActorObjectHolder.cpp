@@ -28,7 +28,7 @@ namespace IED
 
 	namespace detail
 	{
-		SKMP_143_CONSTEXPR auto make_object_slot_array(
+		inline static auto make_object_slot_array(
 			BipedSlotData::display_slot_data_type& a_1) noexcept
 		{
 			return stl::make_array<
@@ -586,6 +586,11 @@ namespace IED
 					}
 				}
 
+				if (auto& ct = a_entry.data.cloningTask)
+				{
+					ct->try_cancel_task();
+				}
+
 				list.emplace_front(std::move(a_entry.data));
 			}
 		});
@@ -625,7 +630,7 @@ namespace IED
 
 				for (auto& e : m_list)
 				{
-					e.Cleanup(m_handle, m_root, m_root1p, m_db);
+					e.Cleanup(m_handle, m_root, m_root1p, m_db, true);
 				}
 			}
 
@@ -744,6 +749,62 @@ namespace IED
 		if (result)
 		{
 			RequestEval();
+		}
+
+		return result;
+	}
+
+	bool ActorObjectHolder::HasQueuedCloningTasks() const noexcept
+	{
+		for (const auto& e : m_entriesSlot)
+		{
+			if (e.data.cloningTask)
+			{
+				return true;
+			}
+		}
+
+		for (const auto& e : m_entriesCustom)
+		{
+			for (const auto& f : e)
+			{
+				for (const auto& g : f.second)
+				{
+					if (g.second.data.cloningTask)
+					{
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	std::size_t ActorObjectHolder::GetNumQueuedCloningTasks() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (const auto& e : m_entriesSlot)
+		{
+			if (e.data.cloningTask)
+			{
+				result++;
+			}
+		}
+
+		for (const auto& e : m_entriesCustom)
+		{
+			for (const auto& f : e)
+			{
+				for (const auto& g : f.second)
+				{
+					if (g.second.data.cloningTask)
+					{
+						result++;
+					}
+				}
+			}
 		}
 
 		return result;

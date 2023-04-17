@@ -459,8 +459,9 @@ namespace IED
 			return m_invChangeConsumerFlags.consume(a_mask);
 		}*/
 
-		std::size_t GetNumSimComponents() const noexcept;
-		std::size_t GetNumAnimObjects() const noexcept;
+		std::size_t               GetNumSimComponents() const noexcept;
+		std::size_t               GetNumAnimObjects() const noexcept;
+		[[nodiscard]] std::size_t GetNumQueuedCloningTasks() const noexcept;
 
 		void QueueSetEffectShaders(Actor* a_actor) noexcept;
 
@@ -737,7 +738,8 @@ namespace IED
 
 		void RemoveSlotObjectEntry(
 			processParams_t& a_params,
-			ObjectEntrySlot& a_entry) noexcept;
+			ObjectEntrySlot& a_entry,
+			bool             a_removeCloningTask = true) noexcept;
 
 		void ProcessSlots(processParams_t& a_params) noexcept;
 
@@ -758,7 +760,7 @@ namespace IED
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config) noexcept;
 
-		bool ProcessCustomEntry(
+		AttachObjectResult ProcessCustomEntry(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_cacheEntry) noexcept;

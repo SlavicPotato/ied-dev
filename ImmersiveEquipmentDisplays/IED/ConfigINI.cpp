@@ -181,6 +181,9 @@ namespace IED
 		m_clearRPCOnSceneMove           = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
 		m_interiorAmbientLightThreshold = static_cast<float>(reader.GetDoubleValue(SECT_MISCELLANEOUS, "InteriorAmbientLightThreshold", 0.35f));
 
+		m_bgClonePlayer = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundClonePlayer", 0), 0l, 2l));
+		m_bgCloneNPC = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundCloneNPC", 0), 0l, 2l));
+
 		m_loaded = reader.is_loaded();
 
 		return m_loaded;

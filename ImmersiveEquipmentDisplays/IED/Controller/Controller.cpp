@@ -24,6 +24,9 @@
 #include <ext/SKSEMessagingHandler.h>
 #include <ext/SKSESerializationEventHandler.h>
 
+//#define IED_ENABLE_STATS_G
+//#define IED_ENABLE_STATS_T
+
 namespace IED
 {
 	using namespace Util::Common;
@@ -47,6 +50,8 @@ namespace IED
 	{
 		//ODBSetUseNativeModelDB(a_config->m_odbNativeLoader);
 		ODBEnableBackgroundLoading(a_config->m_odbBackgroundLoading);
+		SetBackgroundCloneLevel(true, a_config->m_bgClonePlayer);
+		SetBackgroundCloneLevel(false, a_config->m_bgCloneNPC);
 	}
 
 	void Controller::SinkInputEvents()
@@ -545,6 +550,11 @@ namespace IED
 			"ODB: background load: %hhu",
 			ODBGetBackgroundLoadingEnabled());
 
+		Debug(
+			"OM: background clone (player/npc): %hhu / %hhu",
+			GetBackgroundCloneLevel(true),
+			GetBackgroundCloneLevel(false));
+
 		StartAPThreadPool();
 		SetProcessorTaskRunState(true);
 
@@ -582,6 +592,18 @@ namespace IED
 		for (auto& e : m_actorMap)
 		{
 			result += e.second.GetNumAnimObjects();
+		}
+
+		return result;
+	}
+
+	std::size_t Controller::GetNumQueuedCloningTasks() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& e : m_actorMap)
+		{
+			result += e.second.GetNumQueuedCloningTasks();
 		}
 
 		return result;
@@ -2293,7 +2315,8 @@ namespace IED
 
 	void Controller::RemoveSlotObjectEntry(
 		processParams_t& a_params,
-		ObjectEntrySlot& a_entry) noexcept
+		ObjectEntrySlot& a_entry,
+		bool             a_removeCloningTask) noexcept
 	{
 		if (RemoveObject(
 				a_params.actor,
@@ -2301,7 +2324,8 @@ namespace IED
 				a_entry,
 				a_params.objects,
 				a_params.flags,
-				false))
+				false,
+				a_removeCloningTask))
 		{
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
@@ -2644,20 +2668,25 @@ namespace IED
 
 				RemoveSlotObjectEntry(
 					a_params,
-					objectEntry);
+					objectEntry,
+					false);
 
-				if (LoadAndAttach(
-						a_params,
-						usedBaseConf,
-						configEntry,
-						objectEntry,
-						itemData->form,
-						modelForm,
-						ItemData::IsLeftWeaponSlot(f.slot),
-						visible,
-						false,
-						PhysicsProcessingEnabled()))
+				const auto attachResult = LoadAndAttach(
+					a_params,
+					usedBaseConf,
+					configEntry,
+					objectEntry,
+					itemData->form,
+					modelForm,
+					ItemData::IsLeftWeaponSlot(f.slot),
+					visible,
+					false,
+					PhysicsProcessingEnabled());
+
+				switch (attachResult)
 				{
+				case AttachObjectResult::kSucceeded:
+
 					objectEntry.SetObjectVisible(visible);
 
 					objectEntry.data.state->UpdateArrows(
@@ -2685,6 +2714,18 @@ namespace IED
 					a_params.mark_slot_presence_change(objectEntry.slotid);
 
 					typeActive |= visible;
+
+					break;
+
+				case AttachObjectResult::kFailed:
+
+					if (auto& ct = objectEntry.data.cloningTask)
+					{
+						ct->try_cancel_task();
+						ct.reset();
+					}
+
+					break;
 				}
 
 				// Debug("%X: (%.8X) attached | %u ", a_actor->formID, item->formID, slot);
@@ -3020,7 +3061,7 @@ namespace IED
 		return nullptr;
 	}
 
-	bool Controller::ProcessCustomEntry(
+	AttachObjectResult Controller::ProcessCustomEntry(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry) noexcept
@@ -3029,20 +3070,20 @@ namespace IED
 		    a_config.flags.test(BaseFlags::kDisabled))
 		{
 			a_objectEntry.clear_chance_flags();
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (a_config.customFlags.test(CustomFlags::kIgnorePlayer) &&
 		    a_params.actor == *g_thePlayer)
 		{
 			a_objectEntry.clear_chance_flags();
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (!a_config.run_filters(a_params))
 		{
 			a_objectEntry.clear_chance_flags();
-			return false;
+			return AttachObjectResult::kFailed;
 		}
 
 		if (a_config.customFlags.test_any(CustomFlags::kIsInInventoryMask))
@@ -3058,7 +3099,7 @@ namespace IED
 			if (it == a_params.collector.data.forms.end())
 			{
 				a_objectEntry.clear_chance_flags();
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) &&
@@ -3067,7 +3108,7 @@ namespace IED
 			     a_config.customFlags.test(CustomFlags::kAlwaysUnload)))
 			{
 				a_objectEntry.clear_chance_flags();
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			const auto& itemData = it->second;
@@ -3085,7 +3126,7 @@ namespace IED
 			if (usedBaseConf.flags.test(BaseFlags::kDisabled))
 			{
 				a_objectEntry.clear_chance_flags();
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			if (IsBlockedByChance(
@@ -3093,7 +3134,7 @@ namespace IED
 					a_config,
 					a_objectEntry))
 			{
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			const bool visible = GetVisibilitySwitch(
@@ -3145,14 +3186,14 @@ namespace IED
 							UpdateCustomGroup(a_params, a_config, a_objectEntry);
 						}
 
-						return true;
+						return AttachObjectResult::kSucceeded;
 					}
 				}
 			}
 
 			if (!hasMinCount)
 			{
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			if (RemoveObject(
@@ -3161,12 +3202,13 @@ namespace IED
 					a_objectEntry,
 					a_params.objects,
 					a_params.flags,
+					false,
 					false))
 			{
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
 
-			bool result;
+			AttachObjectResult result;
 
 			if (a_config.customFlags.test(CustomFlags::kGroupMode))
 			{
@@ -3201,8 +3243,10 @@ namespace IED
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
-			if (result)
+			switch (result)
 			{
+			case AttachObjectResult::kSucceeded:
+
 				a_objectEntry.data.state->UpdateArrows(
 					usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 						itemData.itemCount :
@@ -3223,6 +3267,18 @@ namespace IED
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
 					ProcessStateUpdateFlags::kObjectAttached);
+
+				break;
+
+			case AttachObjectResult::kFailed:
+
+				if (auto& ct = a_objectEntry.data.cloningTask)
+				{
+					ct->try_cancel_task();
+					ct.reset();
+				}
+
+				break;
 			}
 
 			return result;
@@ -3235,7 +3291,7 @@ namespace IED
 			{
 				a_objectEntry.clear_chance_flags();
 
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			const auto form = cform->get_form();
@@ -3249,7 +3305,7 @@ namespace IED
 
 				a_objectEntry.clear_chance_flags();
 
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			auto configOverride =
@@ -3265,7 +3321,7 @@ namespace IED
 			if (usedBaseConf.flags.test(BaseFlags::kDisabled))
 			{
 				a_objectEntry.clear_chance_flags();
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			if (IsBlockedByChance(
@@ -3273,7 +3329,7 @@ namespace IED
 					a_config,
 					a_objectEntry))
 			{
-				return false;
+				return AttachObjectResult::kFailed;
 			}
 
 			const bool visible = GetVisibilitySwitch(
@@ -3307,7 +3363,7 @@ namespace IED
 							UpdateCustomGroup(a_params, a_config, a_objectEntry);
 						}
 
-						return true;
+						return AttachObjectResult::kSucceeded;
 					}
 				}
 			}
@@ -3318,12 +3374,13 @@ namespace IED
 					a_objectEntry,
 					a_params.objects,
 					a_params.flags,
+					false,
 					false))
 			{
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
 
-			bool result;
+			AttachObjectResult result;
 
 			if (a_config.customFlags.test(CustomFlags::kGroupMode))
 			{
@@ -3358,8 +3415,10 @@ namespace IED
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
-			if (result)
+			switch (result)
 			{
+			case AttachObjectResult::kSucceeded:
+
 				a_objectEntry.SetObjectVisible(visible);
 
 				UpdateObjectEffectShaders(
@@ -3370,6 +3429,18 @@ namespace IED
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
 					ProcessStateUpdateFlags::kObjectAttached);
+
+				break;
+
+			case AttachObjectResult::kFailed:
+
+				if (auto& ct = a_objectEntry.data.cloningTask)
+				{
+					ct->try_cancel_task();
+					ct.reset();
+				}
+
+				break;
 			}
 
 			return result;
@@ -3385,10 +3456,12 @@ namespace IED
 		{
 			auto it = a_entryMap.try_emplace(f.first).first;
 
-			if (!ProcessCustomEntry(
-					a_params,
-					f.second(a_params.get_sex()),
-					it->second))
+			const auto result = ProcessCustomEntry(
+				a_params,
+				f.second(a_params.get_sex()),
+				it->second);
+
+			if (result == AttachObjectResult::kFailed)
 			{
 				if (RemoveObject(
 						a_params.actor,
@@ -4119,16 +4192,14 @@ namespace IED
 		const Data::configNodePhysicsValues_t& a_conf,
 		const MOVNodeEntry::Node&              a_node) noexcept
 	{
-		auto& simComponent = a_node.simComponent;
-
-		if (simComponent)
+		if (auto& simComponent = a_node.simComponent)
 		{
 			if (a_conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
 				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}
 			else if (
-				!a_params.objects.HasQueuedModels() &&
+				!a_params.has_pending_loads() &&
 				!a_node.parent_has_visible_geometry())
 			{
 				a_params.objects.RemoveAndDestroySimComponent(simComponent);

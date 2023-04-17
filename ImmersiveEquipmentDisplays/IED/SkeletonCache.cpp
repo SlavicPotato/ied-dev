@@ -139,6 +139,7 @@ namespace IED
 
 		if (!result)
 		{
+			gLog.Warning(__FUNCTION__ ": [%s] could not load skeleton mesh", a_modelPath);
 			return;
 		}
 

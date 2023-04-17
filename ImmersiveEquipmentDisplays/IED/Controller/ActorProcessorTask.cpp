@@ -544,6 +544,14 @@ namespace IED
 		bool update = false;
 
 		a_holder.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
+			if (const auto& ct = a_v.data.cloningTask)
+			{
+				if (ct->try_acquire_for_use())
+				{
+					a_holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
+				}
+			}
+
 			auto& state = a_v.data.state;
 
 			if (!state)
