@@ -4,13 +4,11 @@
 
 namespace IED
 {
-	template <class T>
 	static constexpr bool ExtractModelParams(
-		T*                     a_ptr,
+		TESModel*              a_ptr,
 		IModel::modelParams_t& a_out,
 		ModelType              a_type = ModelType::kMisc)  //
-		noexcept                              //
-		requires(std::is_convertible_v<T*, TESModel*>)
+		noexcept
 	{
 		const char* path = a_ptr->GetModelName();
 
@@ -20,24 +18,11 @@ namespace IED
 		}
 		else
 		{
-			if constexpr (
-				std::is_convertible_v<
-					T*,
-					TESModelTextureSwap*>)
-			{
-				a_out = {
-					a_type,
-					path,
-					static_cast<TESModelTextureSwap*>(a_ptr)
-				};
-			}
-			else
-			{
-				a_out = {
-					a_type,
-					path
-				};
-			}
+			a_out = {
+				a_type,
+				path,
+				a_ptr->GetAsModelTextureSwap()
+			};
 
 			return true;
 		}
