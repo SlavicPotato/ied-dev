@@ -586,7 +586,7 @@ namespace IED
 			if (ct->GetDBEntry() != dbentry ||
 			    ct->GetSwap() != modelParams.texSwap ||
 			    ct->GetColliderScale() != colScale ||
-			    ct->get_task_state() == ObjectCloningTask::State::kCanceled)
+			    ct->get_task_state() == ObjectCloningTask::State::kCancelled)
 			{
 				ct->try_cancel_task();
 				ct.reset();
@@ -594,6 +594,7 @@ namespace IED
 				if (backgroundClone)
 				{
 					return TryDispatchCloningTask(
+						a_params,
 						dbentry,
 						modelParams.texSwap,
 						colScale,
@@ -601,7 +602,7 @@ namespace IED
 				}
 				else
 				{
-					ObjectCloningTask::clone_and_apply_texswap(
+					ObjectCloningTask::CloneAndApplyTexSwap(
 						dbentry,
 						modelParams.texSwap,
 						colScale,
@@ -612,16 +613,22 @@ namespace IED
 			{
 				switch (ct->get_task_state())
 				{
-				case ObjectCloningTask::State::kDone:
+				case ObjectCloningTask::State::kCompleted:
+
+					ct->try_acquire_for_use();
+
+					[[fallthrough]];
+
 				case ObjectCloningTask::State::kAcquiredForUse:
 
-					object = std::move(ct->GetClone());
-					ct.reset();
+					object = ct->GetClone();
 
 					if (!object)
 					{
 						return AttachObjectResult::kFailed;
 					}
+
+					ct.reset();
 
 					break;
 
@@ -641,14 +648,15 @@ namespace IED
 			if (backgroundClone)
 			{
 				return TryDispatchCloningTask(
+					a_params,
 					dbentry,
 					modelParams.texSwap,
 					colScale,
-					a_objectEntry.data.cloningTask);
+					ct);
 			}
 			else
 			{
-				ObjectCloningTask::clone_and_apply_texswap(
+				ObjectCloningTask::CloneAndApplyTexSwap(
 					dbentry,
 					modelParams.texSwap,
 					colScale,
@@ -1468,6 +1476,7 @@ namespace IED
 	}
 
 	AttachObjectResult IObjectManager::TryDispatchCloningTask(
+		const processParams_t&        a_params,
 		const ObjectDatabaseEntry&    a_entry,
 		TESModelTextureSwap*          a_textureSwap,
 		float                         a_colliderScale,
@@ -1477,6 +1486,7 @@ namespace IED
 		{
 			a_out = thrd->QueueTask<ObjectCloningTask>(
 				*this,
+				a_params.objects.GetActorFormID(),
 				a_entry,
 				a_textureSwap,
 				a_colliderScale);

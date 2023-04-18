@@ -417,14 +417,6 @@ namespace IED
 		ActorObjectHolder&                       a_holder,
 		bool                                     a_updateEffects) noexcept
 	{
-		if (!a_holder.m_queuedModels.empty())
-		{
-			if (a_holder.ProcessQueuedModels())
-			{
-				GetController().RequestCleanup();
-			}
-		}
-
 		auto& state = a_holder.m_state;
 
 		NiPointer<TESObjectREFR> refr;
@@ -439,10 +431,12 @@ namespace IED
 		if (!Util::Common::IsREFRValid(actor) ||
 		    a_holder.m_actor.get() != actor)  // ??
 		{
+#if !defined(IED_PERF_BUILD)
 			if constexpr (_ParUnsafe)
 			{
 				ITaskPool::AddPriorityTask([r = std::move(refr)] {});
 			}
+#endif
 
 			state.active = false;
 			return;
@@ -544,14 +538,6 @@ namespace IED
 		bool update = false;
 
 		a_holder.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
-			if (const auto& ct = a_v.data.cloningTask)
-			{
-				if (ct->try_acquire_for_use())
-				{
-					a_holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
-				}
-			}
-
 			auto& state = a_v.data.state;
 
 			if (!state)
@@ -657,6 +643,7 @@ namespace IED
 		    data.size() > 1)
 		{
 #if defined(IED_PERF_BUILD)
+
 			updateProc->make_shared_data(
 				interval,
 				std::addressof(stepMuls),

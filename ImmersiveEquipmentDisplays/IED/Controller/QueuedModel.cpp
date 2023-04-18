@@ -2,7 +2,7 @@
 
 #include "QueuedModel.h"
 
-#include "ObjectDatabase.h"
+#include "IObjectManager.h"
 
 namespace IED
 {
@@ -21,7 +21,7 @@ namespace IED
 	QueuedModel::~QueuedModel()
 	{
 		_entry.reset();
-		_owner.RequestCleanup(); // must be called after entry decref
+		_owner.RequestCleanup();  // must be called after entry decref
 	}
 
 	void QueuedModel::Unk_01()
@@ -48,7 +48,34 @@ namespace IED
 			}
 		}
 
+		ITaskPool::AddPriorityTask<PostRunTask>(this);
+
 		return false;
+	}
+
+	QueuedModel::PostRunTask::PostRunTask(QueuedModel* a_task) :
+		task(a_task)
+	{
+	}
+
+	void QueuedModel::PostRunTask::Run()
+	{
+		auto& om = static_cast<IObjectManager&>(task->_owner);
+
+		const stl::lock_guard lock(om.GetLock());
+
+		for (auto& e : om.GetActorMap().getvec())
+		{
+			if (e->second.EraseQueuedModel(task->_entry))
+			{
+				e->second.RequestEval();
+			}
+		}
+	}
+
+	void QueuedModel::PostRunTask::Dispose()
+	{
+		delete this;
 	}
 
 }

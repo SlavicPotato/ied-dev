@@ -491,11 +491,13 @@ namespace IED
 			mutable bool clean{ false };
 		};
 
+	public:
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
+	private:
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -739,7 +741,8 @@ namespace IED
 		void RemoveSlotObjectEntry(
 			processParams_t& a_params,
 			ObjectEntrySlot& a_entry,
-			bool             a_removeCloningTask = true) noexcept;
+			bool             a_removeCloningTask = true,
+			bool             a_noSound           = false) noexcept;
 
 		void ProcessSlots(processParams_t& a_params) noexcept;
 

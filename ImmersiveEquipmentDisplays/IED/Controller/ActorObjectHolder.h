@@ -644,7 +644,7 @@ namespace IED
 			m_queuedModels.emplace(a_entry);
 		}
 
-		bool ProcessQueuedModels() noexcept;
+		bool EraseQueuedModel(const ObjectDatabaseEntry &a_entry) noexcept;
 
 		[[nodiscard]] constexpr auto GetNumQueuedModels() const noexcept
 		{

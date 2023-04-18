@@ -2316,14 +2316,20 @@ namespace IED
 	void Controller::RemoveSlotObjectEntry(
 		processParams_t& a_params,
 		ObjectEntrySlot& a_entry,
-		bool             a_removeCloningTask) noexcept
+		bool             a_removeCloningTask,
+		bool             a_noSound) noexcept
 	{
+		const auto flags =
+			a_noSound ?
+				a_params.flags.value & ~ControllerUpdateFlags::kPlayEquipSound :
+				a_params.flags.value;
+
 		if (RemoveObject(
 				a_params.actor,
 				a_params.handle,
 				a_entry,
 				a_params.objects,
-				a_params.flags,
+				flags,
 				false,
 				a_removeCloningTask))
 		{
@@ -2669,7 +2675,8 @@ namespace IED
 				RemoveSlotObjectEntry(
 					a_params,
 					objectEntry,
-					false);
+					false,
+					true);
 
 				const auto attachResult = LoadAndAttach(
 					a_params,
@@ -3201,13 +3208,13 @@ namespace IED
 					a_params.handle,
 					a_objectEntry,
 					a_params.objects,
-					a_params.flags,
+					a_params.flags & ~ControllerUpdateFlags::kPlayEquipSound,
 					false,
 					false))
 			{
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
-
+	
 			AttachObjectResult result;
 
 			if (a_config.customFlags.test(CustomFlags::kGroupMode))
@@ -3243,10 +3250,8 @@ namespace IED
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
-			switch (result)
+			if (result == AttachObjectResult::kSucceeded)
 			{
-			case AttachObjectResult::kSucceeded:
-
 				a_objectEntry.data.state->UpdateArrows(
 					usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 						itemData.itemCount :
@@ -3267,18 +3272,6 @@ namespace IED
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
 					ProcessStateUpdateFlags::kObjectAttached);
-
-				break;
-
-			case AttachObjectResult::kFailed:
-
-				if (auto& ct = a_objectEntry.data.cloningTask)
-				{
-					ct->try_cancel_task();
-					ct.reset();
-				}
-
-				break;
 			}
 
 			return result;
@@ -3373,7 +3366,7 @@ namespace IED
 					a_params.handle,
 					a_objectEntry,
 					a_params.objects,
-					a_params.flags,
+					a_params.flags & ~ControllerUpdateFlags::kPlayEquipSound,
 					false,
 					false))
 			{
@@ -3415,10 +3408,8 @@ namespace IED
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
-			switch (result)
+			if (result == AttachObjectResult::kSucceeded)
 			{
-			case AttachObjectResult::kSucceeded:
-
 				a_objectEntry.SetObjectVisible(visible);
 
 				UpdateObjectEffectShaders(
@@ -3429,18 +3420,6 @@ namespace IED
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
 					ProcessStateUpdateFlags::kObjectAttached);
-
-				break;
-
-			case AttachObjectResult::kFailed:
-
-				if (auto& ct = a_objectEntry.data.cloningTask)
-				{
-					ct->try_cancel_task();
-					ct.reset();
-				}
-
-				break;
 			}
 
 			return result;

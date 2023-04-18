@@ -6,23 +6,38 @@
 
 namespace IED
 {
-	class ObjectDatabase;
+	class IObjectManager;
 
 	class ObjectCloningTask :
 		public RE::IOTask
 	{
+		class PostRunTask :
+			public TaskDelegate
+		{
+		public:
+			PostRunTask(
+				ObjectCloningTask* a_task);
+
+			void Run() override;
+			void Dispose() override;
+
+		private:
+			NiPointer<ObjectCloningTask> task;
+		};
+
 	public:
 		enum class State : std::uint32_t
 		{
 			kPending        = 0,
 			kProcessing     = 1,
-			kCanceled       = 2,
-			kDone           = 3,
+			kCancelled      = 2,
+			kCompleted      = 3,
 			kAcquiredForUse = 4
 		};
 
 		ObjectCloningTask(
-			ObjectDatabase&            a_owner,
+			IObjectManager&            a_owner,
+			Game::FormID               a_actor,
 			const ObjectDatabaseEntry& a_entry,
 			TESModelTextureSwap*       a_textureSwap,
 			float                      a_colliderScale,
@@ -50,11 +65,6 @@ namespace IED
 			return _colliderScale;
 		}
 
-		[[nodiscard]] constexpr auto& GetClone() noexcept
-		{
-			return _clone;
-		}
-
 		[[nodiscard]] constexpr auto& GetClone() const noexcept
 		{
 			return _clone;
@@ -62,7 +72,7 @@ namespace IED
 
 		[[nodiscard]] inline bool try_acquire_for_use() noexcept
 		{
-			auto expected = State::kDone;
+			auto expected = State::kCompleted;
 			return _taskState.compare_exchange_strong(expected, State::kAcquiredForUse);
 		}
 
@@ -75,7 +85,7 @@ namespace IED
 		inline bool try_cancel_task() noexcept
 		{
 			auto expected = State::kPending;
-			return _taskState.compare_exchange_strong(expected, State::kCanceled);
+			return _taskState.compare_exchange_strong(expected, State::kCancelled);
 		}
 
 		[[nodiscard]] inline auto get_task_state() const noexcept
@@ -83,7 +93,7 @@ namespace IED
 			return _taskState.load();
 		}
 
-		static void clone_and_apply_texswap(
+		static void CloneAndApplyTexSwap(
 			const ObjectDatabaseEntry& a_dbentry,
 			TESModelTextureSwap*       a_texSwap,
 			float                      a_colliderScale,
@@ -91,7 +101,8 @@ namespace IED
 
 	private:
 		ObjectDatabaseEntry        _entry;
-		ObjectDatabase&            _owner;
+		const Game::FormID         _actor;
+		IObjectManager&            _owner;
 		TESModelTextureSwap* const _texSwap;
 		const float                _colliderScale;
 		NiPointer<NiNode>          _clone;

@@ -726,32 +726,9 @@ namespace IED
 		a_sc.reset();
 	}
 
-	bool ActorObjectHolder::ProcessQueuedModels() noexcept
+	bool ActorObjectHolder::EraseQueuedModel(const ObjectDatabaseEntry& a_entry) noexcept
 	{
-		bool result = false;
-
-		for (auto it = m_queuedModels.begin(); it != m_queuedModels.end();)
-		{
-			const auto loadState = (*it)->loadState.load();
-
-			if (loadState > ODBEntryLoadState::kLoading)
-			{
-				it = m_queuedModels.erase(it);
-
-				result = true;
-			}
-			else
-			{
-				++it;
-			}
-		}
-
-		if (result)
-		{
-			RequestEval();
-		}
-
-		return result;
+		return static_cast<bool>(m_queuedModels.erase(a_entry));
 	}
 
 	bool ActorObjectHolder::HasQueuedCloningTasks() const noexcept

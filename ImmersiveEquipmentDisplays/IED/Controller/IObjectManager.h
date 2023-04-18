@@ -212,14 +212,15 @@ namespace IED
 		}
 
 	public:
-		constexpr auto GetBackgroundCloneLevel(
-			bool a_player) noexcept
+		[[nodiscard]] constexpr auto GetBackgroundCloneLevel(
+			bool a_player) const noexcept
 		{
 			return m_backgroundClone[a_player];
 		}
 
 	private:
 		AttachObjectResult TryDispatchCloningTask(
+			const processParams_t&        a_params,
 			const ObjectDatabaseEntry&    a_entry,
 			TESModelTextureSwap*          a_textureSwap,
 			float                         a_colliderScale,

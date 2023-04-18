@@ -11,6 +11,20 @@ namespace IED
 	class QueuedModel :
 		public RE::IOTask
 	{
+		class PostRunTask :
+			public TaskDelegate
+		{
+		public:
+			PostRunTask(
+				QueuedModel* a_task);
+
+			void Run() override;
+			void Dispose() override;
+
+		private:
+			NiPointer<QueuedModel> task;
+		};
+
 	public:
 		QueuedModel(
 			const ObjectDatabaseEntry& a_entry,

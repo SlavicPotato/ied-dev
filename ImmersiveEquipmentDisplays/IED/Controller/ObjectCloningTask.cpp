@@ -2,18 +2,21 @@
 
 #include "ObjectCloningTask.h"
 
-#include "IObjectManager.h"
-#include "ObjectDatabase.h"
+#include "Controller.h"
+#include "IED/Util/Common.h"
+#include "QueuedModel.h"
 
 namespace IED
 {
 	ObjectCloningTask::ObjectCloningTask(
-		ObjectDatabase&            a_owner,
+		IObjectManager&            a_owner,
+		Game::FormID               a_actor,
 		const ObjectDatabaseEntry& a_entry,
 		TESModelTextureSwap*       a_textureSwap,
 		float                      a_colliderScale,
 		std::uint8_t               a_priority) :
 		_owner(a_owner),
+		_actor(a_actor),
 		_entry(a_entry),
 		_colliderScale(a_colliderScale),
 		_texSwap(a_textureSwap)
@@ -41,20 +44,22 @@ namespace IED
 		{
 			if (_entry->loadState.load() == ODBEntryLoadState::kLoaded)
 			{
-				clone_and_apply_texswap(_entry, _texSwap, _colliderScale, _clone);
+				CloneAndApplyTexSwap(_entry, _texSwap, _colliderScale, _clone);
 			}
 			else
 			{
 				gLog.Error(__FUNCTION__ ": source object not loaded");
 			}
 
-			_taskState.store(State::kDone);
+			_taskState.store(State::kCompleted);
+
+			ITaskPool::AddTask<PostRunTask>(this);
 		}
 
 		return false;
 	}
 
-	void ObjectCloningTask::clone_and_apply_texswap(
+	void ObjectCloningTask::CloneAndApplyTexSwap(
 		const ObjectDatabaseEntry& a_dbentry,
 		TESModelTextureSwap*       a_texSwap,
 		float                      a_colliderScale,
@@ -68,6 +73,60 @@ namespace IED
 		}
 
 		a_out = result;
+	}
+
+	ObjectCloningTask::PostRunTask::PostRunTask(
+		ObjectCloningTask* a_task) :
+		task(a_task)
+	{
+	}
+
+	void ObjectCloningTask::PostRunTask::Run()
+	{
+		if (task->try_acquire_for_use())
+		{
+			auto& om = task->_owner;
+
+			const stl::lock_guard lock(om.GetLock());
+
+			const auto& actorMap = om.GetActorMap();
+
+			if (const auto it = actorMap.find(task->_actor);
+			    it != actorMap.end())
+			{
+				const auto handle = it->second.GetHandle();
+
+				if (const auto refr = handle.get_ptr())
+				{
+					const auto actor = refr->As<Actor>();
+
+					if (Util::Common::IsREFRValid(actor) &&
+					    it->second.GetActor().get() == actor)
+					{
+						const auto cell = actor->GetParentCell();
+						if (cell && cell->IsAttached())
+						{
+							it->second.RequestEval();
+						}
+						else
+						{
+							auto& controller = static_cast<Controller&>(om);
+
+							controller.EvaluateImpl(
+								actor,
+								handle,
+								ControllerUpdateFlags::kPlayEquipSound |
+									ControllerUpdateFlags::kImmediateTransformUpdate);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void ObjectCloningTask::PostRunTask::Dispose()
+	{
+		delete this;
 	}
 
 }
