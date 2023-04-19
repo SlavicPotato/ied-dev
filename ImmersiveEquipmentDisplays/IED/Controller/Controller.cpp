@@ -2707,18 +2707,22 @@ namespace IED
 
 					objectEntry.slotState.lastOccupied = GetCounterValue();
 
+					a_params.state.flags.set(
+						ProcessStateUpdateFlags::kMenuUpdate |
+						ProcessStateUpdateFlags::kObjectAttached);
+
+					a_params.mark_slot_presence_change(objectEntry.slotid);
+
+					[[fallthrough]];
+
+				case AttachObjectResult::kPending:
+
 					if (visible)
 					{
 						itemData->consume_one();
 					}
 
 					item.consume(candidates);
-
-					a_params.state.flags.set(
-						ProcessStateUpdateFlags::kMenuUpdate |
-						ProcessStateUpdateFlags::kObjectAttached);
-
-					a_params.mark_slot_presence_change(objectEntry.slotid);
 
 					typeActive |= visible;
 
@@ -3250,19 +3254,16 @@ namespace IED
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
-			if (result == AttachObjectResult::kSucceeded)
+			switch (result)
 			{
+			case AttachObjectResult::kSucceeded:
+
 				a_objectEntry.data.state->UpdateArrows(
 					usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 						itemData.itemCount :
 						BSStringHolder::NUM_DYN_ARROWS);
 
 				a_objectEntry.SetObjectVisible(visible);
-
-				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
-				{
-					itemData.consume_one();
-				}
 
 				UpdateObjectEffectShaders(
 					a_params,
@@ -3272,6 +3273,17 @@ namespace IED
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
 					ProcessStateUpdateFlags::kObjectAttached);
+
+				[[fallthrough]];
+
+			case AttachObjectResult::kPending:
+
+				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
+				{
+					itemData.consume_one();
+			}
+
+				break;
 			}
 
 			return result;
