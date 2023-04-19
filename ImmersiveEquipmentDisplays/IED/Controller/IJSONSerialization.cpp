@@ -206,6 +206,8 @@ namespace IED
 		MergeConfig(std::move(a_in.custom), store.custom);
 		MergeConfig(std::move(a_in.transforms), store.transforms);
 		store.condvars = std::move(a_in.condvars);
+		store.outfit   = std::move(a_in.outfit);
+		store.keybinds = std::move(a_in.keybinds);
 
 		JSOnDataImport();
 
@@ -530,14 +532,14 @@ namespace IED
 		{
 			result->condvars = a_data.condvars;
 		}
-		
+
 		//
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kOutfit))
 		{
 			result->outfit = a_data.outfit;
 		}
-		
+
 		//
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kKeyBinds))
