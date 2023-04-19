@@ -3218,7 +3218,7 @@ namespace IED
 			{
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
-	
+
 			AttachObjectResult result;
 
 			if (a_config.customFlags.test(CustomFlags::kGroupMode))
@@ -3281,7 +3281,7 @@ namespace IED
 				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
 				{
 					itemData.consume_one();
-			}
+				}
 
 				break;
 			}
@@ -5740,6 +5740,45 @@ namespace IED
 				}
 			}
 		});
+	}
+
+	void Controller::OnAsyncModelClone(
+		const NiPointer<ObjectCloningTask>& a_task)
+	{
+		const stl::lock_guard lock(m_lock);
+
+		const auto& actorMap = GetActorMap();
+
+		const auto it = actorMap.find(a_task->GetActor());
+		if (it == actorMap.end())
+		{
+			return;
+		}
+
+		const auto handle = it->second.GetHandle();
+
+		if (const auto refr = handle.get_ptr())
+		{
+			const auto actor = refr->As<Actor>();
+
+			if (IsREFRValid(actor) &&
+			    it->second.GetActor().get() == actor)
+			{
+				const auto cell = actor->GetParentCell();
+				if (!cell || !cell->IsAttached())
+				{
+					EvaluateImpl(
+						actor,
+						handle,
+						ControllerUpdateFlags::kPlayEquipSound |
+							ControllerUpdateFlags::kImmediateTransformUpdate);
+
+					return;
+				}
+			}
+		}
+
+		it->second.RequestEval();
 	}
 
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)

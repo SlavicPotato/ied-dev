@@ -10,6 +10,7 @@
 #include <ext/BGSLensFlare.h>
 #include <ext/BSAnimationGraphManager.h>
 #include <ext/BSLight.h>
+#include <ext/BSThread.h>
 #include <ext/Calendar.h>
 #include <ext/Events.h>
 #include <ext/GameCommon.h>

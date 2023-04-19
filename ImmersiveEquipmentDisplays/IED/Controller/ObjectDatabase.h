@@ -3,11 +3,12 @@
 #include "ObjectDatabaseEntry.h"
 #include "ObjectDatabaseLevel.h"
 
-#include <ext/BSThread.h>
 #include <ext/stl_queue.h>
 
 namespace IED
 {
+	class QueuedModel;
+
 	class ObjectDatabase :
 		public virtual ILog
 	{
@@ -101,6 +102,8 @@ namespace IED
 			bool expected = false;
 			m_wantCleanup.compare_exchange_strong(expected, true);
 		}
+
+		virtual void OnAsyncModelLoad(const NiPointer<QueuedModel>& a_task);
 
 		FN_NAMEPROC("ObjectDatabase");
 

@@ -305,6 +305,11 @@ namespace IED
 		return static_cast<NiNode*>(result);
 	}
 
+	void ObjectDatabase::OnAsyncModelLoad(
+		const NiPointer<QueuedModel>& a_task)
+	{
+	}
+
 	bool ObjectDatabase::LoadModel(
 		const char*                a_path,
 		const ObjectDatabaseEntry& a_entry)

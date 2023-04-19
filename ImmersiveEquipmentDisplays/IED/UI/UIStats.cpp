@@ -73,15 +73,9 @@ namespace IED
 				}
 
 				//ImGui::TextUnformatted("Frame timers:");
-				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
 
-				if (m_controller.ODBGetBackgroundLoadingEnabled())
-				{
-					ImGui::TextUnformatted("Queued models:");
-				}
-
-				ImGui::TextUnformatted("Queued cloning tasks:");
+				ImGui::TextUnformatted("Queued models/cloning tasks:");
 
 				if (i3di)
 				{
@@ -130,16 +124,13 @@ namespace IED
 					ImGui::Text("%zu", AnimationUpdateController::GetSingleton().GetNumObjects());
 				}
 
-				ImGui::Text("%llu", m_controller.GetCounterValue());
 				ImGui::Text("%llu", m_controller.GetEvalCounter());
 
-				if (m_controller.ODBGetBackgroundLoadingEnabled())
-				{
-					ImGui::Text("%zu", m_controller.GetNumQueuedModels());
-				}
+				ImGui::Text(
+					"%zu/%zu",
+					m_controller.GetNumQueuedModels(),
+					m_controller.GetNumQueuedCloningTasks());
 
-				ImGui::Text("%zu", m_controller.GetNumQueuedCloningTasks());
-				
 				if (i3di)
 				{
 					if (auto& i3diCommonData = i3di->GetCommonData())

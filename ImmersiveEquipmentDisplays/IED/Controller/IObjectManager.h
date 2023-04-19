@@ -303,6 +303,12 @@ namespace IED
 			bool        a_removeEditorMarker) noexcept;
 
 	public:
+		virtual void OnAsyncModelClone(const NiPointer<ObjectCloningTask>& a_task);
+
+	private:
+		virtual void OnAsyncModelLoad(const NiPointer<QueuedModel>& a_task) override;
+
+	public:
 		using cleanupObject_t                      = void (*)(const Game::ObjectRefHandle& a_handle, NiAVObject* a_object) noexcept;
 		inline static const auto CleanupObjectImpl = IAL::Address<cleanupObject_t>(15495, 15660);
 

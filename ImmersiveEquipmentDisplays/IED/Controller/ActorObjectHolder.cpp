@@ -728,7 +728,7 @@ namespace IED
 
 	bool ActorObjectHolder::EraseQueuedModel(const ObjectDatabaseEntry& a_entry) noexcept
 	{
-		return static_cast<bool>(m_queuedModels.erase(a_entry));
+		return m_queuedModels.erase(a_entry) > 0;
 	}
 
 	bool ActorObjectHolder::HasQueuedCloningTasks() const noexcept

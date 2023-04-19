@@ -491,13 +491,11 @@ namespace IED
 			mutable bool clean{ false };
 		};
 
-	public:
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
-	private:
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -926,6 +924,8 @@ namespace IED
 		virtual void JSOnDataImport() override;
 
 		virtual void OnKBStateChanged() override;
+
+		virtual void OnAsyncModelClone(const NiPointer<ObjectCloningTask>& a_task) override;
 
 		// members
 

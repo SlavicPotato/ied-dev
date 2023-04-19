@@ -4,6 +4,7 @@
 #include "INode.h"
 #include "INodeOverride.h"
 #include "IObjectManager.h"
+#include "QueuedModel.h"
 
 #include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
@@ -614,12 +615,6 @@ namespace IED
 				switch (ct->get_task_state())
 				{
 				case ObjectCloningTask::State::kCompleted:
-
-					ct->try_acquire_for_use();
-
-					[[fallthrough]];
-
-				case ObjectCloningTask::State::kAcquiredForUse:
 
 					object = ct->GetClone();
 
@@ -1754,6 +1749,25 @@ namespace IED
 		a_actor->UpdateAlpha();
 
 		return result;
+	}
+
+	void IObjectManager::OnAsyncModelClone(
+		const NiPointer<ObjectCloningTask>& a_task)
+	{
+	}
+
+	void IObjectManager::OnAsyncModelLoad(
+		const NiPointer<QueuedModel>& a_task)
+	{
+		const stl::lock_guard lock(m_lock);
+
+		for (const auto& e : GetActorMap().getvec())
+		{
+			if (e->second.EraseQueuedModel(a_task->GetEntry()))
+			{
+				e->second.RequestEval();
+			}
+		}
 	}
 
 }

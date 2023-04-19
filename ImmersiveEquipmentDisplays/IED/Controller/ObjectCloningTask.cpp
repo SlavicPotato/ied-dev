@@ -52,9 +52,9 @@ namespace IED
 			}
 
 			_taskState.store(State::kCompleted);
-
-			ITaskPool::AddTask<PostRunTask>(this);
 		}
+
+		ITaskPool::AddTask<PostRunTask>(this);
 
 		return false;
 	}
@@ -83,45 +83,7 @@ namespace IED
 
 	void ObjectCloningTask::PostRunTask::Run()
 	{
-		if (task->try_acquire_for_use())
-		{
-			auto& om = task->_owner;
-
-			const stl::lock_guard lock(om.GetLock());
-
-			const auto& actorMap = om.GetActorMap();
-
-			if (const auto it = actorMap.find(task->_actor);
-			    it != actorMap.end())
-			{
-				const auto handle = it->second.GetHandle();
-
-				if (const auto refr = handle.get_ptr())
-				{
-					const auto actor = refr->As<Actor>();
-
-					if (Util::Common::IsREFRValid(actor) &&
-					    it->second.GetActor().get() == actor)
-					{
-						const auto cell = actor->GetParentCell();
-						if (cell && cell->IsAttached())
-						{
-							it->second.RequestEval();
-						}
-						else
-						{
-							auto& controller = static_cast<Controller&>(om);
-
-							controller.EvaluateImpl(
-								actor,
-								handle,
-								ControllerUpdateFlags::kPlayEquipSound |
-									ControllerUpdateFlags::kImmediateTransformUpdate);
-						}
-					}
-				}
-			}
-		}
+		task->_owner.OnAsyncModelClone(task);
 	}
 
 	void ObjectCloningTask::PostRunTask::Dispose()

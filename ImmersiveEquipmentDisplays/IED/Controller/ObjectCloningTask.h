@@ -32,7 +32,6 @@ namespace IED
 			kProcessing     = 1,
 			kCancelled      = 2,
 			kCompleted      = 3,
-			kAcquiredForUse = 4
 		};
 
 		ObjectCloningTask(
@@ -49,6 +48,11 @@ namespace IED
 		void Unk_02() override;
 
 		bool Run() override;
+
+		[[nodiscard]] constexpr auto& GetActor() const noexcept
+		{
+			return _actor;
+		}
 
 		[[nodiscard]] constexpr auto& GetDBEntry() const noexcept
 		{
@@ -68,12 +72,6 @@ namespace IED
 		[[nodiscard]] constexpr auto& GetClone() const noexcept
 		{
 			return _clone;
-		}
-
-		[[nodiscard]] inline bool try_acquire_for_use() noexcept
-		{
-			auto expected = State::kCompleted;
-			return _taskState.compare_exchange_strong(expected, State::kAcquiredForUse);
 		}
 
 		[[nodiscard]] inline bool try_acquire_for_processing() noexcept

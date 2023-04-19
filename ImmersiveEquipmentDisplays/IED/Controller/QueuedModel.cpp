@@ -60,17 +60,7 @@ namespace IED
 
 	void QueuedModel::PostRunTask::Run()
 	{
-		auto& om = static_cast<IObjectManager&>(task->_owner);
-
-		const stl::lock_guard lock(om.GetLock());
-
-		for (auto& e : om.GetActorMap().getvec())
-		{
-			if (e->second.EraseQueuedModel(task->_entry))
-			{
-				e->second.RequestEval();
-			}
-		}
+		task->_owner.OnAsyncModelLoad(task);
 	}
 
 	void QueuedModel::PostRunTask::Dispose()

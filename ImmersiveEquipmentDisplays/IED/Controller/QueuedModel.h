@@ -39,6 +39,11 @@ namespace IED
 
 		bool Run() override;
 
+		[[nodiscard]] constexpr auto& GetEntry() const noexcept
+		{
+			return _entry;
+		}
+
 	private:
 		ObjectDatabaseEntry _entry;
 		std::string         _path;
