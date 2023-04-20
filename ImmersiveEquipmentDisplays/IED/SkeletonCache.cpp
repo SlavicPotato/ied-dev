@@ -13,8 +13,8 @@ namespace IED
 	SkeletonCache SkeletonCache::m_Instance;
 
 	auto SkeletonCache::Get(
-		TESObjectREFR* a_refr,
-		bool           a_firstPerson)
+		Actor* a_refr,
+		bool   a_firstPerson)
 		-> ActorEntry
 	{
 		const auto key = make_key(a_refr, a_firstPerson);
@@ -35,6 +35,26 @@ namespace IED
 		}
 	}
 
+	void SkeletonCache::MakeFrom(
+		Actor*      a_refr,
+		NiAVObject* a_root,
+		bool        a_firstPerson)
+	{
+		const auto key = make_key(a_refr, a_firstPerson);
+		if (!key.first.empty())
+		{
+			if (!has(key.first))
+			{
+				const stl::write_lock_guard lock(m_lock);
+
+				m_data.try_emplace(
+					key.first,
+					m_useNativeLoader.load(std::memory_order_relaxed),
+					key.second.c_str());
+			}
+		}
+	}
+
 	std::size_t SkeletonCache::GetSize() const
 	{
 		const stl::read_lock_guard lock(m_lock);
@@ -50,15 +70,23 @@ namespace IED
 
 		for (auto& e : m_data)
 		{
-			result += e.second.ptr->data.size();
+			result += e.second->size();
 		}
 
 		return result;
 	}
 
+	void SkeletonCache::OnLoad3D(Actor* a_actor, NiAVObject* a_root, bool a_firstPerson)
+	{
+		if (m_makeOnLoad)
+		{
+			MakeFrom(a_actor, a_root, a_firstPerson);
+		}
+	}
+
 	auto SkeletonCache::make_key(
-		TESObjectREFR* a_refr,
-		bool           a_firstPerson)
+		Actor* a_refr,
+		bool   a_firstPerson)
 		-> KeyPathPair
 	{
 		auto path = Get3DPath(a_refr, a_firstPerson);
@@ -104,6 +132,13 @@ namespace IED
 		}
 	}
 
+	bool SkeletonCache::has(const stl::fixed_string& a_key) const
+	{
+		const stl::read_lock_guard lock(m_lock);
+
+		return m_data.contains(a_key);
+	}
+
 	SkeletonCache::actor_entry_data::actor_entry_data(
 		bool        a_nativeLoader,
 		const char* a_modelPath)
@@ -143,8 +178,18 @@ namespace IED
 			return;
 		}
 
+		make_node_entries(object);
+	}
+
+	SkeletonCache::actor_entry_data::actor_entry_data(NiAVObject* a_root)
+	{
+		make_node_entries(a_root);
+	}
+
+	void SkeletonCache::actor_entry_data::make_node_entries(NiAVObject* a_root)
+	{
 		Traverse(
-			object,
+			a_root,
 			[&](const NiAVObject* a_object) [[msvc::forceinline]] {
 				const auto& name = a_object->m_name;
 
@@ -161,6 +206,11 @@ namespace IED
 		bool        a_nativeLoader,
 		const char* a_modelPath) :
 		ptr(stl::make_smart<actor_entry_data>(a_nativeLoader, a_modelPath))
+	{
+	}
+
+	SkeletonCache::ActorEntry::ActorEntry(NiAVObject* a_root) :
+		ptr(stl::make_smart<actor_entry_data>(a_root))
 	{
 	}
 

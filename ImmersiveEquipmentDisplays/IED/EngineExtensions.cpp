@@ -8,6 +8,7 @@
 
 #include "AnimationUpdateController.h"
 #include "ReferenceLightController.h"
+#include "SkeletonCache.h"
 #include "SkeletonExtensions.h"
 #include "StringHolder.h"
 
@@ -808,9 +809,13 @@ namespace IED
 	{
 		auto result = a_obj->Clone3D2(a_refr);
 
-		if (result && a_refr->IsActor())
+		if (result)
 		{
-			SkeletonExtensions::PostLoad3D(result, GetTransformOverridesEnabled());
+			if (auto actor = a_refr->As<Actor>())
+			{
+				SkeletonExtensions::PostLoad3D(result, GetTransformOverridesEnabled());
+				SkeletonCache::GetSingleton().OnLoad3D(actor, result, false);
+			}
 		}
 
 		return result;
@@ -826,6 +831,7 @@ namespace IED
 		if (a_3D)
 		{
 			SkeletonExtensions::PostLoad3D(a_3D, GetTransformOverridesEnabled());
+			SkeletonCache::GetSingleton().OnLoad3D(*g_thePlayer, a_3D, true);
 		}
 
 		return result;

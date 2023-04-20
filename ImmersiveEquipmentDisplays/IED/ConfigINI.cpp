@@ -176,13 +176,14 @@ namespace IED
 		//m_odbNativeLoader      =  reader.GetBoolValue(SECT_OBJECTDB, "UseNativeModelLoader", false);
 		m_odbBackgroundLoading = reader.GetBoolValue(SECT_OBJECTDB, "BackgroundLoading", true);
 
-		m_scNativeLoader = reader.GetBoolValue(SECT_SKELETON_CACHE, "UseNativeModelLoader", true);
+		m_scNativeLoader = reader.GetBoolValue(SECT_SKELETON_CACHE, "UseNativeModelLoader", false);
+		m_scMakeOnLoad   = reader.GetBoolValue(SECT_SKELETON_CACHE, "ReadTransformsOnLoad", true);
 
 		m_clearRPCOnSceneMove           = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
 		m_interiorAmbientLightThreshold = static_cast<float>(reader.GetDoubleValue(SECT_MISCELLANEOUS, "InteriorAmbientLightThreshold", 0.35f));
 
 		m_bgClonePlayer = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundClonePlayer", 1), 0l, 2l));
-		m_bgCloneNPC = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundCloneNPC", 2), 0l, 2l));
+		m_bgCloneNPC    = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundCloneNPC", 1), 0l, 2l));
 
 		m_loaded = reader.is_loaded();
 
