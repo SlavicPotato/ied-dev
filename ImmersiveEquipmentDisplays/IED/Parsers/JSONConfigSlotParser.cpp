@@ -2,6 +2,7 @@
 
 #include "JSONConfigBaseParser.h"
 #include "JSONConfigSlotParser.h"
+#include "JSONEquipmentOverrideConditionListParser.h"
 #include "JSONFormFilterParser.h"
 #include "JSONFormListParser.h"
 
@@ -38,6 +39,16 @@ namespace IED
 				return false;
 			}
 
+			if (auto& d = a_in["ifc"])
+			{
+				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
+
+				if (!parser.Parse(d, a_out.itemFilterCondition))
+				{
+					return false;
+				}
+			}
+
 			a_out.slotFlags = static_cast<Data::SlotFlags>(
 				a_in.get("sflags", stl::underlying(Data::configSlot_t::DEFAULT_SLOT_FLAGS)).asUInt());
 
@@ -62,6 +73,13 @@ namespace IED
 			}
 
 			pfset.Create(a_in.itemFilter, a_out["iflt"]);
+
+			if (!a_in.itemFilterCondition.empty())
+			{
+				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
+
+				parser.Create(a_in.itemFilterCondition, a_out["ifc"]);
+			}
 
 			a_out["sflags"] = stl::underlying(a_in.slotFlags.value);
 		}

@@ -26,6 +26,11 @@ namespace IED
 				return false;
 			}
 
+			if (auto& d = data["ff_pfn"])
+			{
+				a_out.profile.name = d.asString();
+			}
+
 			a_out.filterFlags = static_cast<Data::FormFilterFlags>(
 				data.get("ff_flags", stl::underlying(Data::FormFilterFlags::kNone)).asUInt());
 
@@ -42,6 +47,11 @@ namespace IED
 			Parser<Data::configFormFilterBase_t> bparser(m_state);
 
 			bparser.Create(a_in, data["data"]);
+
+			if (!a_in.profile.name.empty())
+			{
+				data["ff_pfn"] = *a_in.profile.name;
+			}
 
 			data["ff_flags"] = stl::underlying(a_in.filterFlags.value);
 
