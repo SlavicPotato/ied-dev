@@ -422,30 +422,30 @@ namespace IED
 				return;
 			}
 
-			ImGui::Spacing();
-			ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::OccupiedSlots));
-			ImGui::Spacing();
+			ImGui::TableNextRow();
 
-			ImGui::Indent();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::OccupiedSlots));
+
+			ImGui::TableSetColumnIndex(1);
 
 			using enum_type = std::underlying_type_t<Data::ObjectSlot>;
 
 			for (enum_type j = 0; j < stl::underlying(Data::ObjectSlot::kMax); j++)
 			{
-				auto  slotId = static_cast<Data::ObjectSlot>(j);
-				auto& slot   = it->second.GetSlot(slotId);
+				const auto  slotId = static_cast<Data::ObjectSlot>(j);
+				const auto& slot   = it->second.GetSlot(slotId);
 
 				if (!slot.data.state)
 				{
 					continue;
 				}
 
-				auto name = Data::GetSlotName(slotId);
+				const auto name = Data::GetSlotName(slotId);
 
 				std::stringstream ss;
 
-				ss << std::left << std::setfill(' ') << std::setw(22) << name << " ["
-				   << sshex(8) << slot.data.state->form->formID.get() << "] [" << *slot.data.state->nodeDesc.name << "]";
+				ss << name << " [" << sshex(8) << slot.data.state->form->formID.get() << "] [" << *slot.data.state->nodeDesc.name << "]";
 
 				if (slot.data.state->flags.test(ObjectEntryFlags::kScbLeft))
 				{
@@ -454,16 +454,12 @@ namespace IED
 
 				if (!slot.IsNodeVisible())
 				{
-					ss << " ";
-					ss << UIL::L(UIWidgetCommonStrings::HiddenBrackets);
+					ss << " " << UIL::L(UIWidgetCommonStrings::HiddenBrackets);
 				}
 
-				ss << std::endl;
-
 				ImGui::TextWrapped("%s", ss.str().c_str());
+				ImGui::Spacing();
 			}
-
-			ImGui::Unindent();
 		}
 
 		bool UISlotEditorActor::DrawExtraSlotInfo(
