@@ -40,7 +40,7 @@ namespace IED
 			const ObjectDatabaseEntry& a_entry,
 			TESModelTextureSwap*       a_textureSwap,
 			float                      a_colliderScale,
-			std::uint8_t               a_priority = 4);
+			std::uint8_t               a_priority = 3);
 
 		~ObjectCloningTask() override;
 
