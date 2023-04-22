@@ -53,7 +53,7 @@ namespace IED
 			{
 				if (a_config && a_config->flags.test(Data::ExtraLightFlags::kTargetSelf))
 				{
-					params.data3D.lightingTarget = a_refr->Get3D2();
+					params.data3D.lightingTarget = a_refr->Get3D1(false);
 				}
 
 				params.shadow = false;
