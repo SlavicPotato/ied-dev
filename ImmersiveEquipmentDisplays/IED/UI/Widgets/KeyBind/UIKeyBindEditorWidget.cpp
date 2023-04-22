@@ -171,11 +171,9 @@ namespace IED
 			if (result)
 			{
 				ImGui::Spacing();
-				ImGui::Indent();
 
 				DrawEntry(a_data);
 
-				ImGui::Unindent();
 				ImGui::Spacing();
 
 				ImGui::TreePop();

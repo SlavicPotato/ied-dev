@@ -287,6 +287,11 @@ namespace IED
 			return m_controller.UIGetPopupQueue();
 		}
 
+		constexpr bool UIProfileEditorNodeOverride::IsProfileEditor() const
+		{
+			return true;
+		}
+
 		void UIProfileEditorNodeOverride::UpdateConfig(
 			const NodeOverrideUpdateParams& a_params)
 		{

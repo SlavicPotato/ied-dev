@@ -35,6 +35,7 @@ namespace IED
 			}
 
 		private:
+			virtual bool IsProfileEditor() const override;
 
 			void DrawMenuBar();
 

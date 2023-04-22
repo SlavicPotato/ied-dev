@@ -72,6 +72,8 @@ namespace IED
 
 			virtual NodeOverrideProfile::base_type GetData(
 				const profileSelectorParamsNodeOverride_t<T>& a_params) override;
+
+			virtual constexpr bool IsProfileEditor() const override;
 		};
 
 		template <class T>
@@ -273,6 +275,12 @@ namespace IED
 		{
 			a_params.data.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 			return a_params.data.copy_cc(this->GetConfigClass());
+		}
+
+		template <class T>
+		constexpr bool UINodeOverrideEditorCommon<T>::IsProfileEditor() const
+		{
+			return false;
 		}
 	}
 }

@@ -68,6 +68,7 @@ namespace IED
 
 		protected:
 			virtual void EditorDrawMenuBarItems() override;
+			virtual bool IsProfileEditor() const = 0;
 
 		private:
 			void DrawItemFilter();
@@ -134,6 +135,8 @@ namespace IED
 			ConditionalVariableType m_tmpType{ ConditionalVariableType::kInt32 };
 
 			UIGenericFilter m_itemFilter;
+
+			Controller& m_controller;
 		};
 	}
 }

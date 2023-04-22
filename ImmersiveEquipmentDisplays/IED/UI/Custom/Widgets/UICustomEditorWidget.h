@@ -552,8 +552,8 @@ namespace IED
 		template <class T>
 		void UICustomEditorWidget<T>::EditorDrawMenuBarItems()
 		{
-			bool disabled = !GetCurrentData();
-
+			const bool disabled = !GetCurrentData() || (this->GetDefaultConfigForced() && !this->IsProfileEditor());
+			
 			UICommon::PushDisabled(disabled);
 
 			if (ImGui::MenuItem(UIL::LS(CommonStrings::New, "1")))

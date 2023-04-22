@@ -280,8 +280,10 @@ namespace IED
 				const baseEffectShaderEditorParams_t<T>& a_params,
 				bool                                     a_updateTag) override;
 
+		protected:
 			virtual constexpr bool IsProfileEditor() const;
 
+		private:
 			UIFormSelectorWidget                        m_ffFormSelector;
 			UIFormFilterWidget<bcFormFilterParams_t<T>> m_formFilter;
 			UIFormPickerWidget                          m_formPicker;

@@ -65,6 +65,8 @@ namespace IED
 			virtual void OnCondVarEntryChange(
 				const CondVarDataChangeParams& a_params) override;
 
+			virtual bool IsProfileEditor() const override;
+
 			Controller& m_controller;
 		};
 	}

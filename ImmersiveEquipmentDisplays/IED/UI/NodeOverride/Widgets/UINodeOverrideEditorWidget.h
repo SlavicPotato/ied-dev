@@ -341,6 +341,8 @@ namespace IED
 
 			virtual UIPopupQueue& GetPopupQueue() = 0;
 
+			virtual constexpr bool IsProfileEditor() const = 0;
+
 			UIGenericFilter m_itemFilter;
 		};
 
@@ -2522,7 +2524,7 @@ namespace IED
 		{
 			auto current = GetCurrentData();
 
-			bool disabled = !current;
+			bool disabled = !current || (GetDefaultConfigForced() && !IsProfileEditor());
 
 			UICommon::PushDisabled(disabled);
 

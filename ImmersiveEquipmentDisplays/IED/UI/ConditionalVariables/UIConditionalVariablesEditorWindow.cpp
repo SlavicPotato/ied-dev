@@ -39,7 +39,13 @@ namespace IED
 			{
 				DrawMenuBar();
 
+				const bool disabled = m_controller.IsDefaultConfigForced();
+
+				UICommon::PushDisabled(disabled);
+
 				EditorDraw();
+
+				UICommon::PopDisabled(disabled);
 			}
 
 			ImGui::End();
@@ -53,6 +59,11 @@ namespace IED
 		void UIConditionalVariablesEditorWindow::OnClose()
 		{
 			EditorOnClose();
+		}
+
+		bool UIConditionalVariablesEditorWindow::IsProfileEditor() const
+		{
+			return false;
 		}
 
 		void UIConditionalVariablesEditorWindow::DrawMenuBar()

@@ -114,5 +114,10 @@ namespace IED
 			const CondVarDataChangeParams& a_params)
 		{
 		}
+
+		bool UIProfileEditorConditionalVariables::IsProfileEditor() const
+		{
+			return true;
+		}
 	}
 }

@@ -18,6 +18,7 @@ namespace IED
 		UIConditionalVariablesEditorWidget::UIConditionalVariablesEditorWidget(
 			Controller& a_controller) :
 			UILastEquippedWidget(a_controller),
+			m_controller(a_controller),
 			m_itemFilter(true)
 		{
 		}
@@ -863,6 +864,10 @@ namespace IED
 
 		void UIConditionalVariablesEditorWidget::EditorDrawMenuBarItems()
 		{
+			const bool disabled = m_controller.IsDefaultConfigForced() && !IsProfileEditor();
+
+			UICommon::PushDisabled(disabled);
+
 			if (UIL::LCG_BM(CommonStrings::Add, "1"))
 			{
 				UIVariableTypeSelectorWidget::DrawVariableTypeSelectorWidget(m_tmpType);
@@ -929,6 +934,9 @@ namespace IED
 					}
 				}
 			}
+
+			
+			UICommon::PopDisabled(disabled);
 		}
 	}
 }

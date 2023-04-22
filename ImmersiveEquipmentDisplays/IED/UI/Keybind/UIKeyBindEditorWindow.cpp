@@ -48,10 +48,17 @@ namespace IED
 					ImGuiWindowFlags_MenuBar))
 			{
 				DrawMenuBar();
+
+				const bool disabled = m_controller.IsDefaultConfigForced();
+
+				UICommon::PushDisabled(disabled);
+
 				DrawProfileTree();
 				ImGui::Separator();
 
 				DrawEditor();
+
+				UICommon::PopDisabled(disabled);
 			}
 
 			ImGui::End();
@@ -91,7 +98,13 @@ namespace IED
 					m_controller.GetActiveConfig().keybinds
 				};
 
+				const bool disabled = m_controller.IsDefaultConfigForced();
+
+				UICommon::PushDisabled(disabled);
+
 				DrawProfileSelector(params);
+
+				UICommon::PopDisabled(disabled);
 
 				ImGui::PopItemWidth();
 
@@ -135,9 +148,15 @@ namespace IED
 
 		void UIKeyBindEditorWindow::DrawActionMenu()
 		{
+			const bool disabled = m_controller.IsDefaultConfigForced();
+
+			UICommon::PushDisabled(disabled);
+
 			auto& config = m_controller.GetActiveConfig();
 
 			DrawKeyBindActionItems(config.keybinds);
+
+			UICommon::PopDisabled(disabled);
 		}
 
 		void UIKeyBindEditorWindow::ApplyProfile(

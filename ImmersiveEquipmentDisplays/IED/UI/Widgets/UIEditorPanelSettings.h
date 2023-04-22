@@ -8,8 +8,6 @@
 
 namespace IED
 {
-	class Controller;
-
 	namespace UI
 	{
 		class UIEditorPanelSettings

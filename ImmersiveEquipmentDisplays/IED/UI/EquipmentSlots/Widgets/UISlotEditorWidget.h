@@ -701,9 +701,9 @@ namespace IED
 		{
 			auto sex = GetSex();
 
-			auto current = GetCurrentData();
+			const auto current = GetCurrentData();
 
-			bool disabled = !current;
+			const bool disabled = !current || (GetDefaultConfigForced() && !this->IsProfileEditor());
 
 			UICommon::PushDisabled(disabled);
 

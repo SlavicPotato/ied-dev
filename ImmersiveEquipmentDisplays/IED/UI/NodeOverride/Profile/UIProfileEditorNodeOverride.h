@@ -117,6 +117,8 @@ namespace IED
 
 			virtual UIPopupQueue& GetPopupQueue() override;
 
+			virtual constexpr bool IsProfileEditor() const override;
+
 			template <class Tp>
 			void UpdateConfigSingle(
 				const Tp& a_params,
