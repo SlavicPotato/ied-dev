@@ -52,9 +52,9 @@ namespace IED
 				case ObjectSlot::kCrossBow:
 					return { BSStringHolder::NINODE_BOW, NodeDescriptorFlags::kManaged };
 				case ObjectSlot::kShield:
-					return { BSStringHolder::NINODE_SHIELD_BACK };
+					return { BSStringHolder::NINODE_SHIELD_BACK, NodeDescriptorFlags::kNone };
 				case ObjectSlot::kTorch:
-					return { BSStringHolder::NINODE_AXE_LEFT_REVERSE };
+					return { BSStringHolder::NINODE_AXE_LEFT_REVERSE, NodeDescriptorFlags::kNone };
 				case ObjectSlot::kAmmo:
 					return { BSStringHolder::NINODE_QUIVER, NodeDescriptorFlags::kManaged };
 				default:
@@ -69,15 +69,21 @@ namespace IED
 
 			auto dh = DataHandler::GetSingleton();
 			if (!dh)
+			{
 				return false;
+			}
 
 			for (auto& race : dh->races)
 			{
 				if (!race)
+				{
 					continue;
+				}
 
 				if (race->IsDeleted())
+				{
 					continue;
+				}
 
 				m_Instance.m_raceList.try_emplace(
 					race->formID,
@@ -102,8 +108,8 @@ namespace IED
 
 			const auto& nodeMapData = NodeMap::GetSingleton().GetData();
 
-			if (auto it = nodeMapData.find(targetNode.name); 
-				it != nodeMapData.end())
+			if (auto it = nodeMapData.find(targetNode.name);
+			    it != nodeMapData.end())
 			{
 				targetNode.flags = it->second.flags;
 			}

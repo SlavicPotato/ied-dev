@@ -646,6 +646,8 @@ namespace IED
 
 		bool EraseQueuedModel(const ObjectDatabaseEntry &a_entry) noexcept;
 
+		bool ProcessQueuedModels() noexcept;
+
 		[[nodiscard]] constexpr auto GetNumQueuedModels() const noexcept
 		{
 			return m_queuedModels.size();
@@ -694,7 +696,7 @@ namespace IED
 		stl::cache_aligned::vectormap<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 		conditionalVariableMap_t                                       m_variables;
 
-		std::optional<processParams_t> m_currentParams;
+		std::optional<ProcessParams> m_currentParams;
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;

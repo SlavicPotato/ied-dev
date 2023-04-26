@@ -21,11 +21,6 @@ namespace IED
 			return m_id;
 		}
 
-		[[nodiscard]] constexpr auto& bsx_flags() const noexcept
-		{
-			return m_bsx;
-		}
-
 		[[nodiscard]] constexpr auto& xp_version() const noexcept
 		{
 			return m_xpmse_version;
@@ -36,16 +31,9 @@ namespace IED
 			return m_signature;
 		}
 
-		[[nodiscard]] constexpr auto& presence_flags() const noexcept
-		{
-			return m_pflags;
-		}
-
 	private:
 		std::optional<std::int32_t>              m_id;
-		std::optional<stl::flag<BSXFlags::Flag>> m_bsx;
 		std::optional<float>                     m_xpmse_version;
-		stl::flag<PresenceFlags>                 m_pflags{ PresenceFlags::kNone };
 		std::uint64_t                            m_signature;
 	};
 

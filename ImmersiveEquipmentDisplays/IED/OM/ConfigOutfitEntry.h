@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	struct processParams_t;
+	struct ProcessParams;
 
 	namespace Data
 	{
@@ -37,8 +37,8 @@ namespace IED
 					*this = {};
 				}
 
-				const configOutfit_t&   get_config(IED::processParams_t& a_params) const noexcept;
-				const outfitOverride_t* get_override(IED::processParams_t& a_params) const noexcept;
+				const configOutfit_t&   get_config(IED::ProcessParams& a_params) const noexcept;
+				const outfitOverride_t* get_override(IED::ProcessParams& a_params) const noexcept;
 
 				template <class Tf>
 				void visit_overrides(Tf a_func)
@@ -54,7 +54,7 @@ namespace IED
 
 			private:
 				static const outfitOverride_t* get_override_impl(
-					IED::processParams_t&       a_params,
+					IED::ProcessParams&       a_params,
 					const outfitOverrideList_t& a_list) noexcept;
 
 			protected:

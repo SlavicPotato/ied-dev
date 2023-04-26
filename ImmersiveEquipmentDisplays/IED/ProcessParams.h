@@ -20,23 +20,23 @@ namespace IED
 		kUpdateMask = kMenuUpdate | kForceUpdate,
 
 		kEffectShadersSuspended = 1ui8 << 4,
-		kBipedDataUpdated   = 1ui8 << 5,
+		kBipedDataUpdated       = 1ui8 << 5,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ProcessStateUpdateFlags);
 
-	struct processState_t
+	struct ProcessState
 	{
 		stl::flag<ProcessStateUpdateFlags> flags{ ProcessStateUpdateFlags::kNone };
 	};
 
-	struct processParamsData_t
+	struct ProcessParamsData
 	{
-		inline processParamsData_t(
-			Actor* const                           a_actor,
-			const Game::ObjectRefHandle            a_handle,
-			const stl::flag<ControllerUpdateFlags> a_flags,
-			ActorTempData&                         a_tmp) :
+		inline ProcessParamsData(
+			Actor* const                     a_actor,
+			Game::ObjectRefHandle            a_handle,
+			stl::flag<ControllerUpdateFlags> a_flags,
+			ActorTempData&                   a_tmp) :
 			handle(a_handle),
 			flags(a_flags),
 			useCount(a_tmp.uc),
@@ -59,18 +59,18 @@ namespace IED
 		InventoryInfoCollector           collector;
 	};
 
-	struct processParams_t :
-		processParamsData_t,
+	struct ProcessParams :
+		ProcessParamsData,
 		CommonParams
 	{
 		template <class... Args>
-		constexpr processParams_t(
-			const stl::flag<ControllerUpdateFlags> a_flags,
-			Actor* const                           a_actor,
-			const Game::ObjectRefHandle            a_handle,
-			ActorTempData&                         a_tmp,
+		constexpr ProcessParams(
+			stl::flag<ControllerUpdateFlags> a_flags,
+			Actor* const                     a_actor,
+			Game::ObjectRefHandle            a_handle,
+			ActorTempData&                   a_tmp,
 			Args&&... a_args) :
-			processParamsData_t(
+			ProcessParamsData(
 				a_actor,
 				a_handle,
 				a_flags,
@@ -82,7 +82,7 @@ namespace IED
 
 		void SuspendReferenceEffectShaders() noexcept;
 
-		processState_t state;
+		ProcessState state;
 	};
 
 }

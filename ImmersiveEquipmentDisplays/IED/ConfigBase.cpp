@@ -32,7 +32,7 @@ namespace IED
 	namespace Data
 	{
 		const equipmentOverride_t* configBase_t::get_equipment_override(
-			processParams_t& a_params) const noexcept
+			ProcessParams& a_params) const noexcept
 		{
 			return get_equipment_override(
 				a_params,
@@ -40,7 +40,7 @@ namespace IED
 		}
 
 		const equipmentOverride_t* configBase_t::get_equipment_override(
-			processParams_t&               a_params,
+			ProcessParams&                 a_params,
 			const equipmentOverrideList_t& a_list) noexcept
 		{
 			for (auto& e : a_list)
@@ -73,7 +73,7 @@ namespace IED
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_fp(
 			const formSlotPair_t& a_checkForm,
-			processParams_t&      a_params) const noexcept
+			ProcessParams&        a_params) const noexcept
 		{
 			return get_equipment_override_fp(
 				a_checkForm,
@@ -83,7 +83,7 @@ namespace IED
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_fp(
 			const formSlotPair_t&          a_checkForm,
-			processParams_t&               a_params,
+			ProcessParams&                 a_params,
 			const equipmentOverrideList_t& a_list) noexcept
 		{
 			for (auto& e : a_list)
@@ -117,7 +117,7 @@ namespace IED
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_sfp(
 			const formSlotPair_t& a_checkForm,
-			processParams_t&      a_params) const noexcept
+			ProcessParams&        a_params) const noexcept
 		{
 			return get_equipment_override_sfp(
 				a_checkForm,
@@ -127,7 +127,7 @@ namespace IED
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_sfp(
 			const formSlotPair_t&          a_checkForm,
-			processParams_t&               a_params,
+			ProcessParams&                 a_params,
 			const equipmentOverrideList_t& a_list) noexcept
 		{
 			for (auto& e : a_list)
@@ -160,7 +160,7 @@ namespace IED
 		}
 
 		const configEffectShaderHolder_t* configBase_t::get_effect_shader(
-			processParams_t& a_params) const noexcept
+			ProcessParams& a_params) const noexcept
 		{
 			for (auto& e : effectShaders.data)
 			{
@@ -180,7 +180,7 @@ namespace IED
 
 		const configEffectShaderHolder_t* configBase_t::get_effect_shader_fp(
 			const formSlotPair_t& a_checkForm,
-			processParams_t&      a_params) const noexcept
+			ProcessParams&        a_params) const noexcept
 		{
 			for (auto& e : effectShaders.data)
 			{
@@ -200,7 +200,7 @@ namespace IED
 
 		const configEffectShaderHolder_t* configBase_t::get_effect_shader_sfp(
 			const formSlotPair_t& a_checkForm,
-			processParams_t&      a_params) const noexcept
+			ProcessParams&        a_params) const noexcept
 		{
 			for (auto& e : effectShaders.data)
 			{
@@ -260,7 +260,7 @@ namespace IED
 		}
 
 		bool configBase_t::match_equipped_type(
-			processParams_t&                    a_params,
+			ProcessParams&                      a_params,
 			const equipmentOverrideCondition_t& a_match) noexcept
 		{
 			auto slot = stl::underlying(a_match.slot);
@@ -271,6 +271,11 @@ namespace IED
 
 			if (Conditions::is_hand_slot(a_match.slot))
 			{
+				if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
+				{
+					return a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch3);
+				}
+
 				auto pm = a_params.actor->processManager;
 				if (!pm)
 				{
@@ -320,6 +325,35 @@ namespace IED
 					return false;
 				}
 
+				if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
+				{
+					const auto rv = a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch3);
+
+					if (a_match.slot != ObjectSlotExtra::kAmmo)
+					{
+						return rv;
+					}
+
+					const auto* const biped = a_params.get_biped();
+					if (!biped)
+					{
+						return rv;
+					}
+
+					auto& e = biped->get_object(BIPED_OBJECT::kQuiver);
+
+					const auto* const form = e.item;
+					if (!form || e.addon == form)
+					{
+						return rv;
+					}
+
+					if (Conditions::is_ammo_bolt(form) == rv)
+					{
+						return false;
+					}
+				}
+
 				if (const auto fid = a_match.form.get_id())
 				{
 					const auto rv = a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1);
@@ -352,7 +386,7 @@ namespace IED
 					if (a_match.keyword.get_id())
 					{
 						if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
-						    has_keyword_equipped(a_match.keyword, a_match.slot, data))
+						    type_has_keyword_equipped(a_match, data))
 						{
 							return false;
 						}
@@ -422,7 +456,7 @@ namespace IED
 		}
 
 		bool configBase_t::match_equipped_form(
-			processParams_t&                    a_params,
+			ProcessParams&                      a_params,
 			const equipmentOverrideCondition_t& a_match) noexcept
 		{
 			const auto fid = a_match.form.get_id();
@@ -496,7 +530,7 @@ namespace IED
 
 		bool configBase_t::match_equipped(
 			const equipmentOverrideCondition_t& a_match,
-			processParams_t&                    a_params) noexcept
+			ProcessParams&                      a_params) noexcept
 		{
 			switch (a_match.fbf.type)
 			{
@@ -717,7 +751,7 @@ namespace IED
 
 		bool configBase_t::do_match(
 			const equipmentOverrideConditionList_t& a_matches,
-			processParams_t&                        a_params,
+			ProcessParams&                          a_params,
 			bool                                    a_default) noexcept
 		{
 			bool result = a_default;
@@ -759,7 +793,7 @@ namespace IED
 
 		bool configBase_t::match_equipped_or_slot(
 			const equipmentOverrideCondition_t& a_match,
-			processParams_t&                    a_params) noexcept
+			ProcessParams&                      a_params) noexcept
 		{
 			switch (a_match.fbf.type)
 			{
@@ -813,6 +847,15 @@ namespace IED
 						{
 							if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
 							    IFormCommon::HasKeyword(form, a_match.keyword))
+							{
+								return false;
+							}
+						}
+
+						if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
+						{
+							if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch3) ==
+							    (sid == ObjectSlot::kAmmo && Conditions::is_ammo_bolt(form)))
 							{
 								return false;
 							}
@@ -1198,7 +1241,7 @@ namespace IED
 		}
 
 		static bool match_presence_available(
-			const processParams_t&              a_params,
+			const ProcessParams&                a_params,
 			const equipmentOverrideCondition_t& a_match,
 			const formSlotPair_t&               a_checkForm) noexcept
 		{
@@ -1274,8 +1317,8 @@ namespace IED
 		}
 
 		static constexpr bool match_is_favorited(
-			const processParams_t& a_params,
-			Game::FormID           a_formid) noexcept
+			const ProcessParams& a_params,
+			Game::FormID         a_formid) noexcept
 		{
 			const auto& data = a_params.collector.data.forms;
 
@@ -1296,7 +1339,7 @@ namespace IED
 		bool configBase_t::match_equipped_or_form(
 			const equipmentOverrideCondition_t& a_match,
 			const formSlotPair_t&               a_checkForm,
-			processParams_t&                    a_params) noexcept
+			ProcessParams&                      a_params) noexcept
 		{
 			switch (a_match.fbf.type)
 			{
@@ -1687,7 +1730,7 @@ namespace IED
 		bool configBase_t::do_match_fp(
 			const equipmentOverrideConditionList_t& a_matches,
 			const formSlotPair_t&                   a_checkForm,
-			processParams_t&                        a_params,
+			ProcessParams&                          a_params,
 			bool                                    a_default) noexcept
 		{
 			bool result = a_default;
@@ -1735,7 +1778,7 @@ namespace IED
 		bool configBase_t::do_match_sfp(
 			const equipmentOverrideConditionList_t& a_matches,
 			const formSlotPair_t&                   a_checkForm,
-			processParams_t&                        a_params,
+			ProcessParams&                          a_params,
 			bool                                    a_default) noexcept
 		{
 			bool result = a_default;
@@ -1790,7 +1833,7 @@ namespace IED
 
 		bool configBase_t::do_match_eos(
 			const equipmentOverrideConditionList_t& a_matches,
-			processParams_t&                        a_params,
+			ProcessParams&                          a_params,
 			bool                                    a_default) noexcept
 		{
 			bool result = a_default;
@@ -1832,7 +1875,7 @@ namespace IED
 
 		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
-			processParams_t&          a_params) noexcept
+			ProcessParams&            a_params) noexcept
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
@@ -1923,17 +1966,18 @@ namespace IED
 			return false;
 		}
 
-		bool configBase_t::has_keyword_equipped(
-			const configCachedForm_t& a_keyword,
-			ObjectSlotExtra           a_slot,
-			const CollectorData&      a_data) noexcept
+		bool configBase_t::type_has_keyword_equipped(
+			const equipmentOverrideCondition_t& a_match,
+			const CollectorData&                a_data) noexcept
 		{
-			if (auto keyword = a_keyword.get_form<BGSKeyword>())
+			if (auto keyword = a_match.keyword.get_form<BGSKeyword>())
 			{
+				const auto slot = a_match.slot;
+
 				for (auto& e : a_data.equippedForms)
 				{
-					if (e.extraEquipped.slot == a_slot ||
-					    e.extraEquipped.slotLeft == a_slot)
+					if (e.extraEquipped.slot == slot ||
+					    e.extraEquipped.slotLeft == slot)
 					{
 						if (IFormCommon::HasKeyword(e.form, keyword))
 						{

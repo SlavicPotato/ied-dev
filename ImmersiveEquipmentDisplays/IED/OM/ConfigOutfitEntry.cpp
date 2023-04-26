@@ -12,7 +12,7 @@ namespace IED
 		namespace OM
 		{
 			const configOutfit_t& configOutfitEntry_t::get_config(
-				IED::processParams_t& a_params) const noexcept
+				IED::ProcessParams& a_params) const noexcept
 			{
 				if (const auto v = get_override_impl(a_params, overrides))
 				{
@@ -25,13 +25,13 @@ namespace IED
 			}
 
 			const outfitOverride_t* configOutfitEntry_t::get_override(
-				IED::processParams_t& a_params) const noexcept
+				IED::ProcessParams& a_params) const noexcept
 			{
 				return get_override_impl(a_params, overrides);
 			}
 
 			const outfitOverride_t* configOutfitEntry_t::get_override_impl(
-				IED::processParams_t&       a_params,
+				IED::ProcessParams&       a_params,
 				const outfitOverrideList_t& a_list) noexcept
 			{
 				for (auto& e : a_list)

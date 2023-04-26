@@ -49,33 +49,33 @@ namespace IED
 			const ActorProcessManager* const a_pm) noexcept;
 
 		static SelectedItem SelectSlotItem(
-			processParams_t&          a_params,
+			ProcessParams&          a_params,
 			const Data::configSlot_t& a_config,
 			SlotItemCandidates&       a_candidates,
 			const ObjectEntrySlot&    a_slot) noexcept;
 
 		static bool CustomEntryValidateInventoryForm(
-			processParams_t&                     a_params,
+			ProcessParams&                     a_params,
 			const Data::CollectorData::ItemData& a_itemData,
 			const Data::configCustom_t&          a_config,
 			bool&                                a_hasMinCount) noexcept;
 
 		template <class Tf>
 		static auto DoLastEquippedSelection(
-			processParams_t&                  a_params,
+			ProcessParams&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			Tf                                a_validationFunc) noexcept;
 
 	private:
 		static Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormGroup(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount) noexcept;
 
 		template <class Tf>
 		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormDefault(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount,
@@ -83,7 +83,7 @@ namespace IED
 
 	public:
 		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryForm(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount) noexcept;
@@ -91,26 +91,26 @@ namespace IED
 	private:
 		template <class Tf>
 		static auto SelectInventoryFormLastEquipped(
-			processParams_t&                  a_params,
+			ProcessParams&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const Tf&                         a_validationFunc) noexcept;
 
 		template <class Tf>
 		static auto SelectInventoryFormLastSlotted(
-			processParams_t&                  a_params,
+			ProcessParams&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const Tf&                         a_validationFunc) noexcept;
 
 		template <class Tf>
 		static auto SelectBipedSlotEntryForm(
-			processParams_t&                  a_params,
+			ProcessParams&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const BipedSlotCacheEntry&        a_slotEntry,
 			const Tf&                         a_validationFunc) noexcept;
 
 		template <class Tf>
 		static auto SelectDisplaySlotEntryForm(
-			processParams_t&                  a_params,
+			ProcessParams&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const ObjectEntrySlot&            a_slotEntry,
 			const Tf&                         a_validationFunc) noexcept;
@@ -120,7 +120,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::DoLastEquippedSelection(
-		processParams_t&                  a_params,
+		ProcessParams&                  a_params,
 		const Data::configLastEquipped_t& a_config,
 		Tf                                a_validationFunc) noexcept
 	{
@@ -143,7 +143,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::SelectInventoryFormLastEquipped(
-		processParams_t&                  a_params,
+		ProcessParams&                  a_params,
 		const Data::configLastEquipped_t& a_config,
 		const Tf&                         a_validationFunc) noexcept
 	{
@@ -254,7 +254,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::SelectInventoryFormLastSlotted(
-		processParams_t&                  a_params,
+		ProcessParams&                  a_params,
 		const Data::configLastEquipped_t& a_config,
 		const Tf&                         a_validationFunc) noexcept
 	{
@@ -341,7 +341,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::SelectBipedSlotEntryForm(
-		processParams_t&                  a_params,
+		ProcessParams&                  a_params,
 		const Data::configLastEquipped_t& a_config,
 		const BipedSlotCacheEntry&        a_slotEntry,
 		const Tf&                         a_validationFunc) noexcept
@@ -376,7 +376,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::SelectDisplaySlotEntryForm(
-		processParams_t&                  a_params,
+		ProcessParams&                  a_params,
 		const Data::configLastEquipped_t& a_config,
 		const ObjectEntrySlot&            a_slotEntry,
 		const Tf&                         a_validationFunc) noexcept

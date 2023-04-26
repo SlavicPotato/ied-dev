@@ -191,7 +191,7 @@ namespace IED
 		NiAVObject::ControllerUpdateContext ctx{ 0, 0x2000 };
 		a_root->Update(ctx);
 
-		fUnk12BAFB0(*m_shadowSceneNode, a_root, false);
+		fUnk12BAFB0(RE::ShadowSceneNode::GetSingleton(), a_root, false);
 	}
 
 	bool INode::CreateTargetNode(

@@ -16,7 +16,6 @@ namespace IED
 				CondVarProfile>(
 				UIProfileSelectorFlags::kEnableApply |
 					UIProfileSelectorFlags::kEnableMerge),
-			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}

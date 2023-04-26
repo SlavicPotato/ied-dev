@@ -28,10 +28,10 @@ namespace IED
 	public:
 		enum class State : std::uint32_t
 		{
-			kPending        = 0,
-			kProcessing     = 1,
-			kCancelled      = 2,
-			kCompleted      = 3,
+			kPending    = 0,
+			kProcessing = 1,
+			kCancelled  = 2,
+			kCompleted  = 3,
 		};
 
 		ObjectCloningTask(
@@ -74,6 +74,21 @@ namespace IED
 			return _clone;
 		}
 
+		[[nodiscard]] constexpr auto HasGraphHolder() noexcept
+		{
+			return static_cast<bool>(_graphHolder.second);
+		}
+
+		[[nodiscard]] constexpr auto& GetAnimPath() const noexcept
+		{
+			return _graphHolder.first;
+		}
+		
+		[[nodiscard]] constexpr auto& GetGraphHolderManager() noexcept
+		{
+			return _graphHolder.second;
+		}
+
 		[[nodiscard]] inline bool try_acquire_for_processing() noexcept
 		{
 			auto expected = State::kPending;
@@ -98,12 +113,13 @@ namespace IED
 			NiPointer<NiNode>&         a_out);
 
 	private:
-		ObjectDatabaseEntry        _entry;
-		const Game::FormID         _actor;
-		IObjectManager&            _owner;
-		TESModelTextureSwap* const _texSwap;
-		const float                _colliderScale;
-		NiPointer<NiNode>          _clone;
-		std::atomic<State>         _taskState{ State::kPending };
+		ObjectDatabaseEntry                                                _entry;
+		const Game::FormID                                                 _actor;
+		IObjectManager&                                                    _owner;
+		TESModelTextureSwap* const                                         _texSwap;
+		const float                                                        _colliderScale;
+		NiPointer<NiNode>                                                  _clone;
+		std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr> _graphHolder;
+		std::atomic<State>                                                 _taskState{ State::kPending };
 	};
 }

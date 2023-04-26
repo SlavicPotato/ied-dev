@@ -163,8 +163,8 @@ namespace IED
 					auto& map = Data::NodeMap::GetSingleton();
 
 					auto r = map.Add(
-						name.c_str(),
-						name.c_str(),
+						name,
+						name,
 						Data::NodeDescriptorFlags::kUserNode);
 
 					if (!r.second)

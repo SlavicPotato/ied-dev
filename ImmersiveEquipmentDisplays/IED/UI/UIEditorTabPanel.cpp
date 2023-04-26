@@ -22,7 +22,7 @@ namespace IED
 
 		void UIEditorTabPanel::Initialize()
 		{
-			for (auto& e : m_interfaces)
+			for (const auto& e : m_interfaces)
 			{
 				if (e)
 				{
@@ -43,12 +43,14 @@ namespace IED
 
 			if (!GetInterface(m_currentClass))
 			{
-				using enum_type = std::underlying_type_t<Data::ConfigClass>;
-				for (enum_type i = 0; i < Data::CONFIG_CLASS_MAX; i++)
+				auto i = Data::CONFIG_CLASS_MAX;
+
+				while (i--)
 				{
 					if (auto& e = m_interfaces[i])
 					{
 						m_currentClass = static_cast<Data::ConfigClass>(i);
+						break;
 					}
 				}
 			}
@@ -56,7 +58,7 @@ namespace IED
 
 		void UIEditorTabPanel::Reset()
 		{
-			for (auto& e : m_interfaces)
+			for (const auto& e : m_interfaces)
 			{
 				if (e)
 				{
@@ -67,7 +69,7 @@ namespace IED
 
 		void UIEditorTabPanel::QueueUpdateCurrent()
 		{
-			for (auto& e : m_interfaces)
+			for (const auto& e : m_interfaces)
 			{
 				if (e)
 				{
@@ -85,10 +87,8 @@ namespace IED
 			{
 				auto i = Data::CONFIG_CLASS_MAX;
 
-				while (i)
+				while (i--)
 				{
-					i--;
-
 					auto& e = m_interfaces[i];
 
 					if (!e)
@@ -143,7 +143,7 @@ namespace IED
 		{
 			if (UIL::LCG_BM(CommonStrings::Actions, "et_mb"))
 			{
-				if (auto& e = GetInterface(m_currentClass))
+				if (const auto& e = GetInterface(m_currentClass))
 				{
 					e->EditorDrawMenuBarItems();
 				}
@@ -163,28 +163,19 @@ namespace IED
 
 		void UIEditorTabPanel::OnClose()
 		{
-			for (auto& e : m_interfaces)
+			if (const auto& e = GetInterface(m_currentClass))
 			{
-				if (e)
-				{
-					e->EditorOnClose();
-				}
+				e->EditorOnClose();
 			}
 
-			auto& conf = GetEditorConfig();
-
-			if (m_currentClass != conf.lastConfigClass)
-			{
-				conf.lastConfigClass = m_currentClass;
-				m_controller.GetSettings().mark_dirty();
-			}
+			StoreCurrentTab();
 		}
 
 		void UIEditorTabPanel::SetTabSelected(
 			Data::ConfigClass a_class)
 		{
-			GetInterface(a_class).flags |=
-				ImGuiTabItemFlags_SetSelected;
+			auto& e = GetInterface(a_class);
+			e.flags |= ImGuiTabItemFlags_SetSelected;
 		}
 
 		void UIEditorTabPanel::EvaluateTabSwitch(
@@ -210,6 +201,19 @@ namespace IED
 			if (inew)
 			{
 				inew->EditorOnOpen();
+			}
+
+			StoreCurrentTab();
+		}
+
+		void UIEditorTabPanel::StoreCurrentTab()
+		{
+			auto& conf = GetEditorConfig();
+
+			if (m_currentClass != conf.lastConfigClass)
+			{
+				conf.lastConfigClass = m_currentClass;
+				m_controller.GetSettings().mark_dirty();
 			}
 		}
 	}

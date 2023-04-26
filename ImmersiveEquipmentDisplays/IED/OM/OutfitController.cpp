@@ -21,24 +21,25 @@ namespace IED
 
 		void OutfitController::EvaluateOutfit(
 			const Data::OM::configStoreOutfit_t& a_config,
-			IED::processParams_t&                a_params) noexcept
+			IED::ProcessParams&                  a_params) noexcept
 		{
 			if (!a_params.objects.IsActive())
 			{
 				return;
 			}
 
-			auto& config = a_config.GetNPC(
-									   a_params.npcOrTemplate->formID,
-									   a_params.race->formID)
-			                   .data.get(a_params.configSex)
-			                   .get_config(a_params);
+			auto& config =
+				a_config.GetNPC(
+							a_params.npcOrTemplate->formID,
+							a_params.race->formID)
+					.data.get(a_params.configSex)
+					.get_config(a_params);
 
 			TrySetOutfit(a_params, config);
 		}
 
 		void OutfitController::TrySetOutfit(
-			IED::processParams_t&           a_params,
+			IED::ProcessParams&             a_params,
 			const Data::OM::configOutfit_t& a_config) noexcept
 		{
 			const auto outfit = GetOutfit(a_params, a_config);
@@ -69,7 +70,7 @@ namespace IED
 		}
 
 		BGSOutfit* OutfitController::GetOutfit(
-			IED::processParams_t&           a_params,
+			IED::ProcessParams&             a_params,
 			const Data::OM::configOutfit_t& a_config) noexcept
 		{
 #if defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
@@ -108,8 +109,8 @@ namespace IED
 
 				const auto currentOutfit = a_params.npc->defaultOutfit;
 
-				if (currentOutfit && 
-					currentOutfit->formID == a_config.outfit)
+				if (currentOutfit &&
+				    currentOutfit->formID == a_config.outfit)
 				{
 					return nullptr;
 				}

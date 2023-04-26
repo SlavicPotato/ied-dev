@@ -43,6 +43,11 @@ namespace IED
 		{
 			return _entry;
 		}
+		
+		[[nodiscard]] constexpr auto& GetPath() const noexcept
+		{
+			return _path;
+		}
 
 	private:
 		ObjectDatabaseEntry _entry;

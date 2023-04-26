@@ -278,6 +278,18 @@ namespace IED
 		commonNodes.rootNode->SetVisible(a_switch);
 	}
 
+	/*EventResult ObjectEntryBase::ObjectAnim::ReceiveEvent(
+		const BSAnimationGraphEvent*                            a_event,
+		[[maybe_unused]] BSTEventSource<BSAnimationGraphEvent>* a_sink)
+	{
+		if (a_event)
+		{
+			_DMESSAGE("%s -> %s", a_event->tag.c_str(), a_event->payload.c_str());
+		}
+
+		return EventResult::kContinue;
+	}*/
+
 	void ObjectEntryBase::ObjectAnim::UpdateAndSendAnimationEvent(
 		const stl::fixed_string& a_event) noexcept
 	{
@@ -318,7 +330,7 @@ namespace IED
 			state->Cleanup(a_handle);
 			state.reset();
 
-			a_db.QueueDatabaseCleanup();
+			a_db.RequestCleanup();
 		}
 
 		if (a_removeCloningTask && cloningTask)
@@ -364,12 +376,24 @@ namespace IED
 	{
 		if (light)
 		{
-			ReferenceLightController::GetSingleton().RemoveLight(a_owner, light->niObject.get());
+			ReferenceLightController::GetSingleton().RemoveLight(a_owner, light->niObject);
 		}
 
 		if (anim.holder)
 		{
 			AnimationUpdateController::GetSingleton().RemoveObject(a_owner, anim.holder);
+
+			/*RE::BSAnimationGraphManagerPtr agm;
+			if (anim.holder->GetAnimationGraphManagerImpl(agm))
+			{
+				for (auto &e : agm->graphs)
+				{
+					if (e)
+					{
+						e->RemoveEventSink(std::addressof(anim));
+					}
+				}
+			}*/
 		}
 	}
 

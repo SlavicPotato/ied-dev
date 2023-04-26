@@ -52,8 +52,8 @@ namespace IED
 		}
 
 		static void Install(
-			Controller*                      a_controller,
-			const stl::smart_ptr<ConfigINI>& a_config);
+			Controller*                            a_controller,
+			const stl::smart_ptr<const ConfigINI>& a_config);
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
@@ -99,8 +99,8 @@ namespace IED
 		EngineExtensions() = default;
 
 		void InstallImpl(
-			Controller*                      a_controller,
-			const stl::smart_ptr<ConfigINI>& a_config);
+			Controller*                            a_controller,
+			const stl::smart_ptr<const ConfigINI>& a_config);
 
 		//inline static const auto removeHavokFuncPtr = IAL::Address<void**>(512244, 389072);
 

@@ -48,7 +48,6 @@ namespace IED
 			a_config->m_bipedSlotCacheMaxSize,
 			a_config->m_bipedSlotCacheMaxForms)
 	{
-		//ODBSetUseNativeModelDB(a_config->m_odbNativeLoader);
 		ODBEnableBackgroundLoading(a_config->m_odbBackgroundLoading);
 		SetBackgroundCloneLevel(true, a_config->m_bgClonePlayer);
 		SetBackgroundCloneLevel(false, a_config->m_bgCloneNPC);
@@ -1936,7 +1935,7 @@ namespace IED
 	}
 
 	bool Controller::DoItemUpdate(
-		processParams_t&          a_params,
+		ProcessParams&            a_params,
 		const configBaseValues_t& a_config,
 		ObjectEntryBase&          a_entry,
 		bool                      a_visible,
@@ -2191,7 +2190,7 @@ namespace IED
 	}
 
 	void Controller::ResetEffectShaderData(
-		processParams_t& a_params,
+		ProcessParams&   a_params,
 		ObjectEntryBase& a_entry) noexcept
 	{
 		if (auto& data = a_entry.data.effectShaderData)
@@ -2206,7 +2205,7 @@ namespace IED
 	}
 
 	void Controller::ResetEffectShaderData(
-		processParams_t& a_params,
+		ProcessParams&   a_params,
 		ObjectEntryBase& a_entry,
 		NiAVObject*      a_object) noexcept
 	{
@@ -2221,7 +2220,7 @@ namespace IED
 	}
 
 	void Controller::UpdateObjectEffectShaders(
-		processParams_t&            a_params,
+		ProcessParams&              a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry) noexcept
 	{
@@ -2274,7 +2273,7 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomGroup(
-		processParams_t&            a_params,
+		ProcessParams&              a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry) noexcept
 	{
@@ -2314,7 +2313,7 @@ namespace IED
 	}
 
 	void Controller::RemoveSlotObjectEntry(
-		processParams_t& a_params,
+		ProcessParams&   a_params,
 		ObjectEntrySlot& a_entry,
 		bool             a_removeCloningTask,
 		bool             a_noSound) noexcept
@@ -2339,7 +2338,7 @@ namespace IED
 		}
 	}
 
-	void Controller::ProcessSlots(processParams_t& a_params) noexcept
+	void Controller::ProcessSlots(ProcessParams& a_params) noexcept
 	{
 		auto pm = a_params.actor->processManager;
 		if (!pm)
@@ -2565,7 +2564,7 @@ namespace IED
 					candidates,
 					objectEntry);
 
-				auto configOverride =
+				const auto configOverride =
 					!item ? configEntry.get_equipment_override(
 								a_params) :
 							configEntry.get_equipment_override_fp(
@@ -2592,14 +2591,6 @@ namespace IED
 
 				if (f.equipped)
 				{
-					/*if (objectEntry.DeferredHideObject(
-							2,
-							!settings.hideEquipped ||
-								configEntry.slotFlags.test(SlotFlags::kAlwaysUnload)))
-					{
-						a_params.mark_slot_presence_change(objectEntry.slotid);
-					}*/
-
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
@@ -2855,7 +2846,7 @@ namespace IED
 	bool Controller::GetVisibilitySwitch(
 		Actor*               a_actor,
 		stl::flag<BaseFlags> a_flags,
-		processParams_t&     a_params) noexcept
+		ProcessParams&       a_params) noexcept
 	{
 		if (a_flags.test(BaseFlags::kInvisible))
 		{
@@ -2928,7 +2919,7 @@ namespace IED
 	}
 
 	bool Controller::IsBlockedByChance(
-		processParams_t&      a_params,
+		ProcessParams&        a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry) noexcept
 	{
@@ -2959,8 +2950,8 @@ namespace IED
 	}
 
 	ActorObjectHolder* Controller::SelectCustomFormVariableSourceHolder(
-		Game::FormID     a_id,
-		processParams_t& a_params) noexcept
+		Game::FormID   a_id,
+		ProcessParams& a_params) noexcept
 	{
 		if (a_id == a_params.objects.GetActorFormID())
 		{
@@ -2983,7 +2974,7 @@ namespace IED
 	}
 
 	ActorObjectHolder* Controller::SelectCustomFormVariableSource(
-		processParams_t&            a_params,
+		ProcessParams&              a_params,
 		const Data::configCustom_t& a_config) noexcept
 	{
 		switch (a_config.varSource.source)
@@ -3028,7 +3019,7 @@ namespace IED
 	}
 
 	const configCachedForm_t* Controller::SelectCustomForm(
-		processParams_t&      a_params,
+		ProcessParams&        a_params,
 		const configCustom_t& a_config) noexcept
 	{
 		if (a_config.customFlags.test(CustomFlags::kVariableMode))
@@ -3073,7 +3064,7 @@ namespace IED
 	}
 
 	AttachObjectResult Controller::ProcessCustomEntry(
-		processParams_t&      a_params,
+		ProcessParams&        a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry) noexcept
 	{
@@ -3439,7 +3430,7 @@ namespace IED
 	}
 
 	void Controller::ProcessCustomEntryMap(
-		processParams_t&                     a_params,
+		ProcessParams&                       a_params,
 		const configCustomHolder_t&          a_confData,
 		ActorObjectHolder::customEntryMap_t& a_entryMap) noexcept
 	{
@@ -3469,7 +3460,7 @@ namespace IED
 	}
 
 	void Controller::ProcessCustomMap(
-		processParams_t&               a_params,
+		ProcessParams&                 a_params,
 		const configCustomPluginMap_t& a_confPluginMap,
 		ConfigClass                    a_class) noexcept
 	{
@@ -3488,7 +3479,7 @@ namespace IED
 		}
 	}
 
-	void Controller::ProcessCustom(processParams_t& a_params) noexcept
+	void Controller::ProcessCustom(ProcessParams& a_params) noexcept
 	{
 		const auto& cstore = GetActiveConfig().custom;
 
@@ -3661,9 +3652,9 @@ namespace IED
 	}
 
 	template <class... Args>
-	constexpr processParams_t& make_process_params(
+	constexpr ProcessParams& make_process_params(
 		ActorObjectHolder&                     a_holder,
-		std::optional<processParams_t>&        a_paramsOut,
+		std::optional<ProcessParams>&          a_paramsOut,
 		const stl::flag<ControllerUpdateFlags> a_flags,
 		Args&&... a_args) noexcept
 	{
@@ -3703,7 +3694,7 @@ namespace IED
 			a_holder.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 		}
 
-		std::optional<processParams_t> ps;
+		std::optional<ProcessParams> ps;
 
 		auto& params = make_process_params(
 			a_holder,
@@ -3782,7 +3773,7 @@ namespace IED
 	}
 
 	void Controller::UpdateBipedSlotCache(
-		processParams_t&   a_params,
+		ProcessParams&     a_params,
 		ActorObjectHolder& a_holder) noexcept
 	{
 		/*PerfTimer pt;
@@ -3852,8 +3843,8 @@ namespace IED
 	}
 
 	void Controller::RunVariableMapUpdate(
-		processParams_t& a_params,
-		bool             a_markAllForEval) noexcept
+		ProcessParams& a_params,
+		bool           a_markAllForEval) noexcept
 	{
 		const auto& config = GetActiveConfig().condvars;
 
@@ -3879,7 +3870,7 @@ namespace IED
 	}
 
 	void Controller::RunUpdateBipedSlotCache(
-		processParams_t& a_params) noexcept
+		ProcessParams& a_params) noexcept
 	{
 		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kBipedDataUpdated))
 		{
@@ -3892,7 +3883,7 @@ namespace IED
 	}
 
 	void Controller::DoObjectEvaluation(
-		processParams_t& a_params) noexcept
+		ProcessParams& a_params) noexcept
 	{
 		if (!GetSettings().data.disableNPCSlots ||
 		    a_params.objects.IsPlayer())
@@ -4383,7 +4374,7 @@ namespace IED
 		const Controller::cachedActorInfo_t& a_info,
 		Controller&                          a_controller) noexcept
 	{
-		return processParams_t{
+		return ProcessParams{
 			ControllerUpdateFlags::kNone,
 			a_info.actor,
 			a_info.handle,
@@ -5099,7 +5090,7 @@ namespace IED
 	}
 
 	void Controller::SaveLastEquippedItems(
-		processParams_t&        a_params,
+		ProcessParams&          a_params,
 		const EquippedItemInfo& a_info,
 		ActorObjectHolder&      a_objectHolder) noexcept
 	{

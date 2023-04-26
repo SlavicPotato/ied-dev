@@ -626,7 +626,7 @@ namespace IED
 					(void)m_handle.LookupZH(ref);
 				}
 
-				stl::lock_guard lock(m_db.GetLock());
+				const stl::lock_guard lock(m_db.GetLock());
 
 				for (auto& e : m_list)
 				{
@@ -729,6 +729,34 @@ namespace IED
 	bool ActorObjectHolder::EraseQueuedModel(const ObjectDatabaseEntry& a_entry) noexcept
 	{
 		return m_queuedModels.erase(a_entry) > 0;
+	}
+
+	bool ActorObjectHolder::ProcessQueuedModels() noexcept
+	{
+		bool result = false;
+
+		for (auto it = m_queuedModels.begin(); it != m_queuedModels.end();)
+		{
+			const auto loadState = (*it)->loadState.load();
+
+			if (loadState > ODBEntryLoadState::kLoading)
+			{
+				it = m_queuedModels.erase(it);
+
+				result = true;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		if (result)
+		{
+			RequestEval();
+		}
+
+		return result;
 	}
 
 	bool ActorObjectHolder::HasQueuedCloningTasks() const noexcept

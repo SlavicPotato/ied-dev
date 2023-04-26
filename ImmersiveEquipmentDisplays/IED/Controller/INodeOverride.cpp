@@ -153,15 +153,13 @@ namespace IED
 		const Data::configNodeOverrideCondition_t& a_match,
 		nodeOverrideParams_t&                      a_params) noexcept
 	{
-		auto slot = stl::underlying(Data::ItemData::ExtraSlotToSlot(a_match.typeSlot));
-		if (slot >= stl::underlying(Data::ObjectSlot::kMax))
+		const auto slot = Data::ItemData::ExtraSlotToSlot(a_match.typeSlot);
+		if (slot >= Data::ObjectSlot::kMax)
 		{
 			return false;
 		}
 
-		auto& slots = a_params.objects.GetSlots();
-
-		auto form = slots[slot].GetFormIfActive();
+		const auto form = a_params.objects.GetSlot(slot).GetFormIfActive();
 		if (!form)
 		{
 			return false;
@@ -185,6 +183,15 @@ namespace IED
 			}
 		}
 
+		if (a_match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
+		{
+			if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch3) ==
+			    (slot == Data::ObjectSlot::kAmmo && Conditions::is_ammo_bolt(form)))
+			{
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -196,6 +203,11 @@ namespace IED
 
 		if (Conditions::is_hand_slot(a_match.typeSlot))
 		{
+			if (a_match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
+			{
+				return a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch3);
+			}
+
 			auto pm = a_params.actor->processManager;
 			if (!pm)
 			{
@@ -220,6 +232,11 @@ namespace IED
 		{
 			if (a_match.typeSlot == Data::ObjectSlotExtra::kArmor)
 			{
+				if (a_match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
+				{
+					return a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch3);
+				}
+
 				if (!a_params.get_biped_has_armor())
 				{
 					return false;
@@ -290,9 +307,23 @@ namespace IED
 				{
 					return false;
 				}
+
+				if (a_match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
+				{
+					if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch3) ==
+						Conditions::is_ammo_bolt(form))
+					{
+						return false;
+					}
+				}
 			}
 			else
 			{
+				if (a_match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
+				{
+					return a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch3);
+				}
+
 				return false;
 			}
 		}

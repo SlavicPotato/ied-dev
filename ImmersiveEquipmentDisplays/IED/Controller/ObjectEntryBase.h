@@ -108,10 +108,13 @@ namespace IED
 			std::int32_t                       inventoryCount{ 0 };
 		};
 
-		struct ObjectAnim
+		struct ObjectAnim 
+			//: public BSTEventSink<BSAnimationGraphEvent>
 		{
 			RE::WeaponAnimationGraphManagerHolderPtr holder;
 			stl::fixed_string                        currentEvent;
+
+			//EventResult ReceiveEvent(const BSAnimationGraphEvent* a_event, BSTEventSource<BSAnimationGraphEvent>* a_sink) override;
 
 			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event) noexcept;
 			void Cleanup();

@@ -440,7 +440,7 @@ namespace IED
 	}
 
 	AttachObjectResult IObjectManager::LoadAndAttach(
-		processParams_t&                a_params,
+		ProcessParams&                  a_params,
 		const Data::configBaseValues_t& a_activeConfig,
 		const Data::configBase_t&       a_baseConfig,
 		ObjectEntryBase&                a_objectEntry,
@@ -594,12 +594,13 @@ namespace IED
 
 				if (backgroundClone)
 				{
-					return TryDispatchCloningTask(
+					ct = DispatchCloningTask(
 						a_params,
 						dbentry,
 						modelParams.texSwap,
-						colScale,
-						a_objectEntry.data.cloningTask);
+						colScale);
+
+					return AttachObjectResult::kPending;
 				}
 				else
 				{
@@ -620,10 +621,15 @@ namespace IED
 
 					if (!object)
 					{
+						Error(
+							"[%.8X] [race: %.8X] [item: %.8X] background clone task failed",
+							a_params.actor->formID.get(),
+							a_params.race->formID.get(),
+							a_modelForm->formID.get(),
+							modelParams.path);
+
 						return AttachObjectResult::kFailed;
 					}
-
-					ct.reset();
 
 					break;
 
@@ -642,12 +648,13 @@ namespace IED
 		{
 			if (backgroundClone)
 			{
-				return TryDispatchCloningTask(
+				ct = DispatchCloningTask(
 					a_params,
 					dbentry,
 					modelParams.texSwap,
-					colScale,
-					ct);
+					colScale);
+
+				return AttachObjectResult::kPending;
 			}
 			else
 			{
@@ -673,11 +680,6 @@ namespace IED
 		object->SetVisible(true);
 
 		//NiAVObject_unk39_col(object.get(), 4, true, true, 1ui8);
-
-		if (modelParams.texSwap && modelParams.texSwap->numAlternateTextures > 0)
-		{
-			ApplyTextureSwap(modelParams.texSwap, object.get());
-		}
 
 		state->currentGeomTransformTag = a_activeConfig.geometryTransform;
 
@@ -807,15 +809,49 @@ namespace IED
 		     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
 			!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims))
 		{
-			if (AnimationUpdateController::CreateWeaponBehaviorGraph(
+			bool result;
+
+			const auto& ct = a_objectEntry.data.cloningTask;
+
+			if (ct && ct->HasGraphHolder())
+			{
+				result = AnimationUpdateController::CreateWeaponBehaviorGraph(
+					object,
+					*ct,
+					state->anim.holder,
+					[&](const char* a_path) noexcept {
+						return a_baseConfig.hkxFilter.empty() ?
+					               true :
+					               !a_baseConfig.hkxFilter.contains(a_path);
+					});
+			}
+			else
+			{
+				result = AnimationUpdateController::CreateWeaponBehaviorGraph(
 					object,
 					state->anim.holder,
 					[&](const char* a_path) noexcept {
 						return a_baseConfig.hkxFilter.empty() ?
-				                   true :
-				                   !a_baseConfig.hkxFilter.contains(a_path);
-					}))
+					               true :
+					               !a_baseConfig.hkxFilter.contains(a_path);
+					});
+			}
+
+			if (result)
 			{
+				/*RE::BSAnimationGraphManagerPtr agm;
+				if (state->anim.holder->GetAnimationGraphManagerImpl(agm))
+				{
+					for (auto& e : agm->graphs)
+					{
+						if (e)
+						{
+							e->AddEventSink(std::addressof(state->anim));
+							break;
+						}
+					}
+				}*/
+
 				if (modelParams.type == ModelType::kWeapon)
 				{
 					const auto& eventName = a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent) ?
@@ -856,11 +892,13 @@ namespace IED
 				true);
 		}
 
+		a_objectEntry.data.cloningTask.reset();
+
 		return AttachObjectResult::kSucceeded;
 	}
 
 	AttachObjectResult IObjectManager::LoadAndAttachGroup(
-		processParams_t&                a_params,
+		ProcessParams&                  a_params,
 		const Data::configBaseValues_t& a_activeConfig,
 		const Data::configBase_t&       a_baseConfig,
 		const Data::configModelGroup_t& a_group,
@@ -1265,13 +1303,13 @@ namespace IED
 	}
 
 	void IObjectManager::FinalizeObjectState(
-		std::unique_ptr<ObjectEntryBase::State>& a_state,
-		TESForm*                                 a_form,
-		NiNode*                                  a_rootNode,
-		const NiPointer<NiNode>&                 a_objectNode,
-		targetNodes_t&                           a_targetNodes,
-		const Data::configBaseValues_t&          a_config,
-		Actor*                                   a_actor) noexcept
+		const std::unique_ptr<ObjectEntryBase::State>& a_state,
+		TESForm*                                       a_form,
+		NiNode*                                        a_rootNode,
+		const NiPointer<NiNode>&                       a_objectNode,
+		targetNodes_t&                                 a_targetNodes,
+		const Data::configBaseValues_t&                a_config,
+		Actor*                                         a_actor) noexcept
 	{
 		a_state->form                 = a_form;
 		a_state->commonNodes.rootNode = a_rootNode;
@@ -1419,7 +1457,7 @@ namespace IED
 	}
 
 	void IObjectManager::PlayEquipObjectSound(
-		const processParams_t&          a_params,
+		const ProcessParams&            a_params,
 		const Data::configBaseValues_t& a_config,
 		const ObjectEntryBase&          a_objectEntry,
 		bool                            a_equip) noexcept
@@ -1470,28 +1508,22 @@ namespace IED
 		return result;
 	}
 
-	AttachObjectResult IObjectManager::TryDispatchCloningTask(
-		const processParams_t&        a_params,
-		const ObjectDatabaseEntry&    a_entry,
-		TESModelTextureSwap*          a_textureSwap,
-		float                         a_colliderScale,
-		NiPointer<ObjectCloningTask>& a_out) noexcept
+	NiPointer<ObjectCloningTask> IObjectManager::DispatchCloningTask(
+		const ProcessParams&       a_params,
+		const ObjectDatabaseEntry& a_entry,
+		TESModelTextureSwap*       a_textureSwap,
+		float                      a_colliderScale) noexcept
 	{
-		if (const auto thrd = RE::BackgroundProcessThread::GetSingleton())
-		{
-			a_out = thrd->QueueTask<ObjectCloningTask>(
-				*this,
-				a_params.objects.GetActorFormID(),
-				a_entry,
-				a_textureSwap,
-				a_colliderScale);
+		const auto thrd = RE::BackgroundProcessThread::GetSingleton();
 
-			return AttachObjectResult::kPending;
-		}
-		else
-		{
-			return AttachObjectResult::kFailed;
-		}
+		ASSERT(thrd != nullptr);
+
+		return thrd->QueueTask<ObjectCloningTask>(
+			*this,
+			a_params.objects.GetActorFormID(),
+			a_entry,
+			a_textureSwap,
+			a_colliderScale);
 	}
 
 	bool IObjectManager::RemoveAllChildren(
@@ -1504,15 +1536,22 @@ namespace IED
 
 		while (NiPointer object = GetObjectByName(a_object, a_name, true))
 		{
-			object->m_parent->DetachChild2(object);
+			const auto parent = object->m_parent;
+
+			if (!parent)
+			{
+				break;
+			}
+
+			parent->DetachChild2(object);
 			result = true;
+
+			ShrinkToSize(a_object);
 
 			if (!--maxiter)
 			{
 				break;
 			}
-
-			ShrinkToSize(a_object);
 		}
 
 		return result;
@@ -1601,8 +1640,10 @@ namespace IED
 
 		a_object->IncRef();
 
-		fUnk12ba3e0(*INode::m_shadowSceneNode, a_object);
-		fUnk12b99f0(*INode::m_shadowSceneNode, a_object);
+		const auto ssn = RE::ShadowSceneNode::GetSingleton();
+
+		fUnk12ba3e0(ssn, a_object);
+		fUnk12b99f0(ssn, a_object);
 
 		a_object->DecRef();
 
@@ -1759,13 +1800,18 @@ namespace IED
 	void IObjectManager::OnAsyncModelLoad(
 		const NiPointer<QueuedModel>& a_task)
 	{
-		const stl::lock_guard lock(m_lock);
+		auto& entry = a_task->GetEntry();
 
-		for (const auto& e : GetActorMap().getvec())
+		if (entry->loadState.load() > ODBEntryLoadState::kLoading)
 		{
-			if (e->second.EraseQueuedModel(a_task->GetEntry()))
+			const stl::lock_guard lock(m_lock);
+
+			for (const auto& e : GetActorMap().getvec())
 			{
-				e->second.RequestEval();
+				if (e->second.EraseQueuedModel(entry))
+				{
+					e->second.RequestEval();
+				}
 			}
 		}
 	}

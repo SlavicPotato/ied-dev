@@ -2,6 +2,7 @@
 
 #include "AnimationUpdateController.h"
 
+#include "Controller/ObjectCloningTask.h"
 #include "StringHolder.h"
 
 #include <ext/GarbageCollector.h>
@@ -23,10 +24,12 @@ namespace IED
 
 		for (auto& e : m_data)
 		{
-			for ([[maybe_unused]] auto& f : e.second)
-			{
-				i++;
-			}
+			std::for_each(
+				e.second.begin(),
+				e.second.end(),
+				[&](auto&) [[msvc::forceinline]] {
+					i++;
+				});
 		}
 
 		return i;
@@ -58,7 +61,7 @@ namespace IED
 
 			auto& e = m_data.try_emplace(a_actor).first->second;
 
-			e.emplace_front(a_ptr);
+			e.emplace_back(a_ptr);
 		}
 	}
 
@@ -89,7 +92,6 @@ namespace IED
 		}
 	}
 
-	
 	bool AnimationUpdateController::CreateWeaponBehaviorGraph(
 		NiAVObject*                               a_object,
 		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
@@ -113,7 +115,9 @@ namespace IED
 			return false;
 		}
 
-		if (!a_allowFunc(bged->behaviorGraphFile.c_str()))
+		const auto bgf = bged->behaviorGraphFile;
+
+		if (!a_allowFunc(bgf.c_str()))
 		{
 			return false;
 		}
@@ -122,21 +126,55 @@ namespace IED
 
 		if (!LoadAnimationBehahaviorGraph(
 				*result,
-				bged->behaviorGraphFile.c_str()))
+				bgf.c_str()))
 		{
 			return false;
 		}
 
 		if (!BindAnimationObject(*result, a_object))
 		{
-			CleanupWeaponBehaviorGraph(result);
-
 			gLog.Warning(
 				"%s: binding animation object failed [0x%p | %s]",
 				__FUNCTION__,
 				a_object,
 				a_object->m_name.c_str());
+		}
 
+		a_out = std::move(result);
+
+		return true;
+	}
+
+	bool AnimationUpdateController::LoadWeaponBehaviorGraph(
+		NiAVObject*                                                         a_object,
+		std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr>& a_out)
+	{
+		const auto sh = BSStringHolder::GetSingleton();
+
+		auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(sh->m_bged);
+		if (!bged)
+		{
+			return false;
+		}
+
+		if (bged->controlsBaseSkeleton)
+		{
+			return false;
+		}
+
+		if (bged->behaviorGraphFile.empty())
+		{
+			return false;
+		}
+
+		auto result = std::make_pair(
+			bged->behaviorGraphFile,
+			RE::WeaponAnimationGraphManagerHolder::Create());
+
+		if (!LoadAnimationBehahaviorGraph(
+				*result.second,
+				result.first.c_str()))
+		{
 			return false;
 		}
 
@@ -145,8 +183,33 @@ namespace IED
 		return true;
 	}
 
+	bool AnimationUpdateController::CreateWeaponBehaviorGraph(
+		NiAVObject*                               a_object,
+		ObjectCloningTask&                        a_in,
+		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
+		std::function<bool(const char*)>          a_allowFunc)
+	{
+		if (!a_allowFunc(a_in.GetAnimPath().c_str()))
+		{
+			return false;
+		}
+
+		a_out = std::move(a_in.GetGraphHolderManager());
+
+		if (!BindAnimationObject(*a_out, a_object))
+		{
+			gLog.Warning(
+				"%s: binding animation object failed [0x%p | %s]",
+				__FUNCTION__,
+				a_object,
+				a_object->m_name.c_str());
+		}
+
+		return true;
+	}
+
 	void AnimationUpdateController::CleanupWeaponBehaviorGraph(
-		RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept
+		const RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept
 	{
 		if (a_graph)
 		{
@@ -157,6 +220,5 @@ namespace IED
 			}
 		}
 	}
-
 
 }

@@ -1752,10 +1752,36 @@ namespace IED
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag3));
 				}
+
 				break;
-			case Data::NodeOverrideConditionType::Form:
-			case Data::NodeOverrideConditionType::Keyword:
+
 			case Data::NodeOverrideConditionType::Type:
+				if (match->flags.test_any(Data::NodeOverrideConditionFlags::kMatchAll))
+				{
+					const bool disabled =
+						!match->flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1);
+
+					UICommon::PushDisabled(disabled);
+
+					result |= ImGui::CheckboxFlagsT(
+						"!##t_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
+
+					UICommon::PopDisabled(disabled);
+
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt, "t_2"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
+				}
+
+				[[fallthrough]];
+
+			case Data::NodeOverrideConditionType::Keyword:
+			case Data::NodeOverrideConditionType::Form:
 
 				result |= ImGui::CheckboxFlagsT(
 					UIL::LS(CommonStrings::Equipped, "1"),

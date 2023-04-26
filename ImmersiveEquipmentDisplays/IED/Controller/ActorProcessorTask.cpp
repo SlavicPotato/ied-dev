@@ -417,6 +417,14 @@ namespace IED
 		ActorObjectHolder&                       a_holder,
 		bool                                     a_updateEffects) noexcept
 	{
+		if (!a_holder.m_queuedModels.empty())
+		{
+			if (a_holder.ProcessQueuedModels())
+			{
+				GetController().RequestCleanup();
+			}
+		}
+
 		auto& state = a_holder.m_state;
 
 		NiPointer<TESObjectREFR> refr;

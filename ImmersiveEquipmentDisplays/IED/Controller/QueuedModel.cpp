@@ -48,7 +48,7 @@ namespace IED
 			}
 		}
 
-		ITaskPool::AddPriorityTask<PostRunTask>(this);
+		//ITaskPool::AddPriorityTask<PostRunTask>(this);
 
 		return false;
 	}

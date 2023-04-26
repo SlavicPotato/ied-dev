@@ -36,7 +36,7 @@ namespace IED
 			kMatchMaskAllEquipmentSlotsAndThis = kMatchEquipmentSlots | kMatchThisItem,
 			kMatchMaskAny                      = kMatchEquipped | kMatchMaskAllEquipmentSlotsAndThis,
 
-			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form), rank (Faction)
+			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped/Type), count (Form), rank (Faction)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped), is child (Race)

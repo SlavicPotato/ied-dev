@@ -102,7 +102,7 @@ namespace IED
 		std::uint32_t        m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t        m_bipedSlotCacheMaxForms{ 16 };
 		float                m_introBannerVOffset{ 110.0f };
-		float                m_interiorAmbientLightThreshold{ 0.35f };
+		float                m_interiorAmbientLightThreshold{ 0.425f };
 		LogLevel             m_logLevel{ LogLevel::Message };
 
 		long               m_agManualMode{ 0 };

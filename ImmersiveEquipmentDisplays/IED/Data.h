@@ -825,7 +825,7 @@ namespace IED
 			}
 		};
 
-		struct raceCacheEntry_t
+		struct RaceCacheEntry
 		{
 			std::string              fullname;
 			std::string              edid;
@@ -859,8 +859,8 @@ namespace IED
 			}
 
 		private:
-			stl::unordered_map<Game::FormID, raceCacheEntry_t> m_raceList;
-			IPluginInfoA                                       m_pluginInfo;
+			stl::flat_map<Game::FormID, RaceCacheEntry> m_raceList;
+			IPluginInfoA                                m_pluginInfo;
 
 			static IData m_Instance;
 		};

@@ -27,15 +27,15 @@ namespace IED
 	EngineExtensions EngineExtensions::m_Instance;
 
 	void EngineExtensions::Install(
-		Controller*                      a_controller,
-		const stl::smart_ptr<ConfigINI>& a_config)
+		Controller*                            a_controller,
+		const stl::smart_ptr<const ConfigINI>& a_config)
 	{
 		m_Instance.InstallImpl(a_controller, a_config);
 	}
 
 	void EngineExtensions::InstallImpl(
-		Controller*                      a_controller,
-		const stl::smart_ptr<ConfigINI>& a_config)
+		Controller*                            a_controller,
+		const stl::smart_ptr<const ConfigINI>& a_config)
 	{
 		m_controller                   = a_controller;
 		m_conf.applyTransformOverrides = a_config->m_applyTransformOverrides;

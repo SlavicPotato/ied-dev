@@ -3,6 +3,7 @@
 #include "ObjectCloningTask.h"
 
 #include "Controller.h"
+#include "IED/AnimationUpdateController.h"
 #include "IED/Util/Common.h"
 #include "QueuedModel.h"
 
@@ -45,6 +46,7 @@ namespace IED
 			if (_entry->loadState.load() == ODBEntryLoadState::kLoaded)
 			{
 				CloneAndApplyTexSwap(_entry, _texSwap, _colliderScale, _clone);
+				AnimationUpdateController::LoadWeaponBehaviorGraph(_clone, _graphHolder);
 			}
 			else
 			{
@@ -52,9 +54,9 @@ namespace IED
 			}
 
 			_taskState.store(State::kCompleted);
-		}
 
-		ITaskPool::AddTask<PostRunTask>(this);
+			ITaskPool::AddTask<PostRunTask>(this);
+		}
 
 		return false;
 	}
@@ -65,7 +67,9 @@ namespace IED
 		float                      a_colliderScale,
 		NiPointer<NiNode>&         a_out)
 	{
-		const auto result = ObjectDatabase::CreateClone(a_dbentry->object.get(), a_colliderScale);
+		const auto result = ObjectDatabase::CreateClone(
+			a_dbentry->object.get(),
+			a_colliderScale);
 
 		if (a_texSwap && a_texSwap->numAlternateTextures > 0)
 		{

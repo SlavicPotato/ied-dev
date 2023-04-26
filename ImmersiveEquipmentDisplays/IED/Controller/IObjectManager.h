@@ -140,7 +140,7 @@ namespace IED
 			char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]) noexcept;
 
 		AttachObjectResult LoadAndAttach(
-			processParams_t&                a_params,
+			ProcessParams&                a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_config,
 			ObjectEntryBase&                a_objectEntry,
@@ -152,7 +152,7 @@ namespace IED
 			const bool                      a_physics) noexcept;
 
 		AttachObjectResult LoadAndAttachGroup(
-			processParams_t&                a_params,
+			ProcessParams&                a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_baseConfig,
 			const Data::configModelGroup_t& a_group,
@@ -164,13 +164,13 @@ namespace IED
 			const bool                      a_physics) noexcept;
 
 		static void FinalizeObjectState(
-			std::unique_ptr<ObjectEntryBase::State>& a_state,
-			TESForm*                                 a_form,
-			NiNode*                                  a_rootNode,
-			const NiPointer<NiNode>&                 a_objectNode,
-			targetNodes_t&                           a_targetNodes,
-			const Data::configBaseValues_t&          a_config,
-			Actor*                                   a_actor) noexcept;
+			const std::unique_ptr<ObjectEntryBase::State>& a_state,
+			TESForm*                                       a_form,
+			NiNode*                                        a_rootNode,
+			const NiPointer<NiNode>&                       a_objectNode,
+			targetNodes_t&                                 a_targetNodes,
+			const Data::configBaseValues_t&                a_config,
+			Actor*                                         a_actor) noexcept;
 
 		static void TryMakeArrowState(
 			const std::unique_ptr<ObjectEntryBase::State>& a_state,
@@ -193,7 +193,7 @@ namespace IED
 			const TESForm* a_modelForm) noexcept;
 
 		void PlayEquipObjectSound(
-			const processParams_t&          a_params,
+			const ProcessParams&          a_params,
 			const Data::configBaseValues_t& a_config,
 			const ObjectEntryBase&          a_objectEntry,
 			bool                            a_equip) noexcept;
@@ -219,12 +219,11 @@ namespace IED
 		}
 
 	private:
-		AttachObjectResult TryDispatchCloningTask(
-			const processParams_t&        a_params,
+		NiPointer<ObjectCloningTask> DispatchCloningTask(
+			const ProcessParams&        a_params,
 			const ObjectDatabaseEntry&    a_entry,
 			TESModelTextureSwap*          a_textureSwap,
-			float                         a_colliderScale,
-			NiPointer<ObjectCloningTask>& a_out) noexcept;
+			float                         a_colliderScale) noexcept;
 
 		struct unks_01
 		{

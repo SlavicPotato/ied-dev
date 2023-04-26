@@ -17,6 +17,7 @@
 #include "PapyrusInterface/Papyrus.h"
 #include "ReferenceLightController.h"
 #include "SPtrHolder.h"
+#include "SkeletonCache.h"
 
 #include "Drivers/Input.h"
 #include "Drivers/Render.h"
@@ -28,10 +29,6 @@
 #if defined(IED_ENABLE_OUTFIT) && defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
 #	include "IED/OM/PersistentOutfitFormManager.h"
 #endif
-
-#include "ext/BSThread.h"
-
-#include "IED/SkeletonCache.h"
 
 namespace IED
 {
@@ -48,7 +45,7 @@ namespace IED
 
 		Debug("Loading INI..");
 
-		const auto& config = m_config = stl::make_smart<ConfigINI>(PLUGIN_INI_FILE_NOEXT);
+		const auto& config = m_config = stl::make_smart<const ConfigINI>(PLUGIN_INI_FILE_NOEXT);
 
 		if (!config->IsLoaded())
 		{
@@ -99,6 +96,8 @@ namespace IED
 		OM::PersistentOutfitFormManager::GetSingleton().Install();
 #endif
 
+		bool uiEnabled = false;
+
 		if (config->m_enableUI)
 		{
 			Debug("Initializing render driver..");
@@ -114,6 +113,8 @@ namespace IED
 				Drivers::UI::Initialize();
 				Drivers::UI::SetImGuiIni(PATHS::IMGUI_INI);
 
+				uiEnabled = true;
+
 				Message("Graphical user interface enabled");
 
 				if (config->m_dpiAwareness)
@@ -124,8 +125,6 @@ namespace IED
 			}
 			else
 			{
-				config->m_enableUI = false;
-
 				WinApi::MessageBoxErrorLog(
 					PLUGIN_NAME_FULL,
 					"Failed initializing render driver, UI disabled");
@@ -138,7 +137,7 @@ namespace IED
 
 		Debug("Early initialization done");
 
-		if (!config->m_enableUI)
+		if (!uiEnabled)
 		{
 			ISKSE::GetSingleton().CloseBacklog();
 		}
@@ -165,7 +164,7 @@ namespace IED
 
 		ALD::SetInteriorAmbientLightThreshold(config->m_interiorAmbientLightThreshold);
 
-		auto &sc = SkeletonCache::GetSingleton();
+		auto& sc = SkeletonCache::GetSingleton();
 
 		sc.EnableNativeLoader(config->m_scNativeLoader);
 		sc.EnableMakeOnLoad(config->m_scMakeOnLoad);
@@ -182,20 +181,20 @@ namespace IED
 		{
 			stl::report_and_fail(
 				PLUGIN_NAME_FULL,
-				"Plugin uses AVX2 instrinsics but the processor lacks support for this instruction set");
+				"Plugin uses AVX2 instrinsics but the processor lacks support for the instruction set");
 		}
 #endif
 	}
 
 	const char* Initializer::GetLanguage()
 	{
-		auto e = *g_iniSettingCollection;
+		const auto e = *g_iniSettingCollection;
 		if (!e)
 		{
 			return nullptr;
 		}
 
-		auto f = e->Get("sLanguage:General");
+		const auto* const f = e->Get("sLanguage:General");
 		if (!f)
 		{
 			return nullptr;
@@ -212,13 +211,13 @@ namespace IED
 	void Initializer::SetupSKSEEventHandlers(
 		const SKSEInterface* a_skse)
 	{
-		auto& skse = ISKSE::GetSingleton();
+		const auto& skse = ISKSE::GetSingleton();
 
 		Debug("Setting up SKSE message handler..");
 
-		auto handle = a_skse->GetPluginHandle();
+		const auto handle = a_skse->GetPluginHandle();
 
-		auto messagingInterface = skse.GetInterface<SKSEMessagingInterface>();
+		const auto messagingInterface = skse.GetInterface<SKSEMessagingInterface>();
 
 		ASSERT(messagingInterface);
 
@@ -226,7 +225,7 @@ namespace IED
 
 		Debug("Registering papyrus functions..");
 
-		auto papyrusInterface = skse.GetInterface<SKSEPapyrusInterface>();
+		const auto papyrusInterface = skse.GetInterface<SKSEPapyrusInterface>();
 
 		ASSERT(papyrusInterface);
 
@@ -234,7 +233,7 @@ namespace IED
 
 		Debug("Setting up SKSE serialization handler..");
 
-		auto serializationInterface = skse.GetInterface<SKSESerializationInterface>();
+		const auto serializationInterface = skse.GetInterface<SKSESerializationInterface>();
 
 		ASSERT(serializationInterface);
 
@@ -320,8 +319,8 @@ namespace IED
 				for (auto& e : NodeOverrideData::GetExtraMovNodes())
 				{
 					nodeMap.Add(
-						e.name_node.c_str(),
-						e.desc.c_str(),
+						e.name_node,
+						e.desc,
 						Data::NodeDescriptorFlags::kNone);
 				}
 

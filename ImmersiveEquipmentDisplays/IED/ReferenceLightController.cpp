@@ -46,8 +46,8 @@ namespace IED
 					params.fov = pi * 2.0f;
 				}
 
-				params.nearDistance          = a_lightForm->data.nearDistance;
-				params.shadowDepthBias       = a_config ? a_config->shadowDepthBias : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetExtraLightShadowDepthBias(a_refr))
+				params.nearDistance    = a_lightForm->data.nearDistance;
+				params.shadowDepthBias = a_config ? a_config->shadowDepthBias : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetExtraLightShadowDepthBias(a_refr))
 			}
 			else
 			{
@@ -119,8 +119,7 @@ namespace IED
 
 	static REFR_LIGHT* GetExtraLight(Actor* a_actor) noexcept
 	{
-		auto extraLight = a_actor->extraData.Get<ExtraLight>();
-		if (extraLight)
+		if (auto extraLight = a_actor->extraData.Get<ExtraLight>())
 		{
 			return extraLight->lightData;
 		}
@@ -162,10 +161,8 @@ namespace IED
 
 	void ReferenceLightController::Initialize()
 	{
-		if (auto edl = ScriptEventSourceHolder::GetSingleton())
-		{
-			edl->AddEventSink<TESCellAttachDetachEvent>(this);
-		}
+		const auto edl = ScriptEventSourceHolder::GetSingleton();
+		ASSERT(edl != nullptr);
 
 		m_initialized = true;
 	}
@@ -178,7 +175,7 @@ namespace IED
 		visit_lights(
 			a_actor,
 			[&](auto& a_entry) noexcept [[msvc::forceinline]] {
-				UpdateRefrLight(a_entry.form, a_entry.niLight, a_actor, -1.0f);
+				UpdateRefrLight(a_entry.form, a_entry.data.niObject, a_actor, -1.0f);
 			});
 	}
 
@@ -191,10 +188,9 @@ namespace IED
 			const auto params = detail::make_params(
 				a_actor,
 				a_entry.form,
-				std::addressof(a_entry.config));
+				std::addressof(a_entry.data.extraLightData));
 
-			const auto ssn = *INode::m_shadowSceneNode;
-			ssn->CreateAndAddLight(a_entry.niLight.get(), params);
+			RE::ShadowSceneNode::GetSingleton()->CreateAndAddLight(a_entry.data.niObject.get(), params);
 		});
 	}
 
@@ -227,10 +223,9 @@ namespace IED
 		visit_lights(
 			a_actor,
 			[](auto& a_entry) noexcept [[msvc::forceinline]] {
-				if (auto& bsl = a_entry.bsLight)
+				if (auto& bsl = a_entry.data.bsObject)
 				{
-					QueueAddLight(
-						*INode::m_shadowSceneNode,
+					RE::ShadowSceneNode::GetSingleton()->QueueAddLight(
 						bsl.get());
 				}
 			});
@@ -247,9 +242,8 @@ namespace IED
 			visit_lights(
 				a_actor,
 				[](auto& a_entry) noexcept [[msvc::forceinline]] {
-					UnkQueueBSLight(
-						*INode::m_shadowSceneNode,
-						a_entry.niLight.get());
+					RE::ShadowSceneNode::GetSingleton()->UnkQueueBSLight(
+						a_entry.data.niObject.get());
 				});
 		}
 		else
@@ -258,7 +252,7 @@ namespace IED
 			    a_extraLight &&
 			    a_extraLight->light)
 			{
-				if (auto equipped = GetEquippedLHLight(a_actor))
+				if (const auto equipped = GetEquippedLHLight(a_actor))
 				{
 					if (::NRTTI<NiPointLight>::IsType(a_extraLight->light->GetRTTI()))
 					{
@@ -280,13 +274,12 @@ namespace IED
 					[&](auto& a_entry) noexcept [[msvc::forceinline]] {
 						UpdateRefrLight(
 							a_entry.form,
-							a_entry.niLight,
+							a_entry.data.niObject,
 							a_actor,
 							-1.0f);
 
-						UnkQueueBSLight(
-							*INode::m_shadowSceneNode,
-							a_entry.niLight.get());
+						RE::ShadowSceneNode::GetSingleton()->UnkQueueBSLight(
+							a_entry.data.niObject.get());
 					});
 			}
 			else
@@ -296,9 +289,8 @@ namespace IED
 				visit_lights(
 					a_actor,
 					[](auto& a_entry) noexcept [[msvc::forceinline]] {
-						UnkQueueBSLight(
-							*INode::m_shadowSceneNode,
-							a_entry.niLight.get());
+						RE::ShadowSceneNode::GetSingleton()->UnkQueueBSLight(
+							a_entry.data.niObject.get());
 					});
 			}
 		}
@@ -315,17 +307,13 @@ namespace IED
 
 			auto& e = m_data.try_emplace(a_actor).first->second;
 
-			e.emplace_front(
-				a_form,
-				a_light.niObject,
-				a_light.bsObject,
-				a_light.extraLightData);
+			e.emplace_front(a_form, a_light);
 		}
 	}
 
 	void ReferenceLightController::RemoveLight(
-		Game::FormID  a_actor,
-		NiPointLight* a_light) noexcept
+		Game::FormID                   a_actor,
+		const NiPointer<NiPointLight>& a_light) noexcept
 	{
 		if (m_initialized)
 		{
@@ -334,10 +322,9 @@ namespace IED
 			auto it = m_data.find(a_actor);
 			if (it != m_data.end())
 			{
-				it->second.remove_if(
-					[&](auto& a_v) {
-						return a_v.niLight == a_light;
-					});
+				std::erase_if(it->second, [&](auto& a_v) {
+					return a_v.data.niObject == a_light;
+				});
 			}
 		}
 	}
@@ -394,7 +381,7 @@ namespace IED
 			attachmentNode = a_object;
 		}
 
-		char name[224];
+		char name[32];
 		stl::snprintf(name, "%.8X PtLight", a_lightForm->formID.get());
 
 		const auto pointLight = NiPointLight::Create();
@@ -407,33 +394,14 @@ namespace IED
 		pointLight->radius  = detail::make_radius(a_lightForm);
 		pointLight->diffuse = detail::make_diffuse(a_lightForm);
 
-		// at this point, beth sets a flag on the base form if a transform controller is found on a_object
+		const auto params = detail::make_params(
+			a_actor,
+			a_lightForm,
+			std::addressof(a_config));
 
-		RE::BSLight* bsLight = nullptr;
-
-		const auto* const extraLitWaterRefs = a_actor->extraData.Get<ExtraLitWaterRefs>();
-
-		if (!extraLitWaterRefs ||
-		    extraLitWaterRefs->refs.empty())  // ?
-		{
-			const auto params = detail::make_params(
-				a_actor,
-				a_lightForm,
-				std::addressof(a_config));
-
-			const auto ssn = *INode::m_shadowSceneNode;
-			bsLight        = ssn->CreateAndAddLight(pointLight, params);
-		}
+		const auto bsLight = RE::ShadowSceneNode::GetSingleton()->CreateAndAddLight(pointLight, params);
 
 		NiPointLightSetAttenuation(pointLight, static_cast<std::int32_t>(pointLight->radius.x));
-
-		/*
-			original code:
-
-			if ( !TESObjectREFR::unk_186(a_refr) )      // false if base != TESObjectLIGH
-				v25 = TESObjectREFR::GetExtraLightDataFade(a_refr, a_lightForm->fade);// arg2 if base != TESObjectLIGH, else ExtraLightData->fade + arg2
-			pointLight->fade = v25;
-		*/
 
 		pointLight->fade = a_lightForm->fade;
 
@@ -443,32 +411,9 @@ namespace IED
 			a_config);
 	}
 
-	/*void ReferenceLightController::ReAttachLightImpl(
-		Actor* a_actor,
-		Entry&       a_entry,
-		ObjectLight& a_object) noexcept
-	{
-		a_entry.config = a_object.extraLightData;
-
-		const auto ssn = *INode::m_shadowSceneNode;
-		QueueRemoveLight(ssn, a_entry.niLight.get());
-
-		const auto params = detail::make_params(
-			a_actor,
-			a_entry.form,
-			std::addressof(a_entry.config));
-
-		const auto bsLight = ssn->CreateAndAddLight(a_entry.niLight.get(), params);
-
-		if (a_actor == *g_thePlayer)
-		{
-			a_entry.bsLight = bsLight;
-		}
-	}*/
-
 	void ReferenceLightController::QueueRemoveAllLightsFromNode(NiNode* a_node) noexcept
 	{
-		QueueRemoveAllLightsFromNodeImpl(*INode::m_shadowSceneNode, a_node, true, true);
+		RE::ShadowSceneNode::GetSingleton()->QueueRemoveAllLightsFromNode(a_node, true, true);
 	}
 
 	std::size_t ReferenceLightController::GetNumLights() const noexcept
@@ -479,10 +424,12 @@ namespace IED
 
 		for (auto& e : m_data)
 		{
-			for ([[maybe_unused]] auto& f : e.second)
-			{
-				i++;
-			}
+			std::for_each(
+				e.second.begin(),
+				e.second.end(),
+				[&](auto&) [[msvc::forceinline]] {
+					i++;
+				});
 		}
 
 		return i;
@@ -509,8 +456,7 @@ namespace IED
 				detail::make_params(a_actor, torch, nullptr) :
 				detail::make_params();
 
-		const auto ssn = *INode::m_shadowSceneNode;
-		ssn->CreateAndAddLight(light.get(), params);
+		RE::ShadowSceneNode::GetSingleton()->CreateAndAddLight(light.get(), params);
 	}
 
 	EventResult ReferenceLightController::ReceiveEvent(

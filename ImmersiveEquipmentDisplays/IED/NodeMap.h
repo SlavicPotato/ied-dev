@@ -18,7 +18,7 @@ namespace IED
 			{
 				const char*         node;
 				const char*         desc;
-				NodeDescriptorFlags flags;
+				NodeDescriptorFlags flags{ NodeDescriptorFlags::kNone };
 			};
 
 			static constexpr auto& GetSingleton() noexcept
@@ -91,7 +91,7 @@ namespace IED
 			data_type m_data;
 			map_type  m_extraData;
 
-			bool m_dirty{ false };
+			bool m_dirty{ true };
 
 			mutable stl::recursive_mutex m_rwLock;
 			mutable except::descriptor   m_lastException;

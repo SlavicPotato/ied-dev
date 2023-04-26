@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	void processParams_t::SuspendReferenceEffectShaders() noexcept
+	void ProcessParams::SuspendReferenceEffectShaders() noexcept
 	{
 		if (!state.flags.test(ProcessStateUpdateFlags::kEffectShadersSuspended))
 		{

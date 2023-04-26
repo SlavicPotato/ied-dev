@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	struct processParams_t;
+	struct ProcessParams;
 
 	namespace OM
 	{
@@ -17,15 +17,15 @@ namespace IED
 
 			void EvaluateOutfit(
 				const Data::OM::configStoreOutfit_t& a_config,
-				IED::processParams_t&                a_params) noexcept;
+				IED::ProcessParams&                a_params) noexcept;
 
 		private:
 			static void TrySetOutfit(
-				IED::processParams_t&           a_params,
+				IED::ProcessParams&           a_params,
 				const Data::OM::configOutfit_t& a_config) noexcept;
 
 			static BGSOutfit* GetOutfit(
-				IED::processParams_t&           a_params,
+				IED::ProcessParams&           a_params,
 				const Data::OM::configOutfit_t& a_config) noexcept;
 		};
 	}

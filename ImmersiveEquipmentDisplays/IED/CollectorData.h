@@ -166,8 +166,8 @@ namespace IED
 				{
 				}
 
-				TESBoundObject*              form;
-				ItemExtraData::ExtraEquipped extraEquipped;
+				TESBoundObject* const              form;
+				const ItemExtraData::ExtraEquipped extraEquipped;
 			};
 
 			using eq_container_type = stl::cache_aligned::vector<EquippedItemData>;
@@ -176,8 +176,8 @@ namespace IED
 				container_type&    a_container,
 				eq_container_type& a_equippedContainer)  //
 				noexcept(
-					std::is_nothrow_invocable_v<decltype(&container_type::clear), container_type>&&
-						std::is_nothrow_invocable_v<decltype(&eq_container_type::clear), eq_container_type>) :
+					noexcept(container_type().clear()) &&  //
+					noexcept(eq_container_type().clear())) :
 				forms(a_container),
 				equippedForms(a_equippedContainer)
 			{

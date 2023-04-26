@@ -441,7 +441,7 @@ namespace IED
 
 		//void QueueClearVariableStorage(bool a_requestEval);
 
-		void RunUpdateBipedSlotCache(processParams_t& a_params) noexcept;
+		void RunUpdateBipedSlotCache(ProcessParams& a_params) noexcept;
 
 		[[nodiscard]] constexpr auto GetEvalCounter() const noexcept
 		{
@@ -525,15 +525,15 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void UpdateBipedSlotCache(
-			processParams_t&   a_params,
+			ProcessParams&   a_params,
 			ActorObjectHolder& a_holder) noexcept;
 
 		void RunVariableMapUpdate(
-			processParams_t& a_params,
+			ProcessParams& a_params,
 			bool             a_markAllForEval = false) noexcept;
 
 		void DoObjectEvaluation(
-			processParams_t& a_params) noexcept;
+			ProcessParams& a_params) noexcept;
 
 		void EvaluateImpl(
 			ActorObjectHolder&               a_holder,
@@ -711,82 +711,82 @@ namespace IED
 			const updateActionFunc_t&            a_func);
 
 		bool DoItemUpdate(
-			processParams_t&                a_params,
+			ProcessParams&                a_params,
 			const Data::configBaseValues_t& a_usedConfig,
 			ObjectEntryBase&                a_entry,
 			bool                            a_visible,
 			TESForm*                        a_currentModelForm) noexcept;
 
 		void ResetEffectShaderData(
-			processParams_t& a_params,
+			ProcessParams& a_params,
 			ObjectEntryBase& a_entry) noexcept;
 
 		void ResetEffectShaderData(
-			processParams_t& a_params,
+			ProcessParams& a_params,
 			ObjectEntryBase& a_entry,
 			NiAVObject*      a_object) noexcept;
 
 		void UpdateObjectEffectShaders(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		void UpdateCustomGroup(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		void RemoveSlotObjectEntry(
-			processParams_t& a_params,
+			ProcessParams& a_params,
 			ObjectEntrySlot& a_entry,
 			bool             a_removeCloningTask = true,
 			bool             a_noSound           = false) noexcept;
 
-		void ProcessSlots(processParams_t& a_params) noexcept;
+		void ProcessSlots(ProcessParams& a_params) noexcept;
 
 		bool IsBlockedByChance(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		ActorObjectHolder* SelectCustomFormVariableSourceHolder(
 			Game::FormID     a_id,
-			processParams_t& a_params) noexcept;
+			ProcessParams& a_params) noexcept;
 
 		ActorObjectHolder* SelectCustomFormVariableSource(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config) noexcept;
 
 		const Data::configCachedForm_t* SelectCustomForm(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config) noexcept;
 
 		AttachObjectResult ProcessCustomEntry(
-			processParams_t&            a_params,
+			ProcessParams&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_cacheEntry) noexcept;
 
 		void ProcessCustomEntryMap(
-			processParams_t&                     a_params,
+			ProcessParams&                     a_params,
 			const Data::configCustomHolder_t&    a_confData,
 			ActorObjectHolder::customEntryMap_t& a_entryMap) noexcept;
 
 		void ProcessCustomMap(
-			processParams_t&                     a_params,
+			ProcessParams&                     a_params,
 			const Data::configCustomPluginMap_t& a_confPluginMap,
 			Data::ConfigClass                    a_class) noexcept;
 
-		void ProcessCustom(processParams_t& a_params) noexcept;
+		void ProcessCustom(ProcessParams& a_params) noexcept;
 
 		void SaveLastEquippedItems(
-			processParams_t&        a_params,
+			ProcessParams&        a_params,
 			const EquippedItemInfo& a_info,
 			ActorObjectHolder&      a_objectHolder) noexcept;
 
 		bool GetVisibilitySwitch(
 			Actor*                     a_actor,
 			stl::flag<Data::BaseFlags> a_flags,
-			processParams_t&           a_params) noexcept;
+			ProcessParams&           a_params) noexcept;
 
 		bool LookupTrackedActor(
 			Game::FormID       a_actor,

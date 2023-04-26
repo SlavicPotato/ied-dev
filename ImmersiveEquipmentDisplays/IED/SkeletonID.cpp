@@ -18,7 +18,9 @@ namespace IED
 
 		assert(sh != nullptr);
 
-		auto signature = hash::fnv1::fnv_offset_basis;
+		stl::flag<PresenceFlags> pflags{ PresenceFlags::kNone };
+
+		auto signature = fnv_offset_basis;
 
 		signature = _append_hash_istring_fnv1a(
 			signature,
@@ -34,7 +36,7 @@ namespace IED
 		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
 				sh->m_skeletonID))
 		{
-			m_id = extra->m_data;
+			m_id.emplace(extra->m_data);
 
 			signature = _append_hash_fnv1a(
 				signature,
@@ -44,8 +46,6 @@ namespace IED
 		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
 				sh->m_bsx))
 		{
-			m_bsx = extra->m_data;
-
 			signature = _append_hash_fnv1a(
 				signature,
 				extra->m_data);
@@ -53,24 +53,24 @@ namespace IED
 
 		if (a_root->GetIndexOf(sh->m_BSBoneLOD) > -1)
 		{
-			m_pflags.set(PresenceFlags::kHasBoneLODExtraData);
+			pflags.set(PresenceFlags::kHasBoneLODExtraData);
 		}
 
 		if (a_root->GetIndexOf(sh->m_BBX) > -1)
 		{
-			m_pflags.set(PresenceFlags::kHasBoundExtraData);
+			pflags.set(PresenceFlags::kHasBoundExtraData);
 		}
 
 		if (auto npcRoot = GetNodeByName(a_root, sh->m_npcroot))
 		{
-			m_pflags.set(PresenceFlags::kHasNPCRootNode);
+			pflags.set(PresenceFlags::kHasNPCRootNode);
 
 			if (auto parent = npcRoot->m_parent; parent && parent != a_root)
 			{
 				if (auto extra = parent->GetExtraDataSafe<NiFloatExtraData>(
 						sh->m_XPMSE))
 				{
-					m_xpmse_version = extra->m_data;
+					m_xpmse_version.emplace(extra->m_data);
 
 					signature = _append_hash_fnv1a(
 						signature,
@@ -106,6 +106,6 @@ namespace IED
 			}
 		}
 
-		m_signature = _append_hash_fnv1a(signature, m_pflags);
+		m_signature = _append_hash_fnv1a(signature, pflags);
 	}
 }

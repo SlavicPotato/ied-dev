@@ -39,7 +39,7 @@ namespace IED
 
 			if (auto it = data.find(plugin); it != data.end())
 			{
-				a_out = it->second.GetFormID(lower);
+				a_out = it->second->GetFormID(lower);
 				return true;
 			}
 			else

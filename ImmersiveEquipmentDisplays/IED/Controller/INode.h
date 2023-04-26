@@ -91,7 +91,5 @@ namespace IED
 
 	public:
 		static void UpdateRoot(NiNode* a_root) noexcept;
-
-		inline static const auto m_shadowSceneNode = IAL::Address<RE::ShadowSceneNode**>(513211, 390951);
 	};
 }

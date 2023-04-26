@@ -31,7 +31,7 @@ namespace IED
 				Interface() = default;
 
 				template <concepts::accept_editor_label Ts>
-				constexpr Interface(
+				explicit Interface(
 					std::unique_ptr<UIEditorInterface> a_interface,
 					Ts                                 a_label) :
 					ptr(std::move(a_interface)),
@@ -110,6 +110,8 @@ namespace IED
 
 			void EvaluateTabSwitch(
 				Data::ConfigClass a_class);
+
+			void StoreCurrentTab();
 
 			std::array<Interface, Data::CONFIG_CLASS_MAX> m_interfaces;
 			Localization::StringID                        m_menuName;

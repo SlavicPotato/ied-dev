@@ -12,7 +12,7 @@ namespace IED
 	using namespace Data;
 
 	bool IConditionalVariableProcessor::UpdateVariableMap(
-		processParams_t&                          a_params,
+		ProcessParams&                          a_params,
 		const configConditionalVariablesHolder_t& a_config,
 		conditionalVariableMap_t&                 a_map) noexcept
 	{
@@ -50,7 +50,7 @@ namespace IED
 	}
 
 	constexpr const Data::configConditionalVariable_t* IConditionalVariableProcessor::GetOverrideVariable(
-		processParams_t&                              a_params,
+		ProcessParams&                              a_params,
 		const Data::configConditionalVariablesList_t& a_list) noexcept
 	{
 		for (auto& e : a_list)
@@ -83,7 +83,7 @@ namespace IED
 	}
 
 	Game::FormID IConditionalVariableProcessor::GetLastEquippedForm(
-		processParams_t&                                  a_params,
+		ProcessParams&                                  a_params,
 		const Data::configConditionalVariableValueData_t& a_data) noexcept
 	{
 		auto& controller = a_params.controller;
@@ -112,7 +112,7 @@ namespace IED
 	}
 
 	constexpr void IConditionalVariableProcessor::UpdateVariable(
-		processParams_t&                                  a_params,
+		ProcessParams&                                  a_params,
 		ConditionalVariableType                           a_type,
 		const Data::configConditionalVariableValueData_t& a_src,
 		conditionalVariableStorage_t&                     a_dst,

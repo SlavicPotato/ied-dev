@@ -16,7 +16,6 @@
 
 #include "UIBaseConfigWidgetStrings.h"
 
-
 namespace IED
 {
 	namespace UI
@@ -478,8 +477,33 @@ namespace IED
 
 			switch (match->fbf.type)
 			{
-			case Data::EquipmentOverrideConditionType::Form:
 			case Data::EquipmentOverrideConditionType::Type:
+
+				if (match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchMaskAny))
+				{
+					const bool disabled =
+						!match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
+
+					UICommon::PushDisabled(disabled);
+
+					result |= ImGui::CheckboxFlagsT(
+						"!##t_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
+
+					UICommon::PopDisabled(disabled);
+
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt, "t_2"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+				}
+
+				[[fallthrough]];
+
+			case Data::EquipmentOverrideConditionType::Form:
 			case Data::EquipmentOverrideConditionType::Keyword:
 
 				result |= ImGui::CheckboxFlagsT(
@@ -739,7 +763,6 @@ namespace IED
 									UIL::LS(UIWidgetCommonStrings::GeometryVisible, "F"),
 									stl::underlying(std::addressof(match->flags.value)),
 									stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag8));
-
 							}
 						}
 
@@ -1037,7 +1060,7 @@ namespace IED
 
 					ImGui::SameLine();
 				}
-				
+
 				else if (a_item == ConditionParamItem::LightingTemplateInheritanceFlags)
 				{
 					result |= ImGui::CheckboxFlagsT(
@@ -2265,7 +2288,7 @@ namespace IED
 							{
 								tdesc = "";
 							}
-							
+
 							if (!vdesc)
 							{
 								vdesc = "";

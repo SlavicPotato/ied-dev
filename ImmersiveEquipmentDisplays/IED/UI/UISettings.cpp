@@ -924,6 +924,8 @@ namespace IED
 			{
 				for (auto& [i, e] : ILog::GetLogLevels())
 				{
+					ImGui::PushID(static_cast<int>(e));
+
 					const bool selected = e == a_value;
 					if (selected)
 					{
@@ -931,11 +933,13 @@ namespace IED
 							ImGui::SetScrollHereY();
 					}
 
-					if (ImGui::Selectable(i.c_str(), selected))
+					if (ImGui::Selectable(i, selected))
 					{
 						a_value = e;
 						result  = true;
 					}
+
+					ImGui::PopID();
 				}
 
 				ImGui::EndCombo();

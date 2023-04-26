@@ -40,7 +40,7 @@ namespace IED
 
 		bool m_done{ false };
 
-		stl::smart_ptr<ConfigINI> m_config;
+		stl::smart_ptr<const ConfigINI> m_config;
 
 		static Initializer m_Instance;
 	};

@@ -58,7 +58,7 @@ namespace IED
 			struct UIOutfitEntryEditorWidgetParamWrapper
 			{
 				const T& actual;
-				bool     noData;
+				bool     noData{ false };
 			};
 
 			template <class _Param>

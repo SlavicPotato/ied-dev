@@ -162,25 +162,25 @@ namespace IED
 
 		constexpr auto GetOppositeSex(Data::ConfigSex a_sex) noexcept
 		{
-			return a_sex == Data::ConfigSex::Female ?
-			           Data::ConfigSex::Male :
-			           Data::ConfigSex::Female;
+			static_assert(
+				stl::underlying(Data::ConfigSex::Female) == 1 &&
+				stl::underlying(Data::ConfigSex::Male) == 0);
+
+			return static_cast<Data::ConfigSex>(stl::underlying(a_sex) ^ stl::underlying(Data::ConfigSex::Female));
 		}
 
 		using ConfigForm = IPluginInfoA::formPair_t;
 
-		template <
-			class T,
-			class form_descriptor_type = stl::strip_type<T>>
-			requires stl::is_any_same_v<
-				form_descriptor_type,
-				ConfigForm,
-				Game::FormID>
+		template <class T>  //
+			requires(stl::is_any_same_v<
+					 T,
+					 ConfigForm,
+					 Game::FormID>)
 		struct ConfigSound
 		{
 			using soundPair_t = std::pair<
-				std::optional<form_descriptor_type>,
-				std::optional<form_descriptor_type>>;
+				std::optional<T>,
+				std::optional<T>>;
 
 			bool enabled{ false };
 			bool npc{ false };

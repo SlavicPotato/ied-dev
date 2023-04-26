@@ -2,6 +2,8 @@
 
 namespace IED
 {
+	class ObjectCloningTask;
+
 	class AnimationUpdateController
 	{
 		using updateAnimationGraph_t = bool (*)(
@@ -62,8 +64,18 @@ namespace IED
 			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 			std::function<bool(const char*)>          a_allowFunc = [](const char*) { return true; });
 
+		static bool LoadWeaponBehaviorGraph(
+			NiAVObject*                                                         a_object,
+			std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr>& a_out);
+
+		static bool CreateWeaponBehaviorGraph(
+			NiAVObject*                               a_object,
+			ObjectCloningTask&                        a_in,
+			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
+			std::function<bool(const char*)>          a_allowFunc = [](const char*) { return true; });
+
 		static void CleanupWeaponBehaviorGraph(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept;
+			const RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept;
 
 	private:
 		inline static const auto UpdateAnimationGraph         = IAL::Address<updateAnimationGraph_t>(32155, 32899);
@@ -72,8 +84,8 @@ namespace IED
 
 		bool m_initialized{ false };
 
-		mutable lock_type                                          m_lock;
-		stl::unordered_map<Game::FormID, stl::forward_list<Entry>> m_data;
+		mutable lock_type                                    m_lock;
+		stl::unordered_map<Game::FormID, stl::vector<Entry>> m_data;
 
 		static AnimationUpdateController m_Instance;
 	};

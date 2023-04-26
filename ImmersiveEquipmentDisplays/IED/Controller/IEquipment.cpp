@@ -37,7 +37,7 @@ namespace IED
 	}
 
 	auto IEquipment::SelectSlotItem(
-		processParams_t&          a_params,
+		ProcessParams&          a_params,
 		const Data::configSlot_t& a_config,
 		SlotItemCandidates&       a_candidates,
 		const ObjectEntrySlot&    a_slot) noexcept
@@ -48,7 +48,7 @@ namespace IED
 			return {};
 		}
 
-		bool checkCannotWear =
+		const bool checkCannotWear =
 			a_config.slotFlags.test(Data::SlotFlags::kCheckCannotWear);
 
 		for (auto& e : a_config.preferredItems)
@@ -142,7 +142,7 @@ namespace IED
 	}
 
 	bool IEquipment::CustomEntryValidateInventoryForm(
-		processParams_t&               a_params,
+		ProcessParams&               a_params,
 		const CollectorData::ItemData& a_itemData,
 		const configCustom_t&          a_config,
 		bool&                          a_hasMinCount) noexcept
@@ -216,7 +216,7 @@ namespace IED
 	}
 
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormGroup(
-		processParams_t&            a_params,
+		ProcessParams&            a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
 		bool&                       a_hasMinCount) noexcept
@@ -243,7 +243,7 @@ namespace IED
 
 	template <class Tf>
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormDefault(
-		processParams_t&            a_params,
+		ProcessParams&            a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
 		bool&                       a_hasMinCount,
@@ -368,7 +368,7 @@ namespace IED
 	}
 
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryForm(
-		processParams_t&      a_params,
+		ProcessParams&      a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry,
 		bool&                 a_hasMinCount) noexcept

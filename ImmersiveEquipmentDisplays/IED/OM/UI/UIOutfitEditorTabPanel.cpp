@@ -23,7 +23,7 @@ namespace IED
 					Interface{ std::make_unique<UIOutfitEditorRace>(a_controller), CommonStrings::Race },
 					Interface{ std::make_unique<UIOutfitEditorNPC>(a_controller), CommonStrings::NPC },
 					Interface{ std::unique_ptr<UIEditorInterface>(), CommonStrings::Actor },
-					Interface{ std::make_unique<UIOutfitEditorGlobal>(a_controller), CommonStrings::Global })
+					Interface{ std::unique_ptr<UIEditorInterface>(), CommonStrings::Global })
 			{
 			}
 
