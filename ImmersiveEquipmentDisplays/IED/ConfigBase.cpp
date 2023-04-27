@@ -1391,6 +1391,15 @@ namespace IED
 							}
 						}
 
+						if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
+						{
+							if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch3) ==
+							    (a_match.slot == ObjectSlotExtra::kAmmo && Conditions::is_ammo_bolt(a_checkForm.form)))
+							{
+								return false;
+							}
+						}
+
 						result++;
 					}
 
