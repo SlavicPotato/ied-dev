@@ -4129,7 +4129,7 @@ namespace IED
 						a_holder.RemoveAndDestroySimComponent(node);
 					}
 
-					if (auto& node = e.thirdPerson.simComponent)
+					if (auto& node = e.firstPerson.simComponent)
 					{
 						a_holder.RemoveAndDestroySimComponent(node);
 					}
