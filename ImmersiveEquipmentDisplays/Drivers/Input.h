@@ -16,7 +16,7 @@ namespace IED
 
 			static void RegisterForPriorityKeyEvents(
 				::Events::EventSink<Handlers::KeyEvent>& a_handler);
-			
+
 			static void RegisterForPriorityMouseMoveEvents(
 				::Events::EventSink<Handlers::MouseMoveEvent>* const a_handler);
 
@@ -43,9 +43,14 @@ namespace IED
 				InputEvent* const*           a_evns,
 				BSTEventSource<InputEvent*>* a_dispatcher) override;
 
-			static bool PlayerControls_InputEvent_ProcessEvents_Hook(const InputEvent** a_evns);
+			static void BSTEventSource_InputEvent_SendEvent_Hook(
+				BSTEventSource<InputEvent*>* a_dispatcher,
+				const InputEvent**           a_evns);
 
-			bool ProcessEventsHookImpl(const InputEvent** a_evns);
+			void ProcessPriorityEventsImpl(
+				BSTEventSource<InputEvent*>* a_dispatcher,
+				const InputEvent**           a_evns);
+
 			void ProcessPriorityEvents(const InputEvent** a_evns);
 
 			void DispatchPriorityKeyEvent(
@@ -59,15 +64,15 @@ namespace IED
 				KeyEventState a_event,
 				std::uint32_t a_keyCode);
 
-			::Events::EventDispatcher<Handlers::KeyEvent> m_prioHandlers;
+			::Events::EventDispatcher<Handlers::KeyEvent>       m_prioHandlers;
 			::Events::EventDispatcher<Handlers::MouseMoveEvent> m_prioMMHandlers;
-			::Events::EventDispatcher<Handlers::KeyEvent> m_handlers;
+			::Events::EventDispatcher<Handlers::KeyEvent>       m_handlers;
 
 			std::atomic_bool m_inputBlocked{ false };
 
-			decltype(&PlayerControls_InputEvent_ProcessEvents_Hook) m_nextIEPCall{ nullptr };
+			decltype(&BSTEventSource_InputEvent_SendEvent_Hook) m_inputEventProc_o{ nullptr };
 
-			static inline const auto m_inputEventpProc_a = IAL::Address<std::uintptr_t>(67355, 68655, 0x11E, 0x133);
+			static inline const auto m_inputEventProc_a = IAL::Address<std::uintptr_t>(67315, 68617, 0x7B, 0x7B);
 
 			static Input m_Instance;
 		};

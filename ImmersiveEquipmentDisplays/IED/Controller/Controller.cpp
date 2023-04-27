@@ -299,10 +299,8 @@ namespace IED
 		{
 			m_inputHandlers.uiOpen.SetLambda(
 				[this] {
-					ITaskPool::AddTask([this] {
 						UIOpen();
 					});
-				});
 
 			m_inputHandlers.uiOpen.SetProcessPaused(
 				m_iniconf->m_enableInMenus);
