@@ -45,13 +45,13 @@ namespace IED
 
 			static void BSTEventSource_InputEvent_SendEvent_Hook(
 				BSTEventSource<InputEvent*>* a_dispatcher,
-				const InputEvent**           a_evns);
+				InputEvent* const*           a_evns);
 
 			void ProcessPriorityEventsImpl(
 				BSTEventSource<InputEvent*>* a_dispatcher,
-				const InputEvent**           a_evns);
+				InputEvent* const*     a_evns);
 
-			void ProcessPriorityEvents(const InputEvent** a_evns);
+			void ProcessPriorityEvents(const InputEvent* const* a_evns);
 
 			void DispatchPriorityKeyEvent(
 				KeyEventState a_event,

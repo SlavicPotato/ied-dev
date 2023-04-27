@@ -15,14 +15,14 @@ namespace IED
 
 		void Input::BSTEventSource_InputEvent_SendEvent_Hook(
 			BSTEventSource<InputEvent*>* a_dispatcher,
-			const InputEvent**           a_evns)
+			InputEvent* const*           a_evns)
 		{
 			m_Instance.ProcessPriorityEventsImpl(a_dispatcher, a_evns);
 		}
 
 		void Input::ProcessPriorityEventsImpl(
 			BSTEventSource<InputEvent*>* a_dispatcher,
-			const InputEvent**           a_evns)
+			InputEvent* const*           a_evns)
 		{
 			if (a_evns)
 			{
@@ -31,7 +31,7 @@ namespace IED
 
 			if (m_inputBlocked.load(std::memory_order_relaxed))
 			{
-				const InputEvent* dummy[] = { nullptr };
+				constexpr InputEvent* const dummy[] = { nullptr };
 
 				m_inputEventProc_o(a_dispatcher, dummy);
 			}
@@ -67,7 +67,7 @@ namespace IED
 			}
 		}
 
-		void Input::ProcessPriorityEvents(const InputEvent** a_evns)
+		void Input::ProcessPriorityEvents(const InputEvent* const* a_evns)
 		{
 			for (auto it = *a_evns; it; it = it->next)
 			{

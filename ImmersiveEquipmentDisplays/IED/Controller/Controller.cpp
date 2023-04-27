@@ -299,8 +299,8 @@ namespace IED
 		{
 			m_inputHandlers.uiOpen.SetLambda(
 				[this] {
-						UIOpen();
-					});
+					UIOpen();
+				});
 
 			m_inputHandlers.uiOpen.SetProcessPaused(
 				m_iniconf->m_enableInMenus);
@@ -4174,13 +4174,8 @@ namespace IED
 	{
 		if (auto& simComponent = a_node.simComponent)
 		{
-			if (a_conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
-			{
-				a_params.objects.RemoveAndDestroySimComponent(simComponent);
-			}
-			else if (
-				!a_params.has_pending_loads() &&
-				!a_node.parent_has_visible_geometry())
+			if (a_conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) ||
+				(!a_params.has_pending_loads() && !a_node.parent_has_visible_geometry()))
 			{
 				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}
