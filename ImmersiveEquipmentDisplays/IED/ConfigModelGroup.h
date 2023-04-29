@@ -29,6 +29,7 @@ namespace IED
 			kAttachLight                = 1u << 14,
 			kRemoveEditorMarker         = 1u << 15,
 			kForceTryLoadAnim           = 1u << 16,
+			kAttachSubGraphs            = 1u << 17,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);

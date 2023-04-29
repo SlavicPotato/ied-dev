@@ -207,7 +207,7 @@ namespace IED
 					ImGui::TableHeader(ImGui::TableGetColumnName(column));
 				}
 
-				const auto& objects = m_controller.GetActorMap();
+				const auto& objects = m_controller.GetActorMap().getvec();
 				const auto& ai      = m_controller.GetActorInfo();
 
 				const auto ss = ImGui::TableGetSortSpecs();
@@ -220,19 +220,19 @@ namespace IED
 				for (auto& e : objects)
 				{
 					auto v = std::make_unique<sorted_list_entry_t>(
-						e,
-						e.second.GetNumOccupiedSlots(),
-						e.second.GetNumOccupiedCustom(),
-						e.second.GetAge() / 60000000);
+						*e,
+						e->second.GetNumOccupiedSlots(),
+						e->second.GetNumOccupiedCustom(),
+						e->second.GetAge() / 60000000);
 
-					if (auto it = ai.find(e.first); it != ai.end())
+					if (auto it = ai.find(e->first); it != ai.end())
 					{
 						v->name = it->second.name;
 						v->race = it->second.race;
 					}
 					else
 					{
-						m_controller.QueueUpdateActorInfo(e.first);
+						m_controller.QueueUpdateActorInfo(e->first);
 					}
 
 					auto it = std::upper_bound(list.begin(), list.end(), v, scl);

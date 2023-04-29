@@ -61,7 +61,7 @@ namespace IED
 
 		context->QueueMessage(a_message, a_color);
 
-		Drivers::UI::AddTask(0xF000, task);
+		Drivers::UI::AddTask(TOAST_TASK_ID, task);
 	}
 
 	void IUI::QueueToastImpl(
@@ -75,7 +75,7 @@ namespace IED
 
 		context->QueueMessage(std::move(a_message), a_color);
 
-		Drivers::UI::AddTask(0xF000, task);
+		Drivers::UI::AddTask(TOAST_TASK_ID, task);
 	}
 
 	void IUI::UIInitialize(Controller& a_controller)
@@ -130,18 +130,18 @@ namespace IED
 		return UIOpenImpl();
 	}
 
-	const stl::smart_ptr<IUIRenderTaskMain>* IUI::UIOpenGetRenderTask()
+	stl::smart_ptr<IUIRenderTaskMain> IUI::UIOpenGetRenderTask()
 	{
 		const stl::lock_guard lock(UIGetLock());
 
-		return m_task && m_safeToOpenUI ? std::addressof(m_task) : nullptr;
+		return m_task && m_safeToOpenUI ? m_task : nullptr;
 	}
 
 	auto IUI::UIOpenImpl() -> UIOpenResult
 	{
 		if (const auto task = UIOpenGetRenderTask())
 		{
-			if (Drivers::UI::AddTask(0, *task))
+			if (Drivers::UI::AddTask(0, task))
 			{
 				return UIOpenResult::kResultEnabled;
 			}

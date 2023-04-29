@@ -10,7 +10,7 @@
 
 namespace IED
 {
-	formSlotPair_t::formSlotPair_t(
+	FormSlotPair::FormSlotPair(
 		TESForm* a_form) noexcept :
 		form(a_form)
 	{
@@ -20,7 +20,7 @@ namespace IED
 		slot2 = Data::ItemData::ExtraSlotToSlot(exslot);
 	}
 
-	formSlotPair_t::formSlotPair_t(
+	FormSlotPair::FormSlotPair(
 		TESForm*              a_form,
 		Data::ObjectSlotExtra a_slot) noexcept :
 		form(a_form),
@@ -72,8 +72,8 @@ namespace IED
 		}
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_fp(
-			const formSlotPair_t& a_checkForm,
-			ProcessParams&        a_params) const noexcept
+			const FormSlotPair& a_checkForm,
+			ProcessParams&      a_params) const noexcept
 		{
 			return get_equipment_override_fp(
 				a_checkForm,
@@ -82,7 +82,7 @@ namespace IED
 		}
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_fp(
-			const formSlotPair_t&          a_checkForm,
+			const FormSlotPair&            a_checkForm,
 			ProcessParams&                 a_params,
 			const equipmentOverrideList_t& a_list) noexcept
 		{
@@ -116,8 +116,8 @@ namespace IED
 		}
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_sfp(
-			const formSlotPair_t& a_checkForm,
-			ProcessParams&        a_params) const noexcept
+			const FormSlotPair& a_checkForm,
+			ProcessParams&      a_params) const noexcept
 		{
 			return get_equipment_override_sfp(
 				a_checkForm,
@@ -126,7 +126,7 @@ namespace IED
 		}
 
 		const equipmentOverride_t* configBase_t::get_equipment_override_sfp(
-			const formSlotPair_t&          a_checkForm,
+			const FormSlotPair&            a_checkForm,
 			ProcessParams&                 a_params,
 			const equipmentOverrideList_t& a_list) noexcept
 		{
@@ -179,8 +179,8 @@ namespace IED
 		}
 
 		const configEffectShaderHolder_t* configBase_t::get_effect_shader_fp(
-			const formSlotPair_t& a_checkForm,
-			ProcessParams&        a_params) const noexcept
+			const FormSlotPair& a_checkForm,
+			ProcessParams&      a_params) const noexcept
 		{
 			for (auto& e : effectShaders.data)
 			{
@@ -199,8 +199,8 @@ namespace IED
 		}
 
 		const configEffectShaderHolder_t* configBase_t::get_effect_shader_sfp(
-			const formSlotPair_t& a_checkForm,
-			ProcessParams&        a_params) const noexcept
+			const FormSlotPair& a_checkForm,
+			ProcessParams&      a_params) const noexcept
 		{
 			for (auto& e : effectShaders.data)
 			{
@@ -1120,7 +1120,7 @@ namespace IED
 		static bool match_presence_equipped(
 			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match,
-			const formSlotPair_t&               a_checkForm,
+			const FormSlotPair&                 a_checkForm,
 			CommonParams&                       a_params) noexcept
 		{
 			if (a_match.bipedSlot == BIPED_OBJECT::kNone)
@@ -1189,7 +1189,7 @@ namespace IED
 
 		static bool match_presence_slots(
 			const equipmentOverrideCondition_t& a_match,
-			const formSlotPair_t&               a_checkForm,
+			const FormSlotPair&                 a_checkForm,
 			CommonParams&                       a_params) noexcept
 		{
 			if (a_match.slot == Data::ObjectSlotExtra::kNone)
@@ -1222,7 +1222,7 @@ namespace IED
 		static bool match_presence_count(
 			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match,
-			const formSlotPair_t&               a_checkForm) noexcept
+			const FormSlotPair&                 a_checkForm) noexcept
 		{
 			auto it = a_data.forms.find(a_checkForm.form->formID);
 			if (it == a_data.forms.end())
@@ -1243,7 +1243,7 @@ namespace IED
 		static bool match_presence_available(
 			const ProcessParams&                a_params,
 			const equipmentOverrideCondition_t& a_match,
-			const formSlotPair_t&               a_checkForm) noexcept
+			const FormSlotPair&                 a_checkForm) noexcept
 		{
 			const auto& fdata = a_params.collector.data;
 
@@ -1338,7 +1338,7 @@ namespace IED
 			EquipmentOverrideConditionFlags a_maskSlots>
 		bool configBase_t::match_equipped_or_form(
 			const equipmentOverrideCondition_t& a_match,
-			const formSlotPair_t&               a_checkForm,
+			const FormSlotPair&                 a_checkForm,
 			ProcessParams&                      a_params) noexcept
 		{
 			switch (a_match.fbf.type)
@@ -1738,7 +1738,7 @@ namespace IED
 
 		bool configBase_t::do_match_fp(
 			const equipmentOverrideConditionList_t& a_matches,
-			const formSlotPair_t&                   a_checkForm,
+			const FormSlotPair&                     a_checkForm,
 			ProcessParams&                          a_params,
 			bool                                    a_default) noexcept
 		{
@@ -1786,7 +1786,7 @@ namespace IED
 
 		bool configBase_t::do_match_sfp(
 			const equipmentOverrideConditionList_t& a_matches,
-			const formSlotPair_t&                   a_checkForm,
+			const FormSlotPair&                     a_checkForm,
 			ProcessParams&                          a_params,
 			bool                                    a_default) noexcept
 		{

@@ -77,9 +77,9 @@ namespace IED
 	{
 		std::size_t result = 0;
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			result += e.second.GetNumQueuedModels();
+			result += e->second.GetNumQueuedModels();
 		}
 
 		return result;

@@ -61,9 +61,9 @@ namespace IED
 
 			if (a_in.isMember("glyphs"))
 			{
-				Parser<fontGlyphData_t> gparser(m_state);
+				Parser<FontGlyphData> gparser(m_state);
 
-				auto tmp = std::make_shared<fontGlyphData_t>();
+				auto tmp = std::make_shared<FontGlyphData>();
 
 				if (!gparser.Parse(
 						a_in["glyphs"],

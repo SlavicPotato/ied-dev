@@ -18,14 +18,14 @@ namespace IED
 		{
 			if (!data)
 			{
-				data.emplace();
+				data = std::make_unique<array_type>();
 			}
 
 			using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 			for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 			{
-				auto& e = biped->objects[i];
-				auto& f = (*data)[i];
+				const auto& e = biped->objects[i];
+				auto&       f = (*data)[i];
 
 				if (e.item)
 				{
@@ -45,6 +45,8 @@ namespace IED
 					f.addon = {};
 				}
 
+				f.animated = static_cast<bool>(e.weaponAnimationGraphManagerHolder);
+
 				if (e.object)
 				{
 					f.geometry = {
@@ -54,7 +56,7 @@ namespace IED
 				}
 				else
 				{
-					f.geometry = {};
+					f.geometry.reset();
 				}
 			}
 		}

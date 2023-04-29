@@ -46,7 +46,7 @@ namespace IED
 		IEquipment(RandomNumberGeneratorBase& a_rng) noexcept;
 
 		static EquippedItemInfo CreateEquippedItemInfo(
-			const ActorProcessManager* const a_pm) noexcept;
+			const Actor* a_actor) noexcept;
 
 		static SelectedItem SelectSlotItem(
 			ProcessParams&          a_params,

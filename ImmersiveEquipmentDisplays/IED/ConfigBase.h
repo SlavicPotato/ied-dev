@@ -12,16 +12,16 @@ namespace IED
 {
 	struct ObjectEntrySlot;
 
-	struct formSlotPair_t
+	struct FormSlotPair
 	{
-		formSlotPair_t(
+		FormSlotPair(
 			TESForm* a_form) noexcept;
 
-		formSlotPair_t(
+		FormSlotPair(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slot) noexcept;
 
-		constexpr formSlotPair_t(
+		constexpr FormSlotPair(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slotex,
 			Data::ObjectSlot      a_slot) noexcept :
@@ -154,20 +154,20 @@ namespace IED
 				const equipmentOverrideList_t& a_list) noexcept;
 
 			const equipmentOverride_t* get_equipment_override_fp(
-				const formSlotPair_t& a_checkForm,
-				ProcessParams&        a_params) const noexcept;
+				const FormSlotPair& a_checkForm,
+				ProcessParams&      a_params) const noexcept;
 
 			static const equipmentOverride_t* get_equipment_override_fp(
-				const formSlotPair_t&          a_checkForm,
+				const FormSlotPair&            a_checkForm,
 				ProcessParams&                 a_params,
 				const equipmentOverrideList_t& a_list) noexcept;
 
 			const equipmentOverride_t* get_equipment_override_sfp(
-				const formSlotPair_t& a_checkForm,
-				ProcessParams&        a_params) const noexcept;
+				const FormSlotPair& a_checkForm,
+				ProcessParams&      a_params) const noexcept;
 
 			static const equipmentOverride_t* get_equipment_override_sfp(
-				const formSlotPair_t&          a_checkForm,
+				const FormSlotPair&            a_checkForm,
 				ProcessParams&                 a_params,
 				const equipmentOverrideList_t& a_list) noexcept;
 
@@ -175,12 +175,12 @@ namespace IED
 				ProcessParams& a_params) const noexcept;
 
 			const configEffectShaderHolder_t* get_effect_shader_fp(
-				const formSlotPair_t& a_checkForm,
-				ProcessParams&        a_params) const noexcept;
+				const FormSlotPair& a_checkForm,
+				ProcessParams&      a_params) const noexcept;
 
 			const configEffectShaderHolder_t* get_effect_shader_sfp(
-				const formSlotPair_t& a_checkForm,
-				ProcessParams&        a_params) const noexcept;
+				const FormSlotPair& a_checkForm,
+				ProcessParams&      a_params) const noexcept;
 
 		private:
 			static bool match_equipped_type(
@@ -212,7 +212,7 @@ namespace IED
 				EquipmentOverrideConditionFlags a_maskSlots>
 			static bool match_equipped_or_form(
 				const equipmentOverrideCondition_t& a_match,
-				const formSlotPair_t&               a_checkForm,
+				const FormSlotPair&                 a_checkForm,
 				ProcessParams&                      a_params) noexcept;
 
 		public:
@@ -223,13 +223,13 @@ namespace IED
 
 			static bool do_match_fp(
 				const equipmentOverrideConditionList_t& a_matches,
-				const formSlotPair_t&                   a_checkForm,
+				const FormSlotPair&                     a_checkForm,
 				ProcessParams&                          a_params,
 				bool                                    a_default) noexcept;
 
 			static bool do_match_sfp(
 				const equipmentOverrideConditionList_t& a_matches,
-				const formSlotPair_t&                   a_checkForm,
+				const FormSlotPair&                     a_checkForm,
 				ProcessParams&                          a_params,
 				bool                                    a_default) noexcept;
 
@@ -254,7 +254,7 @@ namespace IED
 			static bool type_has_keyword_equipped(
 				const equipmentOverrideCondition_t& a_match,
 				const CollectorData&                a_data) noexcept;
-			
+
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
 				ObjectTypeExtra           a_type,

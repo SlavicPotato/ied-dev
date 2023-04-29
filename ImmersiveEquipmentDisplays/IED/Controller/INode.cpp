@@ -116,11 +116,9 @@ namespace IED
 
 		if (!update)
 		{
-			auto mm = MenuManager::GetSingleton();
-
-			if (mm && mm->InPausedMenu())
+			if (Game::InPausedMenu())
 			{
-				constexpr UIStringHolder::STRING_INDICES menus[] = {
+				static constexpr UIStringHolder::STRING_INDICES menus[] = {
 					UIStringHolder::STRING_INDICES::kinventoryMenu,
 					UIStringHolder::STRING_INDICES::kcontainerMenu,
 					UIStringHolder::STRING_INDICES::kfavoritesMenu,

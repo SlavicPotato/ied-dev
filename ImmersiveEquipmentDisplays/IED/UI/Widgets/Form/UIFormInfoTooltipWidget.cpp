@@ -260,6 +260,23 @@ namespace IED
 			ImGui::SameLine();
 			ImGui::Text("%.8X", a_info.id.get());
 
+			std::uint32_t modIndex;
+			if (a_info.id.GetPluginPartialIndex(modIndex))
+			{
+				auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
+
+				auto itm = modList.find(modIndex);
+				if (itm != modList.end())
+				{
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Mod));
+					ImGui::SameLine();
+					ImGui::Text(
+						"[%X] %s",
+						itm->second.GetPartialIndex(),
+						itm->second.name.c_str());
+				}
+			}
+
 			ImGui::Text("%s:", UIL::LS(CommonStrings::Type));
 
 			if (auto typeDesc = UIFormTypeSelectorWidget::form_type_to_desc(a_info.type))

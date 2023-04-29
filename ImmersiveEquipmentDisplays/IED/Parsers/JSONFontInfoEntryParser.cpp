@@ -10,9 +10,9 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<fontInfoEntry_t>::Parse(
+		bool Parser<FontInfoEntry>::Parse(
 			const Json::Value& a_in,
-			fontInfoEntry_t&   a_out,
+			FontInfoEntry&   a_out,
 			std::uint32_t      a_version) const
 		{
 			fs::path path(stl::str_to_wstr(a_in["file"].asString()));
@@ -45,7 +45,7 @@ namespace IED
 				a_out.path = stl::wstr_to_str(path.wstring());
 			}
 
-			Parser<fontGlyphData_t> gparser(m_state);
+			Parser<FontGlyphData> gparser(m_state);
 
 			if (!gparser.Parse(a_in, a_out))
 			{
@@ -58,8 +58,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<fontInfoEntry_t>::Create(
-			const fontInfoEntry_t& a_data,
+		void Parser<FontInfoEntry>::Create(
+			const FontInfoEntry& a_data,
 			Json::Value&           a_out) const
 		{
 		}

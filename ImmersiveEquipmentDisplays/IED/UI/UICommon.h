@@ -86,26 +86,33 @@ namespace IED
 				T                             _Min,
 				T                             _Max,
 				T                             _Speed>
-			struct float_anim_t
+			struct float_anim_stepper
 			{
 			public:
 				constexpr T step()
 				{
-					auto result = current;
-					current     = std::clamp(current + static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed, _Min, _Max);
+					const auto result = current;
+
+					current = std::clamp(
+						current + static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed,
+						_Min,
+						_Max);
+
 					return result;
 				}
 
 				constexpr T lerp()
 				{
-					auto result = current;
-					current     = std::clamp(
-                        std::lerp(
-                            current,
-                            _Max,
-                            static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed),
-                        std::min(current, _Min),
-                        std::max(current, _Max));
+					const auto result = current;
+
+					current = std::clamp(
+						std::lerp(
+							current,
+							_Max,
+							static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed),
+						std::min(current, _Min),
+						std::max(current, _Max));
+
 					return result;
 				}
 

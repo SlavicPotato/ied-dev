@@ -138,9 +138,9 @@ namespace IED
 
 		void I3DIMain::OnClose()
 		{
-			for (auto& e : m_controller.GetActorMap())
+			for (auto& e : m_controller.GetActorMap().getvec())
 			{
-				e.second.SetNodeConditionForced(false);
+				e->second.SetNodeConditionForced(false);
 			}
 
 			if (m_actorContext)

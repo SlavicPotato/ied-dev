@@ -121,6 +121,8 @@ namespace IED
 			kResultDisabled
 		};
 
+		static constexpr std::int32_t TOAST_TASK_ID = 0xF000;
+
 	public:
 		template <class Tc, class... Args>
 		inline auto make_render_task(
@@ -189,12 +191,12 @@ namespace IED
 		virtual void                            OnUIOpen(){};
 		virtual void                            OnUIClose(){};
 
-		const stl::smart_ptr<IUIRenderTaskMain>* UIOpenGetRenderTask();
-		UIOpenResult                             UIOpenImpl();
+		stl::smart_ptr<IUIRenderTaskMain> UIOpenGetRenderTask();
+		UIOpenResult                      UIOpenImpl();
 
 		stl::smart_ptr<IUIRenderTaskMain> m_task;
 
-		stl::mutex                    m_makeToastLock;
+		stl::fast_spin_lock           m_makeToastLock;
 		stl::smart_ptr<IUIRenderTask> m_toastTask;
 	};
 

@@ -233,9 +233,9 @@ namespace IED
 			e.clear();
 		}
 
-		for (const auto& _ : data.forms)
+		for (const auto& entry : data.forms)
 		{
-			auto& e = _.second;
+			auto& e = entry.second;
 
 			if (e.extra.type >= ObjectType::kMax)
 			{

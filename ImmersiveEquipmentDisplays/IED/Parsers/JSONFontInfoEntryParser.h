@@ -9,14 +9,14 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<fontInfoEntry_t>::Parse(
+		bool Parser<FontInfoEntry>::Parse(
 			const Json::Value& a_in,
-			fontInfoEntry_t&   a_outData,
+			FontInfoEntry&   a_outData,
 			std::uint32_t      a_version) const;
 
 		template <>
-		void Parser<fontInfoEntry_t>::Create(
-			const fontInfoEntry_t& a_data,
+		void Parser<FontInfoEntry>::Create(
+			const FontInfoEntry& a_data,
 			Json::Value&           a_out) const;
 
 	}

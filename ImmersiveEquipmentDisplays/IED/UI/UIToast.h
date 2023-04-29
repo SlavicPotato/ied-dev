@@ -87,7 +87,7 @@ namespace IED
 		private:
 			stl::queue<ToastMessage>                        m_queue;
 			std::optional<luid_tag>                         m_currentTag;
-			UICommon::float_anim_t<float, 0.0f, 1.0f, 8.0f> m_animbg;
+			UICommon::float_anim_stepper<float, 0.0f, 1.0f, 8.0f> m_animbg;
 			stl::mutex                                      m_lock;
 
 			Tasks::UIRenderTaskBase& m_owner;

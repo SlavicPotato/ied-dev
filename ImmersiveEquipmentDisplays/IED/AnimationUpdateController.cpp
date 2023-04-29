@@ -92,25 +92,36 @@ namespace IED
 		}
 	}
 
+	static constexpr BSBehaviorGraphExtraData* get_bged(NiAVObject* a_object) noexcept
+	{
+		const auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(
+			BSStringHolder::GetSingleton()->m_bged);
+
+		if (!bged)
+		{
+			return nullptr;
+		}
+
+		if (bged->controlsBaseSkeleton)
+		{
+			return nullptr;
+		}
+
+		if (bged->behaviorGraphFile.empty())
+		{
+			return nullptr;
+		}
+
+		return bged;
+	}
+
 	bool AnimationUpdateController::CreateWeaponBehaviorGraph(
 		NiAVObject*                               a_object,
 		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 		std::function<bool(const char*)>          a_allowFunc)
 	{
-		const auto sh = BSStringHolder::GetSingleton();
-
-		auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(sh->m_bged);
+		const auto bged = get_bged(a_object);
 		if (!bged)
-		{
-			return false;
-		}
-
-		if (bged->controlsBaseSkeleton)
-		{
-			return false;
-		}
-
-		if (bged->behaviorGraphFile.empty())
 		{
 			return false;
 		}
@@ -134,8 +145,7 @@ namespace IED
 		if (!BindAnimationObject(*result, a_object))
 		{
 			gLog.Warning(
-				"%s: binding animation object failed [0x%p | %s]",
-				__FUNCTION__,
+				__FUNCTION__ ": binding animation object failed [0x%p | %s]",
 				a_object,
 				a_object->m_name.c_str());
 		}
@@ -149,20 +159,8 @@ namespace IED
 		NiAVObject*                                                         a_object,
 		std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr>& a_out)
 	{
-		const auto sh = BSStringHolder::GetSingleton();
-
-		auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(sh->m_bged);
+		const auto bged = get_bged(a_object);
 		if (!bged)
-		{
-			return false;
-		}
-
-		if (bged->controlsBaseSkeleton)
-		{
-			return false;
-		}
-
-		if (bged->behaviorGraphFile.empty())
 		{
 			return false;
 		}
@@ -199,8 +197,7 @@ namespace IED
 		if (!BindAnimationObject(*a_out, a_object))
 		{
 			gLog.Warning(
-				"%s: binding animation object failed [0x%p | %s]",
-				__FUNCTION__,
+				__FUNCTION__ ": binding animation object failed [0x%p | %s]",
 				a_object,
 				a_object->m_name.c_str());
 		}

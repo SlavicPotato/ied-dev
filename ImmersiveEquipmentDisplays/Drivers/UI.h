@@ -39,11 +39,11 @@ namespace IED
 		{
 			struct UIFontUpdateData
 			{
-				float                            scale{ 1.0f };
-				stl::fixed_string                font;
-				std::optional<float>             fontsize;
-				stl::flag<GlyphPresetFlags>      extraGlyphPresets{ GlyphPresetFlags::kNone };
-				std::shared_ptr<fontGlyphData_t> langGlyphData;
+				float                          scale{ 1.0f };
+				stl::fixed_string              font;
+				std::optional<float>           fontsize;
+				stl::flag<GlyphPresetFlags>    extraGlyphPresets{ GlyphPresetFlags::kNone };
+				std::shared_ptr<FontGlyphData> langGlyphData;
 
 				bool dirty{ false };
 			};
@@ -176,7 +176,7 @@ namespace IED
 			}
 
 			static void QueueSetExtraGlyphs(GlyphPresetFlags a_flags);
-			static void QueueSetLanguageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data);
+			static void QueueSetLanguageGlyphData(const std::shared_ptr<FontGlyphData>& a_data);
 			static void QueueFontChange(const stl::fixed_string& a_font);
 			static void QueueSetFontSize(float a_size);
 			static void QueueResetFontSize();
@@ -188,7 +188,7 @@ namespace IED
 
 			[[nodiscard]] static inline auto IsImInitialized() noexcept
 			{
-				return m_Instance.m_imInitialized.load(std::memory_order_relaxed);
+				return m_Instance.m_imInitialized.load();
 			}
 
 			[[nodiscard]] static constexpr auto GetWindowHandle() noexcept
@@ -206,6 +206,11 @@ namespace IED
 			static bool AddTask(
 				std::int32_t                                   a_id,
 				const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task);
+
+			static inline auto GetScopedLock()
+			{
+				return stl::lock_guard(m_Instance.m_lock);
+			}
 
 			FN_NAMEPROC("UI");
 
@@ -248,7 +253,7 @@ namespace IED
 
 			void QueueSetScaleImpl(float a_scale);
 			void QueueSetExtraGlyphsImpl(GlyphPresetFlags a_flags);
-			void QueueSetLanguageGlyphDataImpl(const std::shared_ptr<fontGlyphData_t>& a_data);
+			void QueueSetLanguageGlyphDataImpl(const std::shared_ptr<FontGlyphData>& a_data);
 			void QueueFontChangeImpl(const stl::fixed_string& a_font);
 			void QueueSetFontSizeImpl(float a_size);
 			void QueueResetFontSizeImpl();
@@ -262,8 +267,8 @@ namespace IED
 				font_data_container&     a_data,
 				const stl::fixed_string& a_font);
 
-			bool LoadFontMetadata(fontInfoMap_t& a_out);
-			bool LoadFontMetadata(const fs::path& a_path, fontInfoMap_t& a_out);
+			bool LoadFontMetadata(FontInfoMap& a_out);
+			bool LoadFontMetadata(const fs::path& a_path, FontInfoMap& a_out);
 
 			void AddFontRanges(
 				ImFontGlyphRangesBuilder& a_builder,
@@ -271,14 +276,14 @@ namespace IED
 
 			void AddFontRanges(
 				ImFontGlyphRangesBuilder& a_builder,
-				const fontGlyphData_t&    a_data);
+				const FontGlyphData&      a_data);
 
 			bool BuildFonts(
-				const fontInfoMap_t&     a_in,
+				const FontInfoMap&       a_in,
 				font_data_container&     a_out,
 				const stl::fixed_string& a_font);
 
-			void UpdateAvailableFontsImpl(const fontInfoMap_t& a_data);
+			void UpdateAvailableFontsImpl(const FontInfoMap& a_data);
 
 			WNDPROC m_pfnWndProc{ nullptr };
 

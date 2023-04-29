@@ -1596,7 +1596,7 @@ namespace IED
 				return;
 			}
 
-			constexpr int NUM_COLUMNS = 6;
+			constexpr int NUM_COLUMNS = 7;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
@@ -1617,6 +1617,7 @@ namespace IED
 				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Addon));
 				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Object));
 				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Visibility));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Animation));
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -1629,13 +1630,13 @@ namespace IED
 				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 				{
-					auto& f = (*data)[i];
+					const auto& f = (*data)[i];
 
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
 					ImGui::Text("%u", i);
-					
+
 					ImGui::TableSetColumnIndex(1);
 					ImGui::Text("%s", UIBipedObjectSelectorWidget::GetBipedSlotDesc(static_cast<BIPED_OBJECT>(i)));
 
@@ -1655,8 +1656,11 @@ namespace IED
 					}
 					else
 					{
-						ImGui::Text(UIL::LS(CommonStrings::None));
+						ImGui::TextUnformatted(UIL::LS(CommonStrings::None));
 					}
+
+					ImGui::TableSetColumnIndex(6);
+					ImGui::Text("%s", f.animated ? UIL::LS(CommonStrings::Yes) : UIL::LS(CommonStrings::No));
 				}
 
 				ImGui::EndTable();
@@ -1907,8 +1911,8 @@ namespace IED
 
 			for (auto& d : data.items.getvec())
 			{
-				const auto i = d->first;
-				auto&      e = d->second;
+				const auto  i = d->first;
+				const auto& e = d->second;
 
 				if (e.IsEquipped())
 				{

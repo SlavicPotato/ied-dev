@@ -131,7 +131,6 @@ namespace IED
 
 			void WriteForms(IOBufferDummy* a_buffer) const;
 			void ReadForms(PersistentFormManager* a_pfm, IOBufferDummy* a_buffer);
-			void CleanupDiscardedForms();
 
 			container_type               m_forms;
 			//discard_container_type       m_discardedForms;

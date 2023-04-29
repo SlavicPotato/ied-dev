@@ -5,9 +5,9 @@
 namespace IED
 {
 	static constexpr bool ExtractModelParams(
-		TESModel*              a_ptr,
-		IModel::modelParams_t& a_out,
-		ModelType              a_type = ModelType::kMisc)  //
+		TESModel*            a_ptr,
+		IModel::ModelParams& a_out,
+		ModelType            a_type = ModelType::kMisc)  //
 		noexcept
 	{
 		const char* path = a_ptr->GetModelName();
@@ -30,9 +30,9 @@ namespace IED
 
 	template <class T>
 	static constexpr bool ExtractFormModelParams(
-		TESForm*               a_form,
-		IModel::modelParams_t& a_out,
-		ModelType              a_type = ModelType::kMisc)  //
+		TESForm*             a_form,
+		IModel::ModelParams& a_out,
+		ModelType            a_type = ModelType::kMisc)  //
 		noexcept                              //
 		requires(std::is_convertible_v<T*, TESModel*>)
 	{
@@ -74,13 +74,13 @@ namespace IED
 	}
 
 	bool IModel::GetModelParams(
-		Actor*         a_actor,
-		TESForm*       a_form,
-		TESRace*       a_race,
-		bool           a_isFemale,
-		bool           a_1pWeap,
-		bool           a_useWorld,
-		modelParams_t& a_out) noexcept
+		Actor*       a_actor,
+		TESForm*     a_form,
+		TESRace*     a_race,
+		bool         a_isFemale,
+		bool         a_1pWeap,
+		bool         a_useWorld,
+		ModelParams& a_out) noexcept
 	{
 		switch (a_form->formType)
 		{

@@ -357,41 +357,8 @@ namespace IED
 				DIK_BACKSPACE);
 		}
 
-		if (!stl::is_equal(config.ui.scale, 1.0f))
-		{
-			Drivers::UI::QueueSetScale(config.ui.scale);
-		}
-
-		if (!config.ui.font.empty())
-		{
-			Drivers::UI::QueueFontChange(config.ui.font);
-		}
-
-		if (config.ui.extraGlyphs.test_any(GlyphPresetFlags::kAll))
-		{
-			Drivers::UI::QueueSetExtraGlyphs(config.ui.extraGlyphs);
-		}
-
-		if (config.ui.fontSize)
-		{
-			Drivers::UI::QueueSetFontSize(*config.ui.fontSize);
-		}
-
-		Drivers::UI::SetStyle(config.ui.stylePreset);
-		Drivers::UI::SetReleaseFontData(config.ui.releaseFontData);
-		Drivers::UI::SetAlpha(config.ui.alpha);
-		Drivers::UI::SetBGAlpha(config.ui.bgAlpha);
-
-		if (config.ui.showIntroBanner &&
-		    !m_iniconf->m_disableIntroBanner)
-		{
-			DispatchIntroBanner();
-		}
-
 		UIEnableNotifications(config.ui.enableNotifications);
 		UISetLogNotificationThreshold(config.ui.notificationThreshold);
-
-		m_safeToOpenUI = true;
 	}
 
 	bool Controller::DispatchIntroBanner()
@@ -404,7 +371,7 @@ namespace IED
 		task->SetEnabledInMenu(true);
 		task->EnableRestrictions(false);
 
-		return Drivers::UI::AddTask(-0xFFFF, task);
+		return Drivers::UI::AddTask(INTRO_BANNER_TASK_ID, task);
 	}
 
 	void Controller::InitializeConfig()
@@ -523,20 +490,20 @@ namespace IED
 		InitializeAnimationStrings();
 	}
 
-	void Controller::OnDataLoaded()
+	void Controller::InitializeControllerPostDataLoad()
 	{
 		const stl::lock_guard lock(m_lock);
 
 		InitializeFPStateData();
 		InitializeData();
 
+		ASSERT(SinkEventsT1());
+		ASSERT(SinkEventsT2());
+
 		if (Drivers::UI::IsImInitialized())
 		{
 			InitializeUI();
 		}
-
-		ASSERT(SinkEventsT1());
-		ASSERT(SinkEventsT2());
 
 		if (IFPV_Detected())
 		{
@@ -555,9 +522,21 @@ namespace IED
 		StartAPThreadPool();
 		SetProcessorTaskRunState(true);
 
+		Debug("Data loaded, entered running state");
+	}
+
+	void Controller::OnDataLoaded()
+	{
+		InitializeControllerPostDataLoad();
+
+		if (Drivers::UI::IsImInitialized())
+		{
+			SetupUI();
+		}
+
 		m_iniconf.reset();
 
-		Debug("Data loaded, entered running state");
+		m_safeToOpenUI = true;
 	}
 
 	void Controller::Evaluate(
@@ -574,9 +553,9 @@ namespace IED
 	{
 		std::size_t result = 0;
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			result += e.second.GetSimComponentListSize();
+			result += e->second.GetSimComponentListSize();
 		}
 
 		return result;
@@ -586,9 +565,9 @@ namespace IED
 	{
 		std::size_t result = 0;
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			result += e.second.GetNumAnimObjects();
+			result += e->second.GetNumAnimObjects();
 		}
 
 		return result;
@@ -598,9 +577,9 @@ namespace IED
 	{
 		std::size_t result = 0;
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			result += e.second.GetNumQueuedCloningTasks();
+			result += e->second.GetNumQueuedCloningTasks();
 		}
 
 		return result;
@@ -861,11 +840,11 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_actorMap)
+			for (auto& e : m_actorMap.getvec())
 			{
-				if (e.second.IsActorNPCOrTemplate(a_npc))
+				if (e->second.IsActorNPCOrTemplate(a_npc))
 				{
-					EvaluateImpl(e.second, a_flags);
+					EvaluateImpl(e->second, a_flags);
 				}
 			}
 		});
@@ -878,11 +857,11 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_actorMap)
+			for (auto& e : m_actorMap.getvec())
 			{
-				if (e.second.IsActorRace(a_race))
+				if (e->second.IsActorRace(a_race))
 				{
-					EvaluateImpl(e.second, a_flags);
+					EvaluateImpl(e->second, a_flags);
 				}
 			}
 		});
@@ -894,9 +873,9 @@ namespace IED
 		ITaskPool::AddTask([this, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_actorMap)
+			for (auto& e : m_actorMap.getvec())
 			{
-				EvaluateImpl(e.second, a_flags);
+				EvaluateImpl(e->second, a_flags);
 			}
 		});
 	}
@@ -946,17 +925,17 @@ namespace IED
 			return;
 		}
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorNPCOrTemplate(a_npc))
+			if (e->second.IsActorNPCOrTemplate(a_npc))
 			{
 				if (a_noDefer)
 				{
-					e.second.RequestTransformUpdate();
+					e->second.RequestTransformUpdate();
 				}
 				else
 				{
-					e.second.RequestTransformUpdateDefer();
+					e->second.RequestTransformUpdateDefer();
 				}
 			}
 		}
@@ -973,17 +952,17 @@ namespace IED
 			return;
 		}
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorRace(a_race))
+			if (e->second.IsActorRace(a_race))
 			{
 				if (a_noDefer)
 				{
-					e.second.RequestTransformUpdate();
+					e->second.RequestTransformUpdate();
 				}
 				else
 				{
-					e.second.RequestTransformUpdateDefer();
+					e->second.RequestTransformUpdateDefer();
 				}
 			}
 		}
@@ -999,15 +978,15 @@ namespace IED
 			return;
 		}
 
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
 			if (a_noDefer)
 			{
-				e.second.RequestTransformUpdate();
+				e->second.RequestTransformUpdate();
 			}
 			else
 			{
-				e.second.RequestTransformUpdateDefer();
+				e->second.RequestTransformUpdateDefer();
 			}
 		}
 	}
@@ -1190,10 +1169,10 @@ namespace IED
 	void Controller::CollectKnownActors(
 		actorLookupResultMap_t& a_out)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
 			NiPointer<TESObjectREFR> ref;
-			auto                     handle = e.second.GetHandle();
+			auto                     handle = e->second.GetHandle();
 
 			if (handle.Lookup(ref))
 			{
@@ -1207,17 +1186,11 @@ namespace IED
 
 	bool Controller::SetLanguageImpl(const stl::fixed_string& a_lang)
 	{
-		bool result = SetLanguage(a_lang);
+		const stl::lock_guard lock(m_lock);
 
-		if (result)
-		{
-			if (Drivers::UI::IsImInitialized())
-			{
-				Drivers::UI::QueueSetLanguageGlyphData(
-					GetCurrentLanguageTable()->GetGlyphData());
-			}
-		}
-		else
+		const bool result = SetLanguage(a_lang);
+
+		if (!result)
 		{
 			Error("String table for language '%s' not found", a_lang.c_str());
 		}
@@ -1393,10 +1366,10 @@ namespace IED
 		ITaskPool::AddTask([this, a_flags] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_actorMap)
+			for (auto& e : m_actorMap.getvec())
 			{
 				NiPointer<TESObjectREFR> ref;
-				auto                     handle = e.second.GetHandle();
+				auto                     handle = e->second.GetHandle();
 
 				if (!handle.Lookup(ref))
 				{
@@ -1405,7 +1378,7 @@ namespace IED
 
 				if (auto actor = ref->As<Actor>())
 				{
-					ResetGearImpl(actor, handle, e.second, a_flags);
+					ResetGearImpl(actor, handle, e->second, a_flags);
 				}
 			}
 		});
@@ -1425,12 +1398,12 @@ namespace IED
 		ITaskPool::AddTask([this] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_actorMap)
+			for (auto& e : m_actorMap.getvec())
 			{
 				ActorLookupResult result;
-				if (LookupTrackedActor(e.first, result))
+				if (LookupTrackedActor(e->first, result))
 				{
-					ResetAA(result.actor, e.second.GetAnimState());
+					ResetAA(result.actor, e->second.GetAnimState());
 				}
 			}
 		});
@@ -1746,31 +1719,25 @@ namespace IED
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
 			std::unique_ptr<FormInfoResult> result;
 
+			if (const auto ref = LookupCrosshairRef())
 			{
-				NiPointer<TESObjectREFR> ref;
-				if (LookupCrosshairRef(ref))
-				{
-					result = IForm::LookupFormInfo(ref->formID);
-				}
+				result = IForm::LookupFormInfo(ref->formID);
 			}
 
 			const stl::lock_guard lock(m_lock);
-
 			func(std::move(result));
 		});
 	}
 
-	void Controller::QueueGetCrosshairRef(std::function<void(Game::FormID)> a_func)
+	void Controller::QueueGetCrosshairRef(
+		std::function<void(Game::FormID)> a_func)
 	{
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
 			Game::FormID result;
 
+			if (const auto ref = LookupCrosshairRef())
 			{
-				NiPointer<TESObjectREFR> ref;
-				if (LookupCrosshairRef(ref))
-				{
-					result = ref->formID;
-				}
+				result = ref->formID;
 			}
 
 			const stl::lock_guard lock(m_lock);
@@ -2338,12 +2305,6 @@ namespace IED
 
 	void Controller::ProcessSlots(ProcessParams& a_params) noexcept
 	{
-		auto pm = a_params.actor->processManager;
-		if (!pm)
-		{
-			return;
-		}
-
 		const auto& settings = GetSettings().data;
 
 		a_params.collector.GenerateSlotCandidates(
@@ -2351,7 +2312,7 @@ namespace IED
 			a_params.objects.IsPlayer() &&
 				!settings.removeFavRestriction);
 
-		const auto equippedInfo = CreateEquippedItemInfo(pm);
+		const auto equippedInfo = CreateEquippedItemInfo(a_params.actor);
 
 		SaveLastEquippedItems(
 			a_params,
@@ -2783,7 +2744,7 @@ namespace IED
 					else if (objectEntry.data.state)
 					{
 						es = configEntry.get_effect_shader_sfp(
-							{ objectEntry.data.state->form, objectEntry.slotidex },
+							{ objectEntry.data.state->form, objectEntry.slotidex, objectEntry.slotid },
 							a_params);
 					}
 
@@ -2862,20 +2823,6 @@ namespace IED
 		{
 			return false;
 		}
-
-		/*if (a_flags.test(BaseFlags::kHideOnMount))
-		{
-			if (!a_params.state.mounted)
-			{
-				a_params.state.mounted =
-					!a_actor->IsMount() &&
-					((a_actor->flags2 & Actor::kFlags_kGettingOnOffMount) ==
-				         Actor::kFlags_kGettingOnOffMount ||
-				     a_actor->HasInteractionExtraData());
-			}
-
-			return !*a_params.state.mounted;
-		}*/
 
 		return true;
 	}
@@ -4175,7 +4122,7 @@ namespace IED
 		if (auto& simComponent = a_node.simComponent)
 		{
 			if (a_conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) ||
-				(!a_params.has_pending_loads() && !a_node.parent_has_visible_geometry()))
+			    (!a_params.has_pending_loads() && !a_node.parent_has_visible_geometry()))
 			{
 				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}
@@ -4430,7 +4377,7 @@ namespace IED
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey,
-		updateActionFunc_t       a_func)
+		UpdateActionfunc         a_func)
 	{
 		auto it = m_actorMap.find(a_actor);
 		if (it != m_actorMap.end())
@@ -4439,34 +4386,34 @@ namespace IED
 		}
 	}
 
-	void IED::Controller::UpdateCustomNPCImpl(
+	void Controller::UpdateCustomNPCImpl(
 		Game::FormID             a_npc,
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey,
-		updateActionFunc_t       a_func)
+		UpdateActionfunc         a_func)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorNPCOrTemplate(a_npc))
+			if (e->second.IsActorNPCOrTemplate(a_npc))
 			{
-				UpdateCustomImpl(e.second, a_class, a_pkey, a_vkey, a_func);
+				UpdateCustomImpl(e->second, a_class, a_pkey, a_vkey, a_func);
 			}
 		}
 	}
 
-	void IED::Controller::UpdateCustomRaceImpl(
+	void Controller::UpdateCustomRaceImpl(
 		Game::FormID             a_race,
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey,
-		updateActionFunc_t       a_func)
+		UpdateActionfunc         a_func)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorRace(a_race))
+			if (e->second.IsActorRace(a_race))
 			{
-				UpdateCustomImpl(e.second, a_class, a_pkey, a_vkey, a_func);
+				UpdateCustomImpl(e->second, a_class, a_pkey, a_vkey, a_func);
 			}
 		}
 	}
@@ -4475,7 +4422,7 @@ namespace IED
 		Game::FormID             a_actor,
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
-		updateActionFunc_t       a_func)
+		UpdateActionfunc         a_func)
 	{
 		auto it = m_actorMap.find(a_actor);
 		if (it != m_actorMap.end())
@@ -4484,40 +4431,40 @@ namespace IED
 		}
 	}
 
-	void IED::Controller::UpdateCustomNPCImpl(
+	void Controller::UpdateCustomNPCImpl(
 		Game::FormID             a_npc,
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
-		updateActionFunc_t       a_func)
+		UpdateActionfunc         a_func)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorNPCOrTemplate(a_npc))
+			if (e->second.IsActorNPCOrTemplate(a_npc))
 			{
-				UpdateCustomImpl(e.second, a_class, a_pkey, a_func);
+				UpdateCustomImpl(e->second, a_class, a_pkey, a_func);
 			}
 		}
 	}
 
-	void IED::Controller::UpdateCustomRaceImpl(
+	void Controller::UpdateCustomRaceImpl(
 		Game::FormID             a_race,
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
-		updateActionFunc_t       a_func)
+		UpdateActionfunc         a_func)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorRace(a_race))
+			if (e->second.IsActorRace(a_race))
 			{
-				UpdateCustomImpl(e.second, a_class, a_pkey, a_func);
+				UpdateCustomImpl(e->second, a_class, a_pkey, a_func);
 			}
 		}
 	}
 
 	void Controller::UpdateCustomImpl(
-		Game::FormID       a_actor,
-		ConfigClass        a_class,
-		updateActionFunc_t a_func)
+		Game::FormID     a_actor,
+		ConfigClass      a_class,
+		UpdateActionfunc a_func)
 	{
 		auto it = m_actorMap.find(a_actor);
 		if (it != m_actorMap.end())
@@ -4526,40 +4473,40 @@ namespace IED
 		}
 	}
 
-	void IED::Controller::UpdateCustomNPCImpl(
-		Game::FormID       a_npc,
-		ConfigClass        a_class,
-		updateActionFunc_t a_func)
+	void Controller::UpdateCustomNPCImpl(
+		Game::FormID     a_npc,
+		ConfigClass      a_class,
+		UpdateActionfunc a_func)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorNPCOrTemplate(a_npc))
+			if (e->second.IsActorNPCOrTemplate(a_npc))
 			{
-				UpdateCustomImpl(e.second, a_class, a_func);
+				UpdateCustomImpl(e->second, a_class, a_func);
 			}
 		}
 	}
 
-	void IED::Controller::UpdateCustomRaceImpl(
-		Game::FormID       a_race,
-		ConfigClass        a_class,
-		updateActionFunc_t a_func)
+	void Controller::UpdateCustomRaceImpl(
+		Game::FormID     a_race,
+		ConfigClass      a_class,
+		UpdateActionfunc a_func)
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (e.second.IsActorRace(a_race))
+			if (e->second.IsActorRace(a_race))
 			{
-				UpdateCustomImpl(e.second, a_class, a_func);
+				UpdateCustomImpl(e->second, a_class, a_func);
 			}
 		}
 	}
 
 	void Controller::UpdateCustomImpl(
-		ActorObjectHolder&        a_record,
-		ConfigClass               a_class,
-		const stl::fixed_string&  a_pkey,
-		const stl::fixed_string&  a_vkey,
-		const updateActionFunc_t& a_func)
+		ActorObjectHolder&       a_record,
+		ConfigClass              a_class,
+		const stl::fixed_string& a_pkey,
+		const stl::fixed_string& a_vkey,
+		const UpdateActionfunc&  a_func)
 	{
 		auto info = LookupCachedActorInfo(a_record);
 		if (!info)
@@ -4649,26 +4596,19 @@ namespace IED
 				a_record,
 				ControllerUpdateFlags::kNone);
 		}
-
-		//auto it = m_configStore.cfg.custom.GetActorData()
 	}
 
 	void Controller::UpdateCustomImpl(
-		ActorObjectHolder&        a_record,
-		ConfigClass               a_class,
-		const stl::fixed_string&  a_pkey,
-		const updateActionFunc_t& a_func)
+		ActorObjectHolder&       a_record,
+		ConfigClass              a_class,
+		const stl::fixed_string& a_pkey,
+		const UpdateActionfunc&  a_func)
 	{
 		auto info = LookupCachedActorInfo(a_record);
 		if (!info)
 		{
 			return;
 		}
-
-		/*if (IsActorBlockedImpl(info.actor->formID))
-		{
-			return;
-		}*/
 
 		auto& data = a_record.GetCustom(a_class);
 		auto& conf = GetActiveConfig().custom;
@@ -4731,20 +4671,15 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		ActorObjectHolder&        a_record,
-		ConfigClass               a_class,
-		const updateActionFunc_t& a_func)
+		ActorObjectHolder&      a_record,
+		ConfigClass             a_class,
+		const UpdateActionfunc& a_func)
 	{
 		auto info = LookupCachedActorInfo(a_record);
 		if (!info)
 		{
 			return;
 		}
-
-		/*if (IsActorBlockedImpl(info.actor->formID))
-		{
-			return;
-		}*/
 
 		auto& data = a_record.GetCustom(a_class);
 		auto& conf = GetActiveConfig().custom;
@@ -4812,7 +4747,7 @@ namespace IED
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
 		const stl::fixed_string&              a_pkey,
 		const stl::fixed_string&              a_vkey,
-		const updateActionFunc_t&             a_func)
+		const UpdateActionfunc&               a_func)
 	{
 		auto itc = a_confPluginMap.find(a_pkey);
 		if (itc == a_confPluginMap.end())
@@ -4834,7 +4769,7 @@ namespace IED
 		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
 		const stl::fixed_string&              a_pkey,
-		const updateActionFunc_t&             a_func)
+		const UpdateActionfunc&               a_func)
 	{
 		auto itc = a_confPluginMap.find(a_pkey);
 		if (itc == a_confPluginMap.end())
@@ -4871,7 +4806,7 @@ namespace IED
 		cachedActorInfo_t&                    a_info,
 		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
-		const updateActionFunc_t&             a_func)
+		const UpdateActionfunc&               a_func)
 	{
 		bool failed = false;
 		bool ran    = false;
@@ -4904,7 +4839,7 @@ namespace IED
 		const configCustomEntryMap_t&        a_confEntryMap,
 		ActorObjectHolder::customEntryMap_t& a_entryMap,
 		const stl::fixed_string&             a_vkey,
-		const updateActionFunc_t&            a_func)
+		const UpdateActionfunc&              a_func)
 	{
 		auto itc = a_confEntryMap.find(a_vkey);
 		if (itc == a_confEntryMap.end())
@@ -4947,8 +4882,7 @@ namespace IED
 		if (!root)
 		{
 			Warning(
-				"%s: %.8X: actor has no 3D",
-				__FUNCTION__,
+				__FUNCTION__ ": %.8X: actor has no 3D",
 				a_actor->formID.get());
 
 			return {};
@@ -4957,8 +4891,7 @@ namespace IED
 		if (root != a_holder.m_root)
 		{
 			Warning(
-				"%s: %.8X: skeleton root mismatch",
-				__FUNCTION__,
+				__FUNCTION__ ": %.8X: skeleton root mismatch",
 				a_actor->formID.get());
 
 			QueueReset(a_actor, ControllerUpdateFlags::kNone);
@@ -5010,8 +4943,7 @@ namespace IED
 		if (!root)
 		{
 			Warning(
-				"%s: %.8X: actor has no 3D",
-				__FUNCTION__,
+				__FUNCTION__ ": %.8X: actor has no 3D",
 				a_actor->formID.get());
 
 			return {};
@@ -5020,8 +4952,7 @@ namespace IED
 		if (root != a_holder.m_root)
 		{
 			Warning(
-				"%s: %.8X: skeleton root mismatch",
-				__FUNCTION__,
+				__FUNCTION__ ": %.8X: skeleton root mismatch",
 				a_actor->formID.get());
 
 			QueueReset(a_actor, ControllerUpdateFlags::kNone);
@@ -5052,9 +4983,7 @@ namespace IED
 		if (!handle.Lookup(refr))
 		{
 			Warning(
-				"%s [%u]: %.8X: could not lookup by handle (%.8X)",
-				__FUNCTION__,
-				__LINE__,
+				__FUNCTION__ ": %.8X: could not lookup by handle (%.8X)",
 				a_holder.m_actorid,
 				handle.get());
 
@@ -5070,8 +4999,7 @@ namespace IED
 		if (!actor)
 		{
 			Warning(
-				"%s: %.8X: not an actor (%u, %hhu)",
-				__FUNCTION__,
+				__FUNCTION__ ": %.8X: not an actor (%u, %hhu)",
 				refr->formID.get(),
 				handle.get(),
 				refr->formType);
@@ -5207,12 +5135,12 @@ namespace IED
 			break;
 		case SKSEMessagingInterface::kMessage_NewGame:
 
-			Drivers::UI::QueueRemoveTask(-0xFFFF);
+			Drivers::UI::QueueRemoveTask(INTRO_BANNER_TASK_ID);
 
 			break;
 		case SKSEMessagingInterface::kMessage_PreLoadGame:
 
-			Drivers::UI::QueueRemoveTask(-0xFFFF);
+			Drivers::UI::QueueRemoveTask(INTRO_BANNER_TASK_ID);
 
 			StoreActiveHandles();
 
@@ -5280,28 +5208,13 @@ namespace IED
 		BSTEventSource<TESEquipEvent>*)
 		-> EventResult
 	{
-		if (a_evn && a_evn->actor)
+		if (a_evn &&
+		    a_evn->actor &&
+		    a_evn->actor->IsActor() &&
+		    a_evn->baseObject)
 		{
-			if (a_evn->actor->IsActor() && a_evn->baseObject)
-			{
-				/*if (auto form = a_evn->baseObject.Lookup())
-				{
-					if (IFormCommon::IsEquippableForm(form))
-					{
-						QueueRequestEvaluate(a_evn->actor->formID, false, true);
-					}
-				}*/
-
-				/*if (auto form = a_evn->baseObject.Lookup())
-				{
-					_DMESSAGE("%.8X | %hhu | %s", form->formID, form->formType, IFormCommon::GetFormName(form).c_str());
-				}*/
-
-				QueueRequestEvaluate(a_evn->actor->formID, false, true);
-			}
+			QueueRequestEvaluate(a_evn->actor->formID, false, true);
 		}
-
-		//m_invChangeConsumerFlags.set(InventoryChangeConsumerFlags::kAll);
 
 		return EventResult::kContinue;
 	}
@@ -5313,21 +5226,17 @@ namespace IED
 	{
 		if (a_evn && a_evn->baseObj)
 		{
-			if (a_evn->oldContainer)
+			if (a_evn->oldContainer &&
+			    a_evn->oldContainer.As<Actor>())
 			{
-				if (a_evn->oldContainer.As<Actor>())
-				{
-					QueueRequestEvaluate(a_evn->oldContainer, true, false);
-				}
+				QueueRequestEvaluate(a_evn->oldContainer, true, false);
 			}
 
 			if (a_evn->newContainer &&
-			    a_evn->oldContainer != a_evn->newContainer)  // ?
+			    a_evn->oldContainer != a_evn->newContainer &&  // ?
+			    a_evn->newContainer.As<Actor>())
 			{
-				if (a_evn->newContainer.As<Actor>())
-				{
-					QueueRequestEvaluate(a_evn->newContainer, true, false);
-				}
+				QueueRequestEvaluate(a_evn->newContainer, true, false);
 			}
 		}
 
@@ -5394,20 +5303,28 @@ namespace IED
 	{
 		if (a_evn && !a_evn->opening)
 		{
+			static constexpr UIStringHolder::STRING_INDICES menus[] = {
+				UIStringHolder::STRING_INDICES::kinventoryMenu,
+				UIStringHolder::STRING_INDICES::kcontainerMenu,
+				UIStringHolder::STRING_INDICES::kgiftMenu,
+				UIStringHolder::STRING_INDICES::kbarterMenu,
+				UIStringHolder::STRING_INDICES::kmagicMenu,
+				UIStringHolder::STRING_INDICES::kconsole,
+				UIStringHolder::STRING_INDICES::kfavoritesMenu
+			};
+
 			auto uish = UIStringHolder::GetSingleton();
 
-			if (
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu) ||
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu) ||
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kgiftMenu) ||
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kbarterMenu) ||
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kmagicMenu) ||
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kconsole) ||
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu))
+			for (auto& e : menus)
 			{
-				if (auto player = *g_thePlayer)
+				if (a_evn->menuName == uish->GetString(e))
 				{
-					QueueRequestEvaluate(player->formID, false, false, false);
+					if (auto player = *g_thePlayer)
+					{
+						QueueRequestEvaluate(player->formID, false, false, false);
+					}
+
+					break;
 				}
 			}
 		}
@@ -5807,9 +5724,9 @@ namespace IED
 
 		m_activeHandles.clear();
 
-		for (auto& e : m_actorMap)
+		for (const auto& e : m_actorMap.getvec())
 		{
-			m_activeHandles.emplace_back(e.second.GetHandle());
+			m_activeHandles.emplace_back(e->second.GetHandle());
 		}
 	}
 
@@ -5817,7 +5734,7 @@ namespace IED
 	{
 		const stl::lock_guard lock(m_lock);
 
-		for (auto& e : m_activeHandles)
+		for (const auto& e : m_activeHandles)
 		{
 			NiPointer<TESObjectREFR> ref;
 			if (e.Lookup(ref))
@@ -5827,6 +5744,7 @@ namespace IED
 		}
 
 		m_activeHandles.clear();
+		m_activeHandles.shrink_to_fit();
 	}
 
 	void Controller::ClearStoredHandles()
@@ -5834,6 +5752,7 @@ namespace IED
 		const stl::lock_guard lock(m_lock);
 
 		m_activeHandles.clear();
+		m_activeHandles.shrink_to_fit();
 	}
 
 	void Controller::QueueObjectDatabaseClear()
@@ -5859,10 +5778,59 @@ namespace IED
 	void Controller::QueueSetLanguage(const stl::fixed_string& a_lang)
 	{
 		ITaskPool::AddTask([this, a_lang] {
-			const stl::lock_guard lock(m_lock);
-
 			SetLanguageImpl(a_lang);
+			if (Drivers::UI::IsImInitialized())
+			{
+				Drivers::UI::QueueSetLanguageGlyphData(GetCurrentGlyphData());
+			}
 		});
+	}
+
+	void Controller::SetupUI()
+	{
+		const auto            uiLock = Drivers::UI::GetScopedLock();
+		const stl::lock_guard lock(m_lock);
+
+		const auto& config = GetSettings().data;
+
+		if (config.ui.scale != 1.0f)
+		{
+			Drivers::UI::QueueSetScale(config.ui.scale);
+		}
+
+		if (!config.ui.font.empty())
+		{
+			Drivers::UI::QueueFontChange(config.ui.font);
+		}
+
+		if (config.ui.extraGlyphs.test_any(GlyphPresetFlags::kAll))
+		{
+			Drivers::UI::QueueSetExtraGlyphs(config.ui.extraGlyphs);
+		}
+
+		if (config.ui.fontSize)
+		{
+			Drivers::UI::QueueSetFontSize(*config.ui.fontSize);
+		}
+
+		Drivers::UI::SetStyle(config.ui.stylePreset);
+		Drivers::UI::SetReleaseFontData(config.ui.releaseFontData);
+		Drivers::UI::SetAlpha(config.ui.alpha);
+		Drivers::UI::SetBGAlpha(config.ui.bgAlpha);
+		Drivers::UI::QueueSetLanguageGlyphData(GetCurrentGlyphData());
+
+		if (config.ui.showIntroBanner &&
+		    !m_iniconf->m_disableIntroBanner)
+		{
+			DispatchIntroBanner();
+		}
+	}
+
+	std::shared_ptr<FontGlyphData> Controller::GetCurrentGlyphData()
+	{
+		const stl::lock_guard lock(m_lock);
+
+		return GetCurrentLanguageTable()->GetGlyphData();
 	}
 
 }

@@ -30,14 +30,10 @@ namespace IED
 		{
 			if (entry->try_acquire_for_queuing())
 			{
-				if (const auto thrd = RE::BackgroundProcessThread::GetSingleton())
-				{
-					thrd->QueueTask<QueuedModel>(entry, path, *this);
-				}
-				else
-				{
-					entry->loadState.store(ODBEntryLoadState::kError);
-				}
+				const auto thrd = RE::BackgroundProcessThread::GetSingleton();
+				ASSERT(thrd != nullptr);
+
+				thrd->QueueTask<QueuedModel>(entry, path, *this);
 			}
 		}
 		else

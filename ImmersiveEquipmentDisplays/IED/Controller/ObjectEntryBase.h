@@ -113,11 +113,12 @@ namespace IED
 		{
 			RE::WeaponAnimationGraphManagerHolderPtr holder;
 			stl::fixed_string                        currentEvent;
+			bool                                     subGraphsAttached{ false };
 
 			//EventResult ReceiveEvent(const BSAnimationGraphEvent* a_event, BSTEventSource<BSAnimationGraphEvent>* a_sink) override;
 
 			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event) noexcept;
-			void Cleanup();
+			void Cleanup(Game::ObjectRefHandle a_handle);
 		};
 
 		struct Object

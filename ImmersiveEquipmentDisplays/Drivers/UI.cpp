@@ -127,7 +127,7 @@ namespace IED
 					a_evn.m_pSwapChainDesc.OutputWindow);
 			}
 
-			m_imInitialized.store(true, std::memory_order_relaxed);
+			m_imInitialized.store(true);
 
 			Message("ImGui initialized");
 		}
@@ -141,7 +141,7 @@ namespace IED
 
 			const stl::lock_guard lock(m_lock);
 
-			if (!m_imInitialized.load(std::memory_order_relaxed))
+			if (!m_imInitialized.load())
 			{
 				return;
 			}
@@ -191,7 +191,9 @@ namespace IED
 			     it != m_drawTasks.end();)
 			{
 				ImGui::PushID(it->first);
-				bool res = it->second->Run();
+
+				const bool res = it->second->Run();
+
 				ImGui::PopID();
 
 				if (!res || it->second->m_stopMe)
@@ -265,7 +267,7 @@ namespace IED
 
 			const stl::lock_guard lock(m_lock);
 
-			if (!m_imInitialized.load(std::memory_order_relaxed))
+			if (!m_imInitialized.load())
 			{
 				return;
 			}
@@ -306,7 +308,7 @@ namespace IED
 
 			const stl::lock_guard lock(m_lock);
 
-			if (!m_imInitialized.load(std::memory_order_relaxed))
+			if (!m_imInitialized.load())
 			{
 				return;
 			}
@@ -336,7 +338,7 @@ namespace IED
 
 			const stl::lock_guard lock(m_lock);
 
-			if (!m_imInitialized.load(std::memory_order_relaxed))
+			if (!m_imInitialized.load())
 			{
 				return;
 			}
@@ -384,7 +386,7 @@ namespace IED
 		{
 			m_state.timeFrozen = a_switch;
 
-			ITaskPool::AddTask([a_switch]() {
+			ITaskPool::AddTask([a_switch] {
 				Game::Main::GetSingleton()->freezeTime = a_switch;
 			});
 		}
@@ -393,7 +395,7 @@ namespace IED
 		{
 			const stl::lock_guard lock(m_Instance.m_lock);
 
-			if (!m_Instance.m_imInitialized.load(std::memory_order_relaxed))
+			if (!m_Instance.m_imInitialized.load())
 			{
 				return {};
 			}
@@ -429,9 +431,30 @@ namespace IED
 
 		void UI::QueueEvaluateTaskState()
 		{
-			ITaskPool::AddTask([]() {
+			ITaskPool::AddTask([] {
 				EvaluateTaskState();
 			});
+		}
+
+		template <class T, class U>
+		static constexpr void eval_opt(
+			const T& a_opt,
+			T&       a_state,
+			U&       a_counter)
+		{
+			if (a_opt != a_state)
+			{
+				a_state = a_opt;
+
+				if (a_state)
+				{
+					a_counter++;
+				}
+				else
+				{
+					a_counter--;
+				}
+			}
 		}
 
 		void UI::EvaluateTaskStateImpl()
@@ -440,75 +463,11 @@ namespace IED
 
 			for (auto& [i, e] : m_drawTasks)
 			{
-				if (e->m_options.lockControls != e->m_state.holdsControlLock)
-				{
-					e->m_state.holdsControlLock = e->m_options.lockControls;
-
-					if (e->m_state.holdsControlLock)
-					{
-						m_state.lockCounter++;
-					}
-					else
-					{
-						m_state.lockCounter--;
-					}
-				}
-
-				if (e->m_options.freeze != e->m_state.holdsFreeze)
-				{
-					e->m_state.holdsFreeze = e->m_options.freeze;
-
-					if (e->m_state.holdsFreeze)
-					{
-						m_state.freezeCounter++;
-					}
-					else
-					{
-						m_state.freezeCounter--;
-					}
-				}
-
-				if (e->m_options.wantCursor != e->m_state.holdsWantCursor)
-				{
-					e->m_state.holdsWantCursor = e->m_options.wantCursor;
-
-					if (e->m_state.holdsWantCursor)
-					{
-						m_state.wantCursorCounter++;
-					}
-					else
-					{
-						m_state.wantCursorCounter--;
-					}
-				}
-
-				if (e->m_options.blockCursor != e->m_state.holdsBlockCursor)
-				{
-					e->m_state.holdsBlockCursor = e->m_options.blockCursor;
-
-					if (e->m_state.holdsBlockCursor)
-					{
-						m_state.blockCursorCounter++;
-					}
-					else
-					{
-						m_state.blockCursorCounter--;
-					}
-				}
-
-				if (e->m_options.blockImGuiInput != e->m_state.holdsBlockImGuiInput)
-				{
-					e->m_state.holdsBlockImGuiInput = e->m_options.blockImGuiInput;
-
-					if (e->m_state.holdsBlockImGuiInput)
-					{
-						m_state.blockInputImGuiCounter++;
-					}
-					else
-					{
-						m_state.blockInputImGuiCounter--;
-					}
-				}
+				eval_opt(e->m_options.lockControls, e->m_state.holdsControlLock, m_state.lockCounter);
+				eval_opt(e->m_options.freeze, e->m_state.holdsFreeze, m_state.freezeCounter);
+				eval_opt(e->m_options.wantCursor, e->m_state.holdsWantCursor, m_state.wantCursorCounter);
+				eval_opt(e->m_options.blockCursor, e->m_state.holdsBlockCursor, m_state.blockCursorCounter);
+				eval_opt(e->m_options.blockImGuiInput, e->m_state.holdsBlockImGuiInput, m_state.blockInputImGuiCounter);
 			}
 
 			if (m_state.controlsLocked)
@@ -549,10 +508,10 @@ namespace IED
 			auto& io = ImGui::GetIO();
 
 			io.MouseDrawCursor =
-				m_state.wantCursorCounter &&
+				m_state.wantCursorCounter > 0 &&
 				!m_state.blockCursorCounter;
 
-			if (m_state.blockCursorCounter)
+			if (m_state.blockCursorCounter > 0)
 			{
 				io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
 			}
@@ -603,7 +562,7 @@ namespace IED
 			m_Instance.QueueSetExtraGlyphsImpl(a_flags);
 		}
 
-		void UI::QueueSetLanguageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data)
+		void UI::QueueSetLanguageGlyphData(const std::shared_ptr<FontGlyphData>& a_data)
 		{
 			m_Instance.QueueSetLanguageGlyphDataImpl(a_data);
 		}
@@ -630,7 +589,7 @@ namespace IED
 
 		void UI::UpdateAvailableFonts()
 		{
-			fontInfoMap_t info;
+			FontInfoMap info;
 			m_Instance.LoadFontMetadata(info);
 
 			const stl::lock_guard lock(m_Instance.m_lock);
@@ -653,7 +612,7 @@ namespace IED
 		}
 
 		bool UI::AddTask(
-			std::int32_t                                    a_id,
+			std::int32_t                                   a_id,
 			const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task)
 		{
 			return m_Instance.AddTaskImpl(a_id, a_task);
@@ -781,12 +740,15 @@ namespace IED
 		}
 
 		void UI::QueueSetLanguageGlyphDataImpl(
-			const std::shared_ptr<fontGlyphData_t>& a_data)
+			const std::shared_ptr<FontGlyphData>& a_data)
 		{
 			const stl::lock_guard lock(m_lock);
 
-			m_fontUpdateData.langGlyphData = a_data;
-			m_fontUpdateData.dirty         = true;
+			if (a_data != m_fontUpdateData.langGlyphData)
+			{
+				m_fontUpdateData.langGlyphData = a_data;
+				m_fontUpdateData.dirty         = true;
+			}
 		}
 
 		void UI::QueueFontChangeImpl(const stl::fixed_string& a_font)
@@ -868,7 +830,7 @@ namespace IED
 				return false;
 			}
 
-			fontInfoMap_t info;
+			FontInfoMap info;
 
 			LoadFontMetadata(info);
 			UpdateAvailableFontsImpl(info);
@@ -976,7 +938,7 @@ namespace IED
 			font_data_container&     a_data,
 			const stl::fixed_string& a_font)
 		{
-			fontInfoMap_t info;
+			FontInfoMap info;
 
 			LoadFontMetadata(info);
 			UpdateAvailableFontsImpl(info);
@@ -992,7 +954,7 @@ namespace IED
 			return true;
 		}
 
-		bool UI::LoadFontMetadata(fontInfoMap_t& a_out)
+		bool UI::LoadFontMetadata(FontInfoMap& a_out)
 		{
 			if (!LoadFontMetadata(PATHS::FONT_META, a_out))
 			{
@@ -1020,7 +982,7 @@ namespace IED
 
 					const auto strPath = Serialization::SafeGetPath(path);
 
-					fontInfoMap_t result;
+					FontInfoMap result;
 
 					if (!LoadFontMetadata(entry.path(), result))
 					{
@@ -1058,7 +1020,7 @@ namespace IED
 
 		bool UI::LoadFontMetadata(
 			const fs::path& a_path,
-			fontInfoMap_t&  a_out)
+			FontInfoMap&    a_out)
 		{
 			try
 			{
@@ -1066,8 +1028,8 @@ namespace IED
 
 				Serialization::ReadData(a_path, root);
 
-				Serialization::ParserState           state;
-				Serialization::Parser<fontInfoMap_t> parser(state);
+				Serialization::ParserState         state;
+				Serialization::Parser<FontInfoMap> parser(state);
 
 				return parser.Parse(root, a_out);
 			}
@@ -1099,7 +1061,7 @@ namespace IED
 
 		void UI::AddFontRanges(
 			ImFontGlyphRangesBuilder& a_builder,
-			const fontGlyphData_t&    a_data)
+			const FontGlyphData&      a_data)
 		{
 			auto& io = ImGui::GetIO();
 
@@ -1199,7 +1161,7 @@ namespace IED
 		}
 
 		bool UI::BuildFonts(
-			const fontInfoMap_t&     a_info,
+			const FontInfoMap&       a_info,
 			font_data_container&     a_out,
 			const stl::fixed_string& a_font)
 		{
@@ -1280,7 +1242,7 @@ namespace IED
 			return io.Fonts->Build();
 		}
 
-		void UI::UpdateAvailableFontsImpl(const fontInfoMap_t& a_data)
+		void UI::UpdateAvailableFontsImpl(const FontInfoMap& a_data)
 		{
 			m_availableFonts.clear();
 
@@ -1294,37 +1256,26 @@ namespace IED
 
 		void UI::Suspend()
 		{
+			assert(m_state.lockCounter == 0);
+			assert(m_state.freezeCounter == 0);
+			assert(m_state.wantCursorCounter == 0);
+			assert(m_state.blockCursorCounter == 0);
+			assert(m_state.blockInputImGuiCounter == 0);
+
 			ResetInput();
-
-			if (m_state.controlsLocked)
-			{
-				m_state.lockCounter = 0;
-				LockControls(false);
-			}
-
-			if (m_state.timeFrozen)
-			{
-				m_state.freezeCounter = 0;
-				FreezeTime(false);
-			}
-
-			auto& io = ImGui::GetIO();
-
-			io.MouseDrawCursor = true;
-			io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
 
 			m_suspended.store(true, std::memory_order_relaxed);
 		}
 
 		bool UI::AddTaskImpl(
-			std::int32_t                                    a_id,
+			std::int32_t                                   a_id,
 			const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task)
 		{
 			assert(a_task);
 
 			const stl::lock_guard lock(m_lock);
 
-			if (!m_imInitialized.load(std::memory_order_relaxed))
+			if (!m_imInitialized.load())
 			{
 				return false;
 			}

@@ -402,8 +402,8 @@ namespace IED
 	}
 
 	void IObjectManager::GetNodeName(
-		TESForm*                     a_form,
-		const IModel::modelParams_t& a_params,
+		TESForm*                   a_form,
+		const IModel::ModelParams& a_params,
 		char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		switch (a_params.type)
@@ -436,6 +436,27 @@ namespace IED
 		default:
 			INode::GetMiscNodeName(a_form->formID, a_out);
 			break;
+		}
+	}
+
+	bool IObjectManager::ShouldBackgroundClone(
+		const ProcessParams&       a_params,
+		const IModel::ModelParams& a_modelParams) noexcept
+	{
+		switch (GetBackgroundCloneLevel(a_params.is_player()))
+		{
+		case BackgroundCloneLevel::kTexSwap:
+
+			return a_modelParams.texSwap &&
+			       a_modelParams.texSwap->numAlternateTextures > 0;
+
+		case BackgroundCloneLevel::kClone:
+
+			return true;
+
+		default:
+
+			return false;
 		}
 	}
 
@@ -480,7 +501,7 @@ namespace IED
 			a_modelForm = a_form;
 		}
 
-		IModel::modelParams_t modelParams;
+		IModel::ModelParams modelParams;
 
 		if (!IModel::GetModelParams(
 				a_params.actor,
@@ -520,30 +541,9 @@ namespace IED
 
 		ObjectDatabaseEntry dbentry;
 
-		bool backgroundClone;
-
-		switch (GetBackgroundCloneLevel(a_params.is_player()))
-		{
-		case BackgroundCloneLevel::kTexSwap:
-
-			backgroundClone =
-				modelParams.texSwap &&
-				modelParams.texSwap->numAlternateTextures > 0;
-
-			break;
-
-		case BackgroundCloneLevel::kClone:
-
-			backgroundClone = true;
-
-			break;
-
-		default:
-
-			backgroundClone = false;
-
-			break;
-		}
+		const bool backgroundClone = ShouldBackgroundClone(
+			a_params,
+			modelParams);
 
 		const auto odbResult = GetModel(
 			modelParams.path,
@@ -811,6 +811,12 @@ namespace IED
 		{
 			bool result;
 
+			const auto filterFunc = [&](const char* a_path) noexcept {
+				return a_baseConfig.hkxFilter.empty() ?
+				           true :
+				           !a_baseConfig.hkxFilter.contains(a_path);
+			};
+
 			const auto& ct = a_objectEntry.data.cloningTask;
 
 			if (ct && ct->HasGraphHolder())
@@ -819,22 +825,14 @@ namespace IED
 					object,
 					*ct,
 					state->anim.holder,
-					[&](const char* a_path) noexcept {
-						return a_baseConfig.hkxFilter.empty() ?
-					               true :
-					               !a_baseConfig.hkxFilter.contains(a_path);
-					});
+					filterFunc);
 			}
 			else
 			{
 				result = AnimationUpdateController::CreateWeaponBehaviorGraph(
 					object,
 					state->anim.holder,
-					[&](const char* a_path) noexcept {
-						return a_baseConfig.hkxFilter.empty() ?
-					               true :
-					               !a_baseConfig.hkxFilter.contains(a_path);
-					});
+					filterFunc);
 			}
 
 			if (result)
@@ -852,15 +850,13 @@ namespace IED
 					}
 				}*/
 
-				if (modelParams.type == ModelType::kWeapon)
+				if (a_activeConfig.flags.test(Data::BaseFlags::kAttachSubGraphs))
 				{
-					const auto& eventName = a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent) ?
-					                            a_activeConfig.animationEvent :
-					                            StringHolder::GetSingleton().weaponSheathe;
-
-					state->anim.UpdateAndSendAnimationEvent(eventName);
+					state->anim.holder->AttachSubGraphs(*a_params.actor);
+					state->anim.subGraphsAttached = true;
 				}
-				else if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
+
+				if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
 				{
 					state->anim.UpdateAndSendAnimationEvent(a_activeConfig.animationEvent);
 				}
@@ -939,7 +935,7 @@ namespace IED
 		{
 			const Data::configModelGroup_t::data_type::value_type* entry{ nullptr };
 			TESForm*                                               form{ nullptr };
-			IModel::modelParams_t                                  params;
+			IModel::ModelParams                                    params;
 			NiPointer<NiNode>                                      object;
 			ObjectEntryBase::State::GroupObject*                   grpObject{ nullptr };
 			ObjectDatabaseEntry                                    dbEntry;
@@ -960,7 +956,7 @@ namespace IED
 				continue;
 			}
 
-			IModel::modelParams_t params;
+			IModel::ModelParams params;
 
 			if (!IModel::GetModelParams(
 					a_params.actor,
@@ -1244,16 +1240,14 @@ namespace IED
 					                   !a_baseConfig.hkxFilter.contains(a_path);
 						}))
 				{
-					if (e.params.type == ModelType::kWeapon)
+					if (a_activeConfig.flags.test(Data::BaseFlags::kAttachSubGraphs) ||
+					    e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachSubGraphs))
 					{
-						const auto& eventName =
-							e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent) ?
-								e.entry->second.animationEvent :
-								StringHolder::GetSingleton().weaponSheathe;
-
-						e.grpObject->anim.UpdateAndSendAnimationEvent(eventName);
+						e.grpObject->anim.holder->AttachSubGraphs(*a_params.actor);
+						e.grpObject->anim.subGraphsAttached = true;
 					}
-					else if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+
+					if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
 					{
 						e.grpObject->anim.UpdateAndSendAnimationEvent(e.entry->second.animationEvent);
 					}

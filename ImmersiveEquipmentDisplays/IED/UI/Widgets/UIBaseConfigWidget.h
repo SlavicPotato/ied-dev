@@ -1798,10 +1798,23 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::DisableWeaponAnims);
 
+				if (ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::ReceiveActorEvents, "3"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kAttachSubGraphs)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kAttachSubGraphs);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				UITipsInterface::DrawTip(UITip::AnimEventForwarding);
+
 				ImGui::NextColumn();
 
 				paChanged = ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::AnimationEvent, "3"),
+					UIL::LS(UIWidgetCommonStrings::AnimationEvent, "4"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::BaseFlags::kAnimationEvent));
 
@@ -1851,7 +1864,7 @@ namespace IED
 				}
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIWidgetCommonStrings::ForceTryLoadAnim, "4"),
+						UIL::LS(UIWidgetCommonStrings::ForceTryLoadAnim, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kForceTryLoadAnim)))
 				{

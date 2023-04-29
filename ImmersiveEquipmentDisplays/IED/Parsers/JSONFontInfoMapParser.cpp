@@ -11,22 +11,22 @@ namespace IED
 		static constexpr std::uint32_t CURRENT_VERSION = 1;
 
 		template <>
-		bool Parser<fontInfoMap_t>::Parse(
+		bool Parser<FontInfoMap>::Parse(
 			const Json::Value& a_in,
-			fontInfoMap_t&     a_out) const
+			FontInfoMap&     a_out) const
 		{
 			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
-			Parser<fontInfoEntry_t>  parser(m_state);
+			Parser<FontInfoEntry>  parser(m_state);
 			Parser<fontGlyphRange_t> rangeParser(m_state);
 
 			for (auto it = data.begin(); it != data.end(); ++it)
 			{
 				auto k = it.key().asString();
 
-				fontInfoEntry_t tmp;
+				FontInfoEntry tmp;
 
 				if (!parser.Parse(*it, tmp, version))
 				{
@@ -38,7 +38,7 @@ namespace IED
 
 			auto& def = a_in["default_font"];
 
-			Parser<fontGlyphData_t> gparser(m_state);
+			Parser<FontGlyphData> gparser(m_state);
 
 			if (!gparser.Parse(
 					def["glyphs"],
@@ -53,8 +53,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<fontInfoMap_t>::Create(
-			const fontInfoMap_t& a_data,
+		void Parser<FontInfoMap>::Create(
+			const FontInfoMap& a_data,
 			Json::Value&         a_out) const
 		{
 		}

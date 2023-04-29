@@ -38,7 +38,7 @@ namespace IED
 			return m_crosshairRef;
 		}
 
-		bool LookupCrosshairRef(NiPointer<TESObjectREFR>& a_out);
+		NiPointer<TESObjectREFR> LookupCrosshairRef();
 
 		void FillActorInfoEntry(Actor* a_actor, actorInfoEntry_t& a_out, bool a_updateNPC = false);
 		void FillNPCInfoEntry(TESNPC* a_npc, npcInfoEntry_t& a_out);

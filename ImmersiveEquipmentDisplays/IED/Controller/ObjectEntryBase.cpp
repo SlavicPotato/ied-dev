@@ -305,8 +305,16 @@ namespace IED
 		holder->NotifyAnimationGraph(a_event.c_str());
 	}
 
-	void ObjectEntryBase::ObjectAnim::Cleanup()
+	void ObjectEntryBase::ObjectAnim::Cleanup(Game::ObjectRefHandle a_handle)
 	{
+		if (holder && subGraphsAttached && a_handle)
+		{
+			if (auto ref = a_handle.get_ptr())
+			{
+				holder->DetachSubGraphs(*ref);
+			}
+		}
+
 		AnimationUpdateController::CleanupWeaponBehaviorGraph(holder);
 	}
 
@@ -317,6 +325,12 @@ namespace IED
 		ObjectDatabase&          a_db,
 		bool                     a_removeCloningTask) noexcept
 	{
+		if (a_removeCloningTask && cloningTask)
+		{
+			cloningTask->try_cancel_task();
+			cloningTask.reset();
+		}
+
 		if (effectShaderData)
 		{
 			effectShaderData->ClearEffectShaderDataFromTree(a_root);
@@ -331,12 +345,6 @@ namespace IED
 			state.reset();
 
 			a_db.RequestCleanup();
-		}
-
-		if (a_removeCloningTask && cloningTask)
-		{
-			cloningTask->try_cancel_task();
-			cloningTask.reset();
 		}
 	}
 
@@ -397,7 +405,8 @@ namespace IED
 		}
 	}
 
-	void ObjectEntryBase::Object::CleanupObject(Game::ObjectRefHandle a_handle) noexcept
+	void ObjectEntryBase::Object::CleanupObject(
+		Game::ObjectRefHandle a_handle) noexcept
 	{
 		if (sound.handle.IsValid())
 		{
@@ -414,7 +423,7 @@ namespace IED
 			a_handle,
 			commonNodes.rootNode.get());
 
-		anim.Cleanup();
+		anim.Cleanup(a_handle);
 
 		if (dbEntry)
 		{

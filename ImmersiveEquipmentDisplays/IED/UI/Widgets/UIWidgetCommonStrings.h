@@ -133,6 +133,7 @@ namespace IED
 			OutfitConfig                        = 2125,
 			GeneralInfo                         = 2126,
 			WeaponType                          = 2127,
+			ReceiveActorEvents                  = 2128,
 		};
 	}
 }

@@ -41,7 +41,7 @@ namespace IED
 
 			float m_voffset;
 
-			UICommon::float_anim_t<float, 0.0f, 1.0f, 1.75f> m_animbg;
+			UICommon::float_anim_stepper<float, 0.0f, 1.0f, 1.75f> m_animbg;
 
 			Tasks::UIRenderTaskBase& m_owner;
 			Controller&              m_controller;

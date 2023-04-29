@@ -18,9 +18,9 @@ namespace IED
 
 			struct table_data
 			{
-				stl::fixed_string                lang;
-				container_type                   data;
-				std::shared_ptr<fontGlyphData_t> glyph_data;
+				stl::fixed_string              lang;
+				container_type                 data;
+				std::shared_ptr<FontGlyphData> glyph_data;
 			};
 
 			bool Load(const fs::path& a_path);

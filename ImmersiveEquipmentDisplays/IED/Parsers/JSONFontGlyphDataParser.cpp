@@ -8,9 +8,9 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<fontGlyphData_t>::Parse(
+		bool Parser<FontGlyphData>::Parse(
 			const Json::Value& a_in,
-			fontGlyphData_t&   a_out) const
+			FontGlyphData&   a_out) const
 		{
 			if (auto& gp = a_in["glyph_presets"])
 			{
@@ -60,8 +60,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<fontGlyphData_t>::Create(
-			const fontGlyphData_t& a_data,
+		void Parser<FontGlyphData>::Create(
+			const FontGlyphData& a_data,
 			Json::Value&           a_out) const
 		{
 		}

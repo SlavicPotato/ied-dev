@@ -350,9 +350,9 @@ namespace IED
 		m_npcInfo.clear();
 		m_crosshairRef.reset();
 
-		for (auto& e : a_cache)
+		for (auto& e : a_cache.getvec())
 		{
-			UpdateActorInfo(e.second);
+			UpdateActorInfo(e->second);
 		}
 
 		Game::AIProcessVisitActors([this](Actor* a_actor) {
@@ -395,9 +395,7 @@ namespace IED
 			AddExtraNPCEntry(e.first);
 		}
 
-		NiPointer<TESObjectREFR> ref;
-
-		if (LookupCrosshairRef(ref))
+		if (const auto ref = LookupCrosshairRef())
 		{
 			if (auto actor = ref->As<Actor>())
 			{
@@ -408,16 +406,15 @@ namespace IED
 		m_actorInfoUpdateID++;
 	}
 
-	bool IActorInfo::LookupCrosshairRef(
-		NiPointer<TESObjectREFR>& a_out)
+	NiPointer<TESObjectREFR> IActorInfo::LookupCrosshairRef()
 	{
 		auto handle = GetTargetActortHandle();
 		if (!handle)
 		{
-			return false;
+			return {};
 		}
 
-		return handle->Lookup(a_out);
+		return handle->get_ptr();
 	}
 
 	void IActorInfo::UpdateActorInfo(

@@ -135,12 +135,16 @@ namespace IED
 		void ClearObjectsImpl() noexcept;
 
 		static void GetNodeName(
-			TESForm*                     a_form,
-			const IModel::modelParams_t& a_params,
+			TESForm*                   a_form,
+			const IModel::ModelParams& a_params,
 			char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]) noexcept;
 
+		bool ShouldBackgroundClone(
+			const ProcessParams&       a_params,
+			const IModel::ModelParams& a_modelParams) noexcept;
+
 		AttachObjectResult LoadAndAttach(
-			ProcessParams&                a_params,
+			ProcessParams&                  a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_config,
 			ObjectEntryBase&                a_objectEntry,
@@ -152,7 +156,7 @@ namespace IED
 			const bool                      a_physics) noexcept;
 
 		AttachObjectResult LoadAndAttachGroup(
-			ProcessParams&                a_params,
+			ProcessParams&                  a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_baseConfig,
 			const Data::configModelGroup_t& a_group,
@@ -193,7 +197,7 @@ namespace IED
 			const TESForm* a_modelForm) noexcept;
 
 		void PlayEquipObjectSound(
-			const ProcessParams&          a_params,
+			const ProcessParams&            a_params,
 			const Data::configBaseValues_t& a_config,
 			const ObjectEntryBase&          a_objectEntry,
 			bool                            a_equip) noexcept;
@@ -220,10 +224,10 @@ namespace IED
 
 	private:
 		NiPointer<ObjectCloningTask> DispatchCloningTask(
-			const ProcessParams&        a_params,
-			const ObjectDatabaseEntry&    a_entry,
-			TESModelTextureSwap*          a_textureSwap,
-			float                         a_colliderScale) noexcept;
+			const ProcessParams&       a_params,
+			const ObjectDatabaseEntry& a_entry,
+			TESModelTextureSwap*       a_textureSwap,
+			float                      a_colliderScale) noexcept;
 
 		struct unks_01
 		{

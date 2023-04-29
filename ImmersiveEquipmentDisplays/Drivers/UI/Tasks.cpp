@@ -36,7 +36,7 @@ namespace IED
 					return false;
 				}
 
-				constexpr UIStringHolder::STRING_INDICES menus[] = {
+				static constexpr UIStringHolder::STRING_INDICES menus[] = {
 					UIStringHolder::STRING_INDICES::kcontainerMenu,
 					UIStringHolder::STRING_INDICES::kinventoryMenu,
 					UIStringHolder::STRING_INDICES::kmagicMenu,

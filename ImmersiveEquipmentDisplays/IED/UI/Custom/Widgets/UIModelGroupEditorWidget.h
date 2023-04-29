@@ -467,17 +467,17 @@ namespace IED
 			}
 			UITipsInterface::DrawTip(UITip::DisableWeaponAnims);
 
-			/*if (ImGui::CheckboxFlagsT(
-					UILI::LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "E"),
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::ReceiveActorEvents, "E"),
 					stl::underlying(std::addressof(entry.flags.value)),
-					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding)))
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kAttachSubGraphs)))
 			{
 				OnModelGroupEditorChange(
 					a_handle,
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			UITipsInterface::DrawTip(UITip::DisableAnimEventForwarding);*/
+			UITipsInterface::DrawTip(UITip::AnimEventForwarding);
 
 			paChanged = ImGui::CheckboxFlagsT(
 				UIL::LS(UIWidgetCommonStrings::AnimationEvent, "F"),

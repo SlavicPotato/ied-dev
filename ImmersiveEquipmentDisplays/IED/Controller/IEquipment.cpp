@@ -18,11 +18,13 @@ namespace IED
 	}
 
 	auto IEquipment::CreateEquippedItemInfo(
-		const ActorProcessManager* const a_pm) noexcept
+		const Actor* a_actor) noexcept
 		-> EquippedItemInfo
 	{
-		const auto formLeft  = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
-		const auto formRight = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Right];
+		const auto pm = a_actor->processManager;
+
+		const auto formLeft  = pm ? pm->equippedObject[ActorProcessManager::kEquippedHand_Left] : nullptr;
+		const auto formRight = pm ? pm->equippedObject[ActorProcessManager::kEquippedHand_Right] : nullptr;
 
 		return EquippedItemInfo{
 			formRight,

@@ -114,6 +114,8 @@ namespace IED
 
 		friend class ActorProcessorTask;
 
+		static constexpr std::int32_t INTRO_BANNER_TASK_ID = -0xFFFF;
+
 	public:
 		enum : unsigned int
 		{
@@ -186,6 +188,7 @@ namespace IED
 		bool SinkEventsT1();
 		bool SinkEventsT2();
 
+		void InitializeControllerPostDataLoad();
 		void OnDataLoaded();
 
 		void StoreActiveHandles();
@@ -438,7 +441,12 @@ namespace IED
 		}
 
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
+		void SetupUI();
 
+	private:
+		std::shared_ptr<FontGlyphData> GetCurrentGlyphData();
+
+	public:
 		//void QueueClearVariableStorage(bool a_requestEval);
 
 		void RunUpdateBipedSlotCache(ProcessParams& a_params) noexcept;
@@ -473,7 +481,7 @@ namespace IED
 	private:
 		FN_NAMEPROC("Controller");
 
-		struct updateActionFunc_t
+		struct UpdateActionfunc
 		{
 			using func_t = std::function<bool(
 				cachedActorInfo_t&,
@@ -525,12 +533,12 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void UpdateBipedSlotCache(
-			ProcessParams&   a_params,
+			ProcessParams&     a_params,
 			ActorObjectHolder& a_holder) noexcept;
 
 		void RunVariableMapUpdate(
 			ProcessParams& a_params,
-			bool             a_markAllForEval = false) noexcept;
+			bool           a_markAllForEval = false) noexcept;
 
 		void DoObjectEvaluation(
 			ProcessParams& a_params) noexcept;
@@ -615,72 +623,72 @@ namespace IED
 			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey,
-			updateActionFunc_t       a_func);
+			UpdateActionfunc         a_func);
 
 		void UpdateCustomNPCImpl(
 			Game::FormID             a_npc,
 			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey,
-			updateActionFunc_t       a_func);
+			UpdateActionfunc         a_func);
 
 		void UpdateCustomRaceImpl(
 			Game::FormID             a_race,
 			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey,
-			updateActionFunc_t       a_func);
+			UpdateActionfunc         a_func);
 
 		void UpdateCustomImpl(
 			Game::FormID             a_actor,
 			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
-			updateActionFunc_t       a_func);
+			UpdateActionfunc         a_func);
 
 		void UpdateCustomNPCImpl(
 			Game::FormID             a_npc,
 			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
-			updateActionFunc_t       a_func);
+			UpdateActionfunc         a_func);
 
 		void UpdateCustomRaceImpl(
 			Game::FormID             a_race,
 			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
-			updateActionFunc_t       a_func);
+			UpdateActionfunc         a_func);
 
 		void UpdateCustomImpl(
-			Game::FormID       a_actor,
-			Data::ConfigClass  a_class,
-			updateActionFunc_t a_func);
+			Game::FormID      a_actor,
+			Data::ConfigClass a_class,
+			UpdateActionfunc  a_func);
 
 		void UpdateCustomNPCImpl(
-			Game::FormID       a_npc,
-			Data::ConfigClass  a_class,
-			updateActionFunc_t a_func);
+			Game::FormID      a_npc,
+			Data::ConfigClass a_class,
+			UpdateActionfunc  a_func);
 
 		void UpdateCustomRaceImpl(
-			Game::FormID       a_race,
-			Data::ConfigClass  a_class,
-			updateActionFunc_t a_func);
+			Game::FormID      a_race,
+			Data::ConfigClass a_class,
+			UpdateActionfunc  a_func);
 
 		void UpdateCustomImpl(
-			ActorObjectHolder&        a_record,
-			Data::ConfigClass         a_class,
-			const stl::fixed_string&  a_pkey,
-			const stl::fixed_string&  a_vkey,
-			const updateActionFunc_t& a_func);
+			ActorObjectHolder&       a_record,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			const stl::fixed_string& a_vkey,
+			const UpdateActionfunc&  a_func);
 
 		void UpdateCustomImpl(
-			ActorObjectHolder&        a_record,
-			Data::ConfigClass         a_class,
-			const stl::fixed_string&  a_pkey,
-			const updateActionFunc_t& a_func);
+			ActorObjectHolder&       a_record,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			const UpdateActionfunc&  a_func);
 
 		void UpdateCustomImpl(
-			ActorObjectHolder&        a_record,
-			Data::ConfigClass         a_class,
-			const updateActionFunc_t& a_func);
+			ActorObjectHolder&      a_record,
+			Data::ConfigClass       a_class,
+			const UpdateActionfunc& a_func);
 
 		void UpdateCustomImpl(
 			cachedActorInfo_t&                    a_info,
@@ -688,56 +696,56 @@ namespace IED
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
 			const stl::fixed_string&              a_pkey,
 			const stl::fixed_string&              a_vkey,
-			const updateActionFunc_t&             a_func);
+			const UpdateActionfunc&               a_func);
 
 		void UpdateCustomAllImpl(
 			cachedActorInfo_t&                    a_info,
 			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
 			const stl::fixed_string&              a_pkey,
-			const updateActionFunc_t&             a_func);
+			const UpdateActionfunc&               a_func);
 
 		void UpdateCustomAllImpl(
 			cachedActorInfo_t&                    a_info,
 			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
-			const updateActionFunc_t&             a_func);
+			const UpdateActionfunc&               a_func);
 
 		void UpdateCustomImpl(
 			cachedActorInfo_t&                   a_info,
 			const Data::configCustomEntryMap_t&  a_confEntryMap,
 			ActorObjectHolder::customEntryMap_t& a_entryMap,
 			const stl::fixed_string&             a_vkey,
-			const updateActionFunc_t&            a_func);
+			const UpdateActionfunc&              a_func);
 
 		bool DoItemUpdate(
-			ProcessParams&                a_params,
+			ProcessParams&                  a_params,
 			const Data::configBaseValues_t& a_usedConfig,
 			ObjectEntryBase&                a_entry,
 			bool                            a_visible,
 			TESForm*                        a_currentModelForm) noexcept;
 
 		void ResetEffectShaderData(
-			ProcessParams& a_params,
+			ProcessParams&   a_params,
 			ObjectEntryBase& a_entry) noexcept;
 
 		void ResetEffectShaderData(
-			ProcessParams& a_params,
+			ProcessParams&   a_params,
 			ObjectEntryBase& a_entry,
 			NiAVObject*      a_object) noexcept;
 
 		void UpdateObjectEffectShaders(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		void UpdateCustomGroup(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		void RemoveSlotObjectEntry(
-			ProcessParams& a_params,
+			ProcessParams&   a_params,
 			ObjectEntrySlot& a_entry,
 			bool             a_removeCloningTask = true,
 			bool             a_noSound           = false) noexcept;
@@ -745,48 +753,48 @@ namespace IED
 		void ProcessSlots(ProcessParams& a_params) noexcept;
 
 		bool IsBlockedByChance(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		ActorObjectHolder* SelectCustomFormVariableSourceHolder(
-			Game::FormID     a_id,
+			Game::FormID   a_id,
 			ProcessParams& a_params) noexcept;
 
 		ActorObjectHolder* SelectCustomFormVariableSource(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config) noexcept;
 
 		const Data::configCachedForm_t* SelectCustomForm(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config) noexcept;
 
 		AttachObjectResult ProcessCustomEntry(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_cacheEntry) noexcept;
 
 		void ProcessCustomEntryMap(
-			ProcessParams&                     a_params,
+			ProcessParams&                       a_params,
 			const Data::configCustomHolder_t&    a_confData,
 			ActorObjectHolder::customEntryMap_t& a_entryMap) noexcept;
 
 		void ProcessCustomMap(
-			ProcessParams&                     a_params,
+			ProcessParams&                       a_params,
 			const Data::configCustomPluginMap_t& a_confPluginMap,
 			Data::ConfigClass                    a_class) noexcept;
 
 		void ProcessCustom(ProcessParams& a_params) noexcept;
 
 		void SaveLastEquippedItems(
-			ProcessParams&        a_params,
+			ProcessParams&          a_params,
 			const EquippedItemInfo& a_info,
 			ActorObjectHolder&      a_objectHolder) noexcept;
 
 		bool GetVisibilitySwitch(
 			Actor*                     a_actor,
 			stl::flag<Data::BaseFlags> a_flags,
-			ProcessParams&           a_params) noexcept;
+			ProcessParams&             a_params) noexcept;
 
 		bool LookupTrackedActor(
 			Game::FormID       a_actor,

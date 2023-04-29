@@ -44,6 +44,7 @@ namespace IED
 			kForceTryLoadAnim           = 1u << 27,
 			kPlayLoopSound              = 1u << 28,
 			kHideGeometry               = 1u << 29,
+			kAttachSubGraphs            = 1u << 30,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kDisabled |
@@ -58,7 +59,8 @@ namespace IED
 			                     kAttachLight |
 			                     kRemoveEditorMarker |
 			                     kGeometryScaleCollider |
-			                     kForceTryLoadAnim
+			                     kForceTryLoadAnim |
+			                     kAttachSubGraphs
 
 		};
 
