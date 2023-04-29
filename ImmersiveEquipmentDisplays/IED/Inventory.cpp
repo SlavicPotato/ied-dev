@@ -76,7 +76,7 @@ namespace IED
 
 	void InventoryInfoCollector::PostProcess() noexcept
 	{
-		for (auto& e : data.forms)
+		for (const auto& e : data.forms)
 		{
 			const auto typeExtra = e.second.extra.typeExtra;
 
@@ -140,7 +140,7 @@ namespace IED
 			return;
 		}
 
-		const auto typePair   = ItemData::GetItemTypePair(form);
+		const auto typePair = ItemData::GetItemTypePair(form);
 
 		auto& entry = data.forms.raw()
 		                  .emplace_back(
@@ -322,9 +322,9 @@ namespace IED
 				continue;
 			}
 
-			auto& entry = slotResults[stl::underlying(e.extra.type)];
+			auto& r = slotResults[stl::underlying(e.extra.type)];
 
-			entry.emplace_back(
+			r.emplace_back(
 				std::addressof(e),
 				static_cast<std::uint32_t>(extra),
 				rating);

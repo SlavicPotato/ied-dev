@@ -525,18 +525,6 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::ForceTryLoadAnim, "F1"),
-					stl::underlying(std::addressof(entry.flags.value)),
-					stl::underlying(Data::ConfigModelGroupEntryFlags::kForceTryLoadAnim)))
-			{
-				OnModelGroupEditorChange(
-					a_handle,
-					a_params,
-					ModelGroupEditorOnChangeEventType::Flags);
-			}
-			UITipsInterface::DrawTip(UITip::ForceTryLoadAnim);
-
-			if (ImGui::CheckboxFlagsT(
 					UIL::LS(UIWidgetCommonStrings::DisableHavok, "G"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))

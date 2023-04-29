@@ -805,8 +805,6 @@ namespace IED
 		}
 		else if (
 			AnimationUpdateController::GetSingleton().IsInitialized() &&
-			(modelParams.type == ModelType::kWeapon ||
-		     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
 			!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims))
 		{
 			bool result;
@@ -1225,9 +1223,6 @@ namespace IED
 			}
 			else if (
 				AnimationUpdateController::GetSingleton().IsInitialized() &&
-				(e.params.type == ModelType::kWeapon ||
-			     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim) ||
-			     e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kForceTryLoadAnim)) &&
 				!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims) &&
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableBehaviorGraphAnims))
 			{

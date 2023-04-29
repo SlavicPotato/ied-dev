@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 11
+	return 12
 EndFunction
 
 Int Function GetVersion() native global
@@ -121,10 +121,6 @@ Bool Function SetItemAttachLightActor(Actor akActor, string asPlugin, string asN
 Bool Function SetItemAttachLightNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemAttachLightRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 
-Bool Function SetItemAlwaysLoadGraphActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
-Bool Function SetItemAlwaysLoadGraphNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
-Bool Function SetItemAlwaysLoadGraphRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
-
 Bool Function SetItemLightTargetSelfActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemLightTargetSelfNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemLightTargetSelfRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
@@ -207,7 +203,7 @@ Bool Function ItemEnabledRace(Race akRace, string asPlugin, string asName, bool 
 ;
 
 
-; Returns form displayed in aiSlot or None if empty or hidden
+; Returns the form displayed in aiSlot or None if empty or hidden
 Form Function GetSlottedForm(Actor akActor, int aiSlot) native global
 
 

@@ -111,7 +111,6 @@ namespace IED
 			DynamicArrows                       = 1102,
 			NPCLightCellAttachFix               = 1103,
 			NPCLightUpdateFix                   = 1104,
-			ForceTryLoadAnim                    = 1105,
 			LightFieldOfView                    = 1106,
 			LightTargetSelf                     = 1107,
 			MatchNPCOrTemplate                  = 1108,

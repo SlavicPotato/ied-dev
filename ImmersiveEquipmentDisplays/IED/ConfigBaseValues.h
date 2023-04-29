@@ -41,7 +41,7 @@ namespace IED
 			kHideLight                  = 1u << 24,
 			kRemoveEditorMarker         = 1u << 25,
 			kGeometryScaleCollider      = 1u << 26,
-			kForceTryLoadAnim           = 1u << 27,
+			kForceTryLoadAnim           = 1u << 27,  // removed (RC18)
 			kPlayLoopSound              = 1u << 28,
 			kHideGeometry               = 1u << 29,
 			kAttachSubGraphs            = 1u << 30,
@@ -59,7 +59,6 @@ namespace IED
 			                     kAttachLight |
 			                     kRemoveEditorMarker |
 			                     kGeometryScaleCollider |
-			                     kForceTryLoadAnim |
 			                     kAttachSubGraphs
 
 		};

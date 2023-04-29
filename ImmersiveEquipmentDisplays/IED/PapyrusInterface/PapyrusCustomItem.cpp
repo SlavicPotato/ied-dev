@@ -786,35 +786,6 @@ namespace IED
 			}
 
 			template <concepts::valid_target T>
-			static bool SetItemAlwaysLoadGraph(
-				StaticFunctionTag*,
-				T*            a_target,
-				BSFixedString a_key,
-				BSFixedString a_name,
-				bool          a_female,
-				bool          a_switch)
-			{
-				if (!a_target)
-				{
-					return false;
-				}
-
-				auto keys = GetKeys(a_key, a_name);
-				if (!keys)
-				{
-					return false;
-				}
-
-				return SetItemAlwaysLoadGraphImpl(
-					a_target->formID,
-					GetConfigClass<T>(),
-					keys.key,
-					keys.name,
-					GetSex(a_female),
-					a_switch);
-			}
-
-			template <concepts::valid_target T>
 			static bool SetItemLightTargetSelf(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1651,27 +1622,6 @@ namespace IED
 						"SetItemAttachLightRace",
 						SCRIPT_NAME,
 						SetItemAttachLight,
-						a_registry));
-
-				a_registry->RegisterFunction(
-					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
-						"SetItemAlwaysLoadGraphActor",
-						SCRIPT_NAME,
-						SetItemAlwaysLoadGraph,
-						a_registry));
-
-				a_registry->RegisterFunction(
-					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
-						"SetItemAlwaysLoadGraphNPC",
-						SCRIPT_NAME,
-						SetItemAlwaysLoadGraph,
-						a_registry));
-
-				a_registry->RegisterFunction(
-					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
-						"SetItemAlwaysLoadGraphRace",
-						SCRIPT_NAME,
-						SetItemAlwaysLoadGraph,
 						a_registry));
 
 				a_registry->RegisterFunction(

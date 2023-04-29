@@ -1798,19 +1798,6 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::DisableWeaponAnims);
 
-				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIWidgetCommonStrings::ReceiveActorEvents, "3"),
-						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kAttachSubGraphs)))
-				{
-					PropagateFlagToEquipmentOverrides(
-						a_baseConfig,
-						Data::BaseFlags::kAttachSubGraphs);
-
-					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-				}
-				UITipsInterface::DrawTip(UITip::AnimEventForwarding);
-
 				ImGui::NextColumn();
 
 				paChanged = ImGui::CheckboxFlagsT(
@@ -1864,30 +1851,17 @@ namespace IED
 				}
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIWidgetCommonStrings::ForceTryLoadAnim, "5"),
+						UIL::LS(UIWidgetCommonStrings::ReceiveActorEvents, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kForceTryLoadAnim)))
+						stl::underlying(Data::BaseFlags::kAttachSubGraphs)))
 				{
 					PropagateFlagToEquipmentOverrides(
 						a_baseConfig,
-						Data::BaseFlags::kForceTryLoadAnim);
+						Data::BaseFlags::kAttachSubGraphs);
 
-					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				UITipsInterface::DrawTip(UITip::ForceTryLoadAnim);
-
-				/*if (ImGui::CheckboxFlagsT(
-					UILI::LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "4"),
-					stl::underlying(std::addressof(a_data.flags.value)),
-					stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
-				{
-					PropagateFlagToEquipmentOverrides(
-						a_baseConfig,
-						Data::BaseFlags::kDisableAnimEventForwarding);
-
-					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-				}
-				UITipsInterface::DrawTip(UITip::DisableAnimEventForwarding);*/
+				UITipsInterface::DrawTip(UITip::AnimEventForwarding);
 
 				UICommon::PopDisabled(a_disabled);
 
