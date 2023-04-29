@@ -43,7 +43,7 @@ namespace IED
 			std::make_pair(TESObjectDOOR::kTypeID, UIFormTypeSelectorWidgetStrings::Door),
 			std::make_pair(BGSExplosion::kTypeID, UIFormTypeSelectorWidgetStrings::Explosion),
 			std::make_pair(BGSMaterialObject::kTypeID, UIFormTypeSelectorWidgetStrings::Material),
-			std::make_pair(BGSProjectile::kTypeID, UIFormTypeSelectorWidgetStrings::Material),
+			std::make_pair(BGSProjectile::kTypeID, UIFormTypeSelectorWidgetStrings::Projectile),
 			std::make_pair(BGSLocation::kTypeID, UIFormTypeSelectorWidgetStrings::Location),
 			std::make_pair(TESWorldSpace::kTypeID, UIFormTypeSelectorWidgetStrings::Worldspace),
 			std::make_pair(TESPackage::kTypeID, UIFormTypeSelectorWidgetStrings::Package),
