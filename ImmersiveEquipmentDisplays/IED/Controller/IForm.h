@@ -30,7 +30,7 @@ namespace IED
 
 		ExtraFormInfoTESWeather(const FORM_TYPE* a_form);
 
-		const WeatherClassificationFlags classFlags;
+		WeatherClassificationFlags classFlags;
 	};
 
 	class ExtraFormInfoTESObjectWEAP :
@@ -41,9 +41,11 @@ namespace IED
 
 		ExtraFormInfoTESObjectWEAP(const FORM_TYPE* a_form);
 
-		const WEAPON_TYPE weaponType;
+		WEAPON_TYPE                           weaponType;
+		stl::flag<TESObjectWEAP::Data::Flag>  flags;
+		stl::flag<TESObjectWEAP::Data::Flag2> flags2;
 	};
-	
+
 	class ExtraFormInfoTESAmmo :
 		public BaseExtraFormInfo
 	{
@@ -52,7 +54,7 @@ namespace IED
 
 		ExtraFormInfoTESAmmo(const FORM_TYPE* a_form);
 
-		const bool isBolt;
+		stl::flag<AMMO_DATA::Flag> flags;
 	};
 
 	struct FormInfoData
@@ -66,13 +68,13 @@ namespace IED
 		std::string              name;
 		std::uint32_t            extraType;
 
-		std::unique_ptr<BaseExtraFormInfo> extraInfo;
+		std::unique_ptr<const BaseExtraFormInfo> extraInfo;
 	};
 
 	struct FormInfoResult
 	{
-		FormInfoData                  form;
-		std::unique_ptr<FormInfoData> base;
+		const FormInfoData                  form;
+		std::unique_ptr<const FormInfoData> base;
 
 		[[nodiscard]] constexpr const auto& get_base() const noexcept
 		{

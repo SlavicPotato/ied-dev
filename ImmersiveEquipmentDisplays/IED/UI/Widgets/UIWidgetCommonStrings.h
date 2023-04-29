@@ -133,6 +133,7 @@ namespace IED
 			GeneralInfo                         = 2126,
 			WeaponType                          = 2127,
 			ReceiveActorEvents                  = 2128,
+			BoundWeapon                         = 2129,
 		};
 	}
 }

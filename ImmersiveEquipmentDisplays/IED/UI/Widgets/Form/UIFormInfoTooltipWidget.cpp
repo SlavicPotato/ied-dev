@@ -4,6 +4,7 @@
 
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UIFormInfoCache.h"
+#include "IED/UI/UIWeaponTypeStrings.h"
 
 #include "IED/UI/Widgets/UIWeatherClassSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
@@ -29,38 +30,89 @@ namespace IED
 			const FormInfoResult*  a_info,
 			const ObjectEntryBase& a_entry)
 		{
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
+			bool          drawnSep1 = false;
+			std::uint32_t numFF     = 0;
 
-			if (a_info)
+			const auto ds = [&]<class T = std::nullptr_t>(T a_func = T())
 			{
-				ImGui::Text("%s:", UIL::LS(CommonStrings::FormID));
-				ImGui::SameLine();
-				ImGui::Text("%.8X", a_info->form.id.get());
-
-				ImGui::Text("%s:", UIL::LS(CommonStrings::Type));
-
-				if (auto typeDesc = UIFormTypeSelectorWidget::form_type_to_desc(a_info->form.type))
+				if (a_info && !drawnSep1)
 				{
-					ImGui::SameLine();
-					ImGui::TextUnformatted(typeDesc);
+					ImGui::Spacing();
+					ImGui::Separator();
+					ImGui::Spacing();
+
+					drawnSep1 = true;
+				}
+
+				if constexpr (std::invocable<T>)
+				{
+					if (numFF > 0)
+					{
+						ImGui::SameLine();
+						ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+						ImGui::SameLine();
+					}
+
+					numFF++;
+
+					a_func();
 				}
 				else
 				{
-					ImGui::SameLine();
-					ImGui::Text("%hhu", a_info->form.type);
+					numFF = 0;
 				}
+			};
 
-				ImGui::Spacing();
+			ImGui::BeginTooltip();
+			//ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
+
+			if (a_info)
+			{
+				DrawFormInfoResult(*a_info);
 			}
 
 			if (a_entry.data.state->flags.test(ObjectEntryFlags::kScbLeft))
 			{
-				ImGui::TextUnformatted(UIL::LS(UIWidgetCommonStrings::LeftScbAttached));
-				ImGui::Spacing();
+				ds([] { ImGui::TextUnformatted(UIL::LS(UIWidgetCommonStrings::LeftScbAttached)); });
 			}
 
-			ImGui::PopTextWrapPos();
+			if (a_entry.data.state->anim.holder)
+			{
+				ds([] { ImGui::TextUnformatted(UIL::LS(CommonStrings::Animation)); });
+			}
+
+			if (a_entry.data.state->light)
+			{
+				ds([] { ImGui::TextUnformatted(UIL::LS(CommonStrings::Light)); });
+			}
+
+			if (a_entry.data.state->simComponent)
+			{
+				ds([] { ImGui::TextUnformatted(UIL::LS(CommonStrings::Physics)); });
+			}
+
+			if (const auto soundForm = a_entry.data.state->sound.form)
+			{
+				ds();
+
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Sound));
+
+				auto& flc = m_controller.UIGetFormLookupCache();
+
+				if (const auto formInfo = flc.LookupForm(soundForm->formID))
+				{
+					ImGui::Indent();
+					DrawFormInfoResult(*formInfo);
+					ImGui::Unindent();
+				}
+				else
+				{
+					ImGui::SameLine();
+					ImGui::Text("%.8X", soundForm->formID.get());
+				}
+			}
+
+			//ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}
 
@@ -223,22 +275,7 @@ namespace IED
 
 			if (a_info)
 			{
-				DrawFormInfo(a_info->form);
-
-				if (auto& base = a_info->base)
-				{
-					ImGui::Spacing();
-					ImGui::Spacing();
-
-					ImGui::Text("%s:", UIL::LS(CommonStrings::Base));
-					ImGui::Spacing();
-
-					ImGui::Indent();
-
-					DrawFormInfo(*base);
-
-					ImGui::Unindent();
-				}
+				DrawFormInfoResult(*a_info);
 			}
 			else
 			{
@@ -252,6 +289,26 @@ namespace IED
 			ImGui::EndTooltip();
 
 			ImGui::PopStyleVar();
+		}
+
+		void UIFormInfoTooltipWidget::DrawFormInfoResult(const FormInfoResult& a_info)
+		{
+			DrawFormInfo(a_info.form);
+
+			if (auto& base = a_info.base)
+			{
+				ImGui::Spacing();
+				ImGui::Spacing();
+
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Base));
+				ImGui::Spacing();
+
+				ImGui::Indent();
+
+				DrawFormInfo(*base);
+
+				ImGui::Unindent();
+			}
 		}
 
 		void UIFormInfoTooltipWidget::DrawFormInfo(const FormInfoData& a_info)
@@ -312,6 +369,37 @@ namespace IED
 			}
 		}
 
+		static Localization::StringID constexpr weapon_type_to_strid(WEAPON_TYPE a_type) noexcept
+		{
+			using namespace Localization;
+
+			switch (a_type)
+			{
+			case WEAPON_TYPE::kHandToHandMelee:
+				return static_cast<StringID>(UIWeaponTypeStrings::HandToHandMelee);
+			case WEAPON_TYPE::kOneHandSword:
+				return static_cast<StringID>(UIWeaponTypeStrings::OneHandSword);
+			case WEAPON_TYPE::kOneHandDagger:
+				return static_cast<StringID>(UIWeaponTypeStrings::OneHandDagger);
+			case WEAPON_TYPE::kOneHandAxe:
+				return static_cast<StringID>(UIWeaponTypeStrings::OneHandAxe);
+			case WEAPON_TYPE::kOneHandMace:
+				return static_cast<StringID>(UIWeaponTypeStrings::OneHandMace);
+			case WEAPON_TYPE::kTwoHandSword:
+				return static_cast<StringID>(UIWeaponTypeStrings::TwoHandSword);
+			case WEAPON_TYPE::kTwoHandAxe:
+				return static_cast<StringID>(UIWeaponTypeStrings::TwoHandAxe);
+			case WEAPON_TYPE::kBow:
+				return static_cast<StringID>(UIWeaponTypeStrings::Bow);
+			case WEAPON_TYPE::kStaff:
+				return static_cast<StringID>(UIWeaponTypeStrings::Staff);
+			case WEAPON_TYPE::kCrossbow:
+				return static_cast<StringID>(UIWeaponTypeStrings::Crossbow);
+			default:
+				return static_cast<StringID>(CommonStrings::Unknown);
+			}
+		}
+
 		void UIFormInfoTooltipWidget::DrawExtraFormInfo(const BaseExtraFormInfo& a_info)
 		{
 			switch (a_info.type)
@@ -322,7 +410,7 @@ namespace IED
 
 					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::WeatherClass));
 					ImGui::SameLine();
-					ImGui::Text("%s", UIWeatherClassSelectorWidget{}.weather_class_to_desc(v.classFlags));
+					ImGui::TextUnformatted(UIWeatherClassSelectorWidget{}.weather_class_to_desc(v.classFlags));
 				}
 				break;
 			case ExtraFormInfoTESObjectWEAP::FORM_TYPE::kTypeID:
@@ -331,7 +419,16 @@ namespace IED
 
 					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::WeaponType));
 					ImGui::SameLine();
-					ImGui::Text("%hhu", v.weaponType);
+					ImGui::Text("%hhu [%s]", v.weaponType, UIL::LS(weapon_type_to_strid(v.weaponType)));
+
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Playable));
+					ImGui::SameLine();
+					ImGui::TextUnformatted(UIL::LS(v.flags.test(TESObjectWEAP::Data::Flag::kNonPlayable) ? CommonStrings::No : CommonStrings::Yes));
+
+					if (v.flags2.test(TESObjectWEAP::Data::Flag2::kBoundWeapon))
+					{
+						ImGui::TextUnformatted(UIL::LS(UIWidgetCommonStrings::BoundWeapon));
+					}
 				}
 				break;
 			case ExtraFormInfoTESAmmo::FORM_TYPE::kTypeID:
@@ -340,7 +437,11 @@ namespace IED
 
 					ImGui::Text("%s:", UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt));
 					ImGui::SameLine();
-					ImGui::Text("%s", UIL::LS(v.isBolt ? CommonStrings::Yes : CommonStrings::No));
+					ImGui::TextUnformatted(UIL::LS(v.flags.test(AMMO_DATA::Flag::kNonBolt) ? CommonStrings::No : CommonStrings::Yes));
+
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Playable));
+					ImGui::SameLine();
+					ImGui::TextUnformatted(UIL::LS(v.flags.test(AMMO_DATA::Flag::kNonPlayable) ? CommonStrings::No : CommonStrings::Yes));
 				}
 				break;
 			}

@@ -40,6 +40,9 @@ namespace IED
 			void DrawGeneralFormInfoTooltip(
 				const FormInfoResult* a_info);
 
+			void DrawFormInfoResult(
+				const FormInfoResult& a_info);
+
 			void DrawFormInfo(
 				const FormInfoData& a_info);
 

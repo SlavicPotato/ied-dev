@@ -1991,6 +1991,9 @@
     <ClInclude Include="IED\Controller\BackgroundCloneLevel.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIWeaponTypeStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">

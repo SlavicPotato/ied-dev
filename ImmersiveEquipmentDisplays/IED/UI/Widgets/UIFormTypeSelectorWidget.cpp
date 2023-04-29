@@ -63,6 +63,7 @@ namespace IED
 			std::make_pair(BGSLightingTemplate::kTypeID, UIFormTypeSelectorWidgetStrings::LightingTemplate),
 			std::make_pair(TESObjectCELL::kTypeID, UIFormTypeSelectorWidgetStrings::Cell),
 			std::make_pair(TESLevItem::kTypeID, UIFormTypeSelectorWidgetStrings::LevItem),
+			std::make_pair(TESObjectARMA::kTypeID, UIFormTypeSelectorWidgetStrings::ArmorAddon),
 			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form)
 		);
 
@@ -183,10 +184,10 @@ namespace IED
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Door);
 			case BGSExplosion::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Explosion);
-			case BGSProjectile::kTypeID:
-				return UIL::LS(UIFormTypeSelectorWidgetStrings::Projectile);
 			case BGSMaterialObject::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Material);
+			case BGSProjectile::kTypeID:
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Projectile);
 			case BGSLocation::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Location);
 			case TESWorldSpace::kTypeID:
@@ -225,6 +226,8 @@ namespace IED
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Cell);
 			case TESLevItem::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::LevItem);
+			case TESObjectARMA::kTypeID:
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::ArmorAddon);
 			case TESForm::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Form);
 			default:

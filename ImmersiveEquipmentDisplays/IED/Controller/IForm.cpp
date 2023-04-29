@@ -92,14 +92,16 @@ namespace IED
 	ExtraFormInfoTESObjectWEAP::ExtraFormInfoTESObjectWEAP(
 		const FORM_TYPE* a_form) :
 		BaseExtraFormInfo(a_form),
-		weaponType(a_form->type())
+		weaponType(a_form->type()),
+		flags(a_form->weaponData.flags),
+		flags2(a_form->weaponData.flags2)
 	{
 	}
 
 	ExtraFormInfoTESAmmo::ExtraFormInfoTESAmmo(
 		const FORM_TYPE* a_form) :
 		BaseExtraFormInfo(a_form),
-		isBolt(a_form->isBolt())
+		flags(a_form->settings.flags)
 	{
 	}
 
