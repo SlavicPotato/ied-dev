@@ -18,7 +18,7 @@ namespace IED
 		ItaClassic,
 		SpectrumDark,
 		EnemyMouse,
-		S562,
+		S56_2,
 
 		Max
 	};

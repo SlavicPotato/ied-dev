@@ -24,7 +24,7 @@ namespace IED
 	{
 		if (!a_data)
 		{
-			throw std::exception(__FUNCTION__ ": no model data");
+			throw std::runtime_error(__FUNCTION__ ": no model data");
 		}
 
 		SetLightingEnabled(true);

@@ -1,11 +1,26 @@
 #pragma once
 
-//#define PARSER_NOT_IMPL_STR "Not implemented"
+#define PARSER_NOT_IMPL_STR "not implemented"
 
 namespace IED
 {
 	namespace Serialization
 	{
+#if defined(SKMP_TRACED_EXCEPTIONS)
+		class parser_exception :
+			public stl::traced_exception
+		{
+		public:
+			explicit parser_exception(
+				const std::string&            a_message,
+				boost::stacktrace::stacktrace a_trace = boost::stacktrace::stacktrace()) :
+				stl::traced_exception(a_message, a_trace)
+			{
+			}
+		};
+#else
+		using parser_exception = std::runtime_error;
+#endif
 
 		enum class ParserStateFlags : std::uint32_t
 		{
@@ -160,6 +175,7 @@ namespace IED
 		void        CreateRootPath(const fs::path& a_path);
 
 		bool FileExists(const fs::path& a_path);
+		bool IsDirectory(const fs::path& a_path);
 
 		static constexpr auto TMP_EXT = ".tmp";
 
@@ -269,11 +285,10 @@ namespace IED
 
 		std::uint32_t ExtractVersion(
 			const Json::Value& a_in,
-			std::uint32_t      a_current,
-			const char*        a_func);
+			std::uint32_t      a_current);
 
 	}
 }
 
 #define JSON_PARSE_VERSION() \
-	[[maybe_unused]] auto version = ExtractVersion(a_in, CURRENT_VERSION, __FUNCTION__);
+	[[maybe_unused]] const auto version = ExtractVersion(a_in, CURRENT_VERSION);

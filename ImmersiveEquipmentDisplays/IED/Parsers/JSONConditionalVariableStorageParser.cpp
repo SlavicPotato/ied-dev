@@ -81,7 +81,7 @@ namespace IED
 				}
 				break;
 			default:
-				throw std::exception("unknown type");
+				throw parser_exception(__FUNCTION__": unknown type");
 			}
 
 			a_out["version"] = CURRENT_VERSION;

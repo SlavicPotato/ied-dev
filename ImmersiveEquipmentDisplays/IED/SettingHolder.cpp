@@ -27,7 +27,7 @@ namespace IED
 
 				if (!parser.Parse(root, *tmp))
 				{
-					throw std::exception("parser error");
+					throw parser_exception("parser error");
 				}
 
 				data = std::move(*tmp);

@@ -38,10 +38,10 @@ namespace IED
 						auto tmp = stl::make_smart_for_overwrite<StringTable>();
 						if (!tmp->Load(path))
 						{
-							Error(
-								"%s: %s",
-								Serialization::SafeGetPath(path).c_str(),
-								tmp->GetLastException().what());
+							Exception(
+								tmp->GetLastException(),
+								__FUNCTION__ ": [%s]",
+								Serialization::SafeGetPath(path).c_str());
 
 							continue;
 						}

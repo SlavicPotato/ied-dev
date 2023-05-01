@@ -21,7 +21,7 @@ namespace IED
 			}
 			else
 			{
-				throw std::exception("no uid");
+				throw parser_exception(__FUNCTION__ ": no uid");
 			}
 
 			a_out.data.testType = static_cast<Data::NodeMonitorTestType>(
@@ -33,7 +33,7 @@ namespace IED
 
 				if (!smparser.Parse(skels, a_out.data.targetSkeletons))
 				{
-					throw std::exception("bad skeleton match");
+					throw parser_exception(__FUNCTION__ ": bad skeleton match");
 				}
 			}
 
@@ -43,7 +43,7 @@ namespace IED
 
 			if (a_out.parent.empty())
 			{
-				throw std::exception("bad parent");
+				throw parser_exception(__FUNCTION__ ": bad parent");
 			}
 
 			if (auto& subject = a_in["subject"])
@@ -51,7 +51,7 @@ namespace IED
 				auto s = a_in["subject"].asString();
 				if (s.empty())
 				{
-					throw std::exception("bad subject");
+					throw parser_exception(__FUNCTION__ ": bad subject");
 				}
 
 				a_out.subjects.emplace_back(std::move(s));
@@ -64,7 +64,7 @@ namespace IED
 					auto s = e.asString();
 					if (s.empty())
 					{
-						throw std::exception("bad subject");
+						throw parser_exception(__FUNCTION__ ": bad subject");
 					}
 
 					a_out.subjects.emplace_back(std::move(s));
@@ -73,7 +73,7 @@ namespace IED
 
 			if (a_out.subjects.empty())
 			{
-				throw std::exception("no subjects defined");
+				throw parser_exception(__FUNCTION__ ": no subjects defined");
 			}
 
 			return true;
@@ -84,7 +84,7 @@ namespace IED
 			const Data::configNodeMonitorEntry_t& a_data,
 			Json::Value&                          a_out) const
 		{
-			throw std::runtime_error("not implemented");
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 
 	}

@@ -28,7 +28,7 @@ namespace IED
 
 		UIKeyBindEditorWindow::~UIKeyBindEditorWindow()
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<KeybindProfile>().RemoveSink(this);
 		}
 
 		void UIKeyBindEditorWindow::Initialize()

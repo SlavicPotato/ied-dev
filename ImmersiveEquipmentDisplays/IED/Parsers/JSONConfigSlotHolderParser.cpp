@@ -9,8 +9,6 @@ namespace IED
 {
 	namespace Serialization
 	{
-		static SlotKeyParser s_slotKeyParser;
-
 		static constexpr std::uint32_t CURRENT_VERSION = 2;
 
 		template <>
@@ -28,7 +26,7 @@ namespace IED
 			{
 				const auto key = it.key().asString();
 
-				const auto slot = s_slotKeyParser.KeyToSlot(key);
+				const auto slot = SlotKeyParser::KeyToSlot(key);
 
 				if (slot >= Data::ObjectSlot::kMax)
 				{
@@ -113,7 +111,7 @@ namespace IED
 					continue;
 				}
 
-				auto key = s_slotKeyParser.SlotToKey(slot);
+				const auto key = SlotKeyParser::SlotToKey(slot);
 
 				assert(key);
 

@@ -17,7 +17,7 @@ namespace IED
 
 		UINodeOverrideEditorGlobal::~UINodeOverrideEditorGlobal() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<NodeOverrideProfile>().RemoveSink(this);
 		}
 
 		void UINodeOverrideEditorGlobal::EditorInitialize()

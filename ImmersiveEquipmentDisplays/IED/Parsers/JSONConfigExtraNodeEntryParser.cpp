@@ -58,6 +58,7 @@ namespace IED
 			const Data::configExtraNodeEntry_t& a_data,
 			Json::Value&                        a_out) const
 		{
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 	}
 }

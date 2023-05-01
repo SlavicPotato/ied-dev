@@ -25,7 +25,7 @@ namespace IED
 
 		if (read<std::uint32_t>() != MAGIC)
 		{
-			throw std::exception("bad magic");
+			throw std::runtime_error("bad magic");
 		}
 
 		read<std::uint8_t>();   // major
@@ -53,7 +53,7 @@ namespace IED
 
 		if (m_stream.gcount() != len)
 		{
-			throw std::exception("string read error");
+			throw std::runtime_error("string read error");
 		}
 
 		return std::string(data.get(), data.get() + len);

@@ -12,44 +12,46 @@ namespace IED
 		template <>
 		bool Parser<FontInfoEntry>::Parse(
 			const Json::Value& a_in,
-			FontInfoEntry&   a_out,
+			FontInfoEntry&     a_out,
 			std::uint32_t      a_version) const
 		{
-			fs::path path(stl::str_to_wstr(a_in["file"].asString()));
+			a_out.path = a_in["file"].asString();
 
-			if (path.empty())
+			if (a_out.path.empty())
 			{
-				Error("%s: empty font filename", __FUNCTION__);
-				return false;
+				throw parser_exception("empty font filename");
 			}
 
-			bool win_font = a_in.get("win_font", false).asBool();
+			a_out.win_font = a_in.get("win_font", false).asBool();
 
-			if (win_font && !path.is_absolute())
+			if (a_version >= 2)
 			{
-				fs::path tmp;
-
-				if (!WinApi::get_windows_path(tmp))
+				if (auto& glyphs = a_in["glyphs"])
 				{
-					Error("%s: failed getting windows path", __FUNCTION__);
-					return false;
+					Parser<FontGlyphData> gparser(m_state);
+
+					auto tmp = stl::make_smart_for_overwrite<FontGlyphData>();
+
+					if (!gparser.Parse(glyphs, *tmp))
+					{
+						return false;
+					}
+
+					a_out.glyph_data = std::move(tmp);
 				}
-
-				tmp /= "Fonts";
-				tmp /= path;
-
-				a_out.path = stl::wstr_to_str(tmp.wstring());
 			}
 			else
 			{
-				a_out.path = stl::wstr_to_str(path.wstring());
-			}
+				Parser<FontGlyphData> gparser(m_state);
 
-			Parser<FontGlyphData> gparser(m_state);
+				auto tmp = stl::make_smart_for_overwrite<FontGlyphData>();
 
-			if (!gparser.Parse(a_in, a_out))
-			{
-				return false;
+				if (!gparser.Parse(a_in, *tmp))
+				{
+					return false;
+				}
+
+				a_out.glyph_data = std::move(tmp);
 			}
 
 			a_out.size = std::max(a_in["size"].asFloat(), 0.1f);
@@ -60,8 +62,9 @@ namespace IED
 		template <>
 		void Parser<FontInfoEntry>::Create(
 			const FontInfoEntry& a_data,
-			Json::Value&           a_out) const
+			Json::Value&         a_out) const
 		{
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 
 	}

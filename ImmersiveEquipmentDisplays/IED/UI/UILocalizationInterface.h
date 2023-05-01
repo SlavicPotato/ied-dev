@@ -50,11 +50,13 @@ namespace IED
 				const char* a_str,
 				const char* a_im_id) noexcept
 			{
-				auto& buffer = GetLocalizationInterface().m_scBuffer1;
+				constexpr auto BUFFER_SIZE = Localization::ILocalization::SC_BUFFER_SIZE;
 
-				static_assert(sizeof(buffer) > _NumHash);
+				const auto& buffer = GetLocalizationInterface().m_scBuffer1;
 
-				constexpr auto d = sizeof(buffer) - _NumHash - 1;
+				static_assert(BUFFER_SIZE > _NumHash);
+
+				constexpr auto d = BUFFER_SIZE - _NumHash - 1;
 
 				const auto mslen = d - std::min(std::strlen(a_im_id), d);
 
@@ -76,7 +78,7 @@ namespace IED
 					buffer[i++] = '#';
 				}
 
-				for (auto p = a_im_id; i < sizeof(buffer) - 1; p++, i++)
+				for (auto p = a_im_id; i < BUFFER_SIZE - 1; p++, i++)
 				{
 					if (const auto c = *p)
 					{
@@ -88,11 +90,11 @@ namespace IED
 					}
 				}
 
-				assert(i < sizeof(buffer));
+				assert(i < BUFFER_SIZE);
 
 				buffer[i] = 0;
 
-				return buffer;
+				return buffer.get();
 			}
 
 			static Localization::ILocalization& GetLocalizationInterface() noexcept;

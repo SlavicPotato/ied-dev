@@ -8,32 +8,7 @@ namespace IED
 	{
 		using namespace Data;
 
-		SlotKeyParser::SlotKeyParser() :
-			m_keyToSlot{
-				{ "1h_sword", ObjectSlot::k1HSword },
-				{ "1h_sword_l", ObjectSlot::k1HSwordLeft },
-				{ "1h_axe", ObjectSlot::k1HAxe },
-				{ "1h_axe_l", ObjectSlot::k1HAxeLeft },
-				{ "2h_sword", ObjectSlot::k2HSword },
-				{ "2h_sword_l", ObjectSlot::k2HSwordLeft },
-				{ "2h_axe", ObjectSlot::k2HAxe },
-				{ "2h_axe_l", ObjectSlot::k2HAxeLeft },
-				{ "mace", ObjectSlot::kMace },
-				{ "mace_l", ObjectSlot::kMaceLeft },
-				{ "dagger", ObjectSlot::kDagger },
-				{ "dagger_l", ObjectSlot::kDaggerLeft },
-				{ "staff", ObjectSlot::kStaff },
-				{ "staff_l", ObjectSlot::kStaffLeft },
-				{ "bow", ObjectSlot::kBow },
-				{ "crossbow", ObjectSlot::kCrossBow },
-				{ "shield", ObjectSlot::kShield },
-				{ "torch", ObjectSlot::kTorch },
-				{ "ammo", ObjectSlot::kAmmo }
-			}
-		{
-		}
-
-		const char* SlotKeyParser::SlotToKey(ObjectSlot a_slot) const noexcept
+		const char* SlotKeyParser::SlotToKey(ObjectSlot a_slot) noexcept
 		{
 			switch (a_slot)
 			{
@@ -80,15 +55,49 @@ namespace IED
 			}
 		}
 
-		ObjectSlot SlotKeyParser::KeyToSlot(const std::string& a_key) const
+		ObjectSlot SlotKeyParser::KeyToSlot(const std::string& a_key) noexcept
 		{
-			auto it = m_keyToSlot.find(a_key);
-			if (it != m_keyToSlot.end())
+			switch (stl::fixed_string::key_type::compute_hash(a_key.c_str()))
 			{
-				return it->second;
-			}
-			else
-			{
+			case stl::fixed_string::make_hash("1h_sword"):
+				return ObjectSlot::k1HSword;
+			case stl::fixed_string::make_hash("1h_sword_l"):
+				return ObjectSlot::k1HSwordLeft;
+			case stl::fixed_string::make_hash("1h_axe"):
+				return ObjectSlot::k1HAxe;
+			case stl::fixed_string::make_hash("1h_axe_l"):
+				return ObjectSlot::k1HAxeLeft;
+			case stl::fixed_string::make_hash("2h_sword"):
+				return ObjectSlot::k2HSword;
+			case stl::fixed_string::make_hash("2h_sword_l"):
+				return ObjectSlot::k2HSwordLeft;
+			case stl::fixed_string::make_hash("2h_axe"):
+				return ObjectSlot::k2HAxe;
+			case stl::fixed_string::make_hash("2h_axe_l"):
+				return ObjectSlot::k2HAxeLeft;
+			case stl::fixed_string::make_hash("mace"):
+				return ObjectSlot::kMace;
+			case stl::fixed_string::make_hash("mace_l"):
+				return ObjectSlot::kMaceLeft;
+			case stl::fixed_string::make_hash("dagger"):
+				return ObjectSlot::kDagger;
+			case stl::fixed_string::make_hash("dagger_l"):
+				return ObjectSlot::kDaggerLeft;
+			case stl::fixed_string::make_hash("staff"):
+				return ObjectSlot::kStaff;
+			case stl::fixed_string::make_hash("staff_l"):
+				return ObjectSlot::kStaffLeft;
+			case stl::fixed_string::make_hash("bow"):
+				return ObjectSlot::kBow;
+			case stl::fixed_string::make_hash("crossbow"):
+				return ObjectSlot::kCrossBow;
+			case stl::fixed_string::make_hash("shield"):
+				return ObjectSlot::kShield;
+			case stl::fixed_string::make_hash("torch"):
+				return ObjectSlot::kTorch;
+			case stl::fixed_string::make_hash("ammo"):
+				return ObjectSlot::kAmmo;
+			default:
 				return ObjectSlot::kNone;
 			}
 		}

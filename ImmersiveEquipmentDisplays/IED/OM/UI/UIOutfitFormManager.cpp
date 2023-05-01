@@ -39,7 +39,7 @@ namespace IED
 
 			UIOutfitFormManager::~UIOutfitFormManager()
 			{
-				GetProfileManager().RemoveSink(this);
+				GlobalProfileManager::GetSingleton<OutfitFormListProfile>().RemoveSink(this);
 			}
 
 			void UIOutfitFormManager::Initialize()

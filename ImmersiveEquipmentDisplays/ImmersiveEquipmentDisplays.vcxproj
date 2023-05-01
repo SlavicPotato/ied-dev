@@ -406,7 +406,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Perf 143|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_MSVC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);SKMP_LOCK_TYPE=2;SKMP_CUSTOM_ALLOCATOR=0;RE_USE_OWN_SHARED_LOCK_IMPL;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;BT_USE_AVX;_XM_SSE4_INTRINSICS_;_XM_AVX2_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;IED_PERF_BUILD;IED_DISABLE_ENB_LIGHT_STRIPPING;IED_ENABLE_OUTFIT;IED_ENABLE_OUTFIT_FORM_MANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MSVC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);SKMP_LOCK_TYPE=2;SKMP_CUSTOM_ALLOCATOR=0;RE_USE_OWN_SHARED_LOCK_IMPL;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;BT_USE_AVX;_XM_SSE4_INTRINSICS_;_XM_AVX2_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;IED_PERF_BUILD;IED_DISABLE_ENB_LIGHT_STRIPPING;IED_ENABLE_OUTFIT;IED_ENABLE_OUTFIT_FORM_MANAGER;SKMP_USE_TLS;SKMP_TRACED_EXCEPTIONS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak;$(SolutionDir)..\oneTBB\include</AdditionalIncludeDirectories>
@@ -422,6 +422,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <ConformanceMode>true</ConformanceMode>
       <FloatingPointModel>Fast</FloatingPointModel>
       <UseFullPaths>false</UseFullPaths>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -695,6 +696,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="Drivers\Render\Events.h" />
     <ClInclude Include="Drivers\UI.h" />
     <ClInclude Include="Drivers\UI\InputHandler.h" />
+    <ClInclude Include="Drivers\UI\StyleProfileManager.h" />
     <ClInclude Include="Drivers\UI\Tasks.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
@@ -790,6 +792,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\GeneralInfo.h" />
     <ClInclude Include="IED\GlobalParams.h" />
     <ClInclude Include="IED\I3DIModelID.h" />
+    <ClInclude Include="IED\ImGuiStyleHolder.h" />
     <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\KeyBindDataHolder.h" />
     <ClInclude Include="IED\KeyToggleStateEntry.h" />
@@ -860,6 +863,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
+    <ClInclude Include="IED\Parsers\JSONImGuiStyleHolderParser.h" />
+    <ClInclude Include="IED\Parsers\JSONImGuiStyleParser.h" />
+    <ClInclude Include="IED\Parsers\JSONImVec2Parser.h" />
+    <ClInclude Include="IED\Parsers\JSONImVec4Parser.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsI3DIParser.h" />
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\Physics\SimComponent.h" />
@@ -910,6 +917,9 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.h" />
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Profile\UIProfileEditorBaseStrings.h" />
+    <ClInclude Include="IED\UI\Style\UIStyleEditorWindow.h" />
+    <ClInclude Include="IED\UI\Style\Widgets\UIStyleEditorWidget.h" />
+    <ClInclude Include="IED\UI\Style\Widgets\UIStyleEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\UIAboutModal.h" />
     <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
     <ClInclude Include="IED\UI\UIActorInfo.h" />
@@ -931,6 +941,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UISkeletonExplorer.h" />
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\UIToast.h" />
+    <ClInclude Include="IED\UI\UIWeaponTypeStrings.h" />
     <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
     <ClInclude Include="IED\UI\Widgets\EquipmentOverride\UIEquipmentOverrideWidget.h" />
     <ClInclude Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.h" />
@@ -975,7 +986,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UISimpleStringList.h" />
     <ClInclude Include="IED\UI\Widgets\UISimpleStringSet.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h" />
-    <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UITextureClampModeSelector.h" />
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidgetStrings.h" />
@@ -993,16 +1003,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\WeatherClassificationFlags.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
-    <ClInclude Include="ImGui\Styles\adobe-spectrum\imgui_spectrum.h" />
-    <ClInclude Include="ImGui\Styles\all.h" />
-    <ClInclude Include="ImGui\Styles\corp-grey.h" />
-    <ClInclude Include="ImGui\Styles\dark-red.h" />
-    <ClInclude Include="ImGui\Styles\deep-dark.h" />
-    <ClInclude Include="ImGui\Styles\enemymouse.h" />
-    <ClInclude Include="ImGui\Styles\ita.h" />
-    <ClInclude Include="ImGui\Styles\s56.h" />
-    <ClInclude Include="ImGui\Styles\spectrum-dark.h" />
-    <ClInclude Include="ImGui\Styles\steam-classic.h" />
     <ClInclude Include="ImGui\Styles\StylePreset.h" />
     <ClInclude Include="Localization\Common.h" />
     <ClInclude Include="Localization\CommonStrings.h" />
@@ -1394,6 +1394,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONEffectShaderListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONImGuiStyleHolderParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONImGuiStyleParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONImVec2Parser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONImVec4Parser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsI3DIParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\Physics\SimComponent.cpp" />
@@ -1436,6 +1440,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.cpp" />
     <ClCompile Include="IED\UI\Keybind\UIKeyBindEditorWindow.cpp" />
     <ClCompile Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.cpp" />
+    <ClCompile Include="IED\UI\Style\UIStyleEditorWindow.cpp" />
+    <ClCompile Include="IED\UI\Style\Widgets\UIStyleEditorWidget.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
     <ClCompile Include="IED\UI\UIActorInfo.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />

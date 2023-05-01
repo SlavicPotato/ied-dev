@@ -21,7 +21,7 @@ namespace IED
 
 		UISlotEditorRace::~UISlotEditorRace() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<SlotProfile>().RemoveSink(this);
 		}
 
 		void UISlotEditorRace::EditorInitialize()

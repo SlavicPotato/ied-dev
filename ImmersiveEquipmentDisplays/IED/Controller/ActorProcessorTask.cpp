@@ -35,31 +35,31 @@ namespace IED
 			if (a_state->transform.scale)
 			{
 				a_state->commonNodes.rootNode->m_localTransform.scale =
-					a_state->ref->m_localTransform.scale * *a_state->transform.scale;
+					a_state->refNode->m_localTransform.scale * *a_state->transform.scale;
 			}
 			else
 			{
-				a_state->commonNodes.rootNode->m_localTransform.scale = a_state->ref->m_localTransform.scale;
+				a_state->commonNodes.rootNode->m_localTransform.scale = a_state->refNode->m_localTransform.scale;
 			}
 
 			if (a_state->transform.rotation)
 			{
 				a_state->commonNodes.rootNode->m_localTransform.rot =
-					a_state->ref->m_localTransform.rot * *a_state->transform.rotation;
+					a_state->refNode->m_localTransform.rot * *a_state->transform.rotation;
 			}
 			else
 			{
-				a_state->commonNodes.rootNode->m_localTransform.rot = a_state->ref->m_localTransform.rot;
+				a_state->commonNodes.rootNode->m_localTransform.rot = a_state->refNode->m_localTransform.rot;
 			}
 
 			if (a_state->transform.position)
 			{
 				a_state->commonNodes.rootNode->m_localTransform.pos =
-					a_state->ref->m_localTransform * *a_state->transform.position;
+					a_state->refNode->m_localTransform * *a_state->transform.position;
 			}
 			else
 			{
-				a_state->commonNodes.rootNode->m_localTransform.pos = a_state->ref->m_localTransform.pos;
+				a_state->commonNodes.rootNode->m_localTransform.pos = a_state->refNode->m_localTransform.pos;
 			}
 		}
 	}
@@ -101,7 +101,7 @@ namespace IED
 	{
 		const auto state = a_entry.data.state.get();
 
-		if (!state->ref)
+		if (!state->refNode)
 		{
 			return;
 		}
@@ -124,7 +124,7 @@ namespace IED
 				return;
 			}
 
-			if (!state->ref)
+			if (!state->refNode)
 			{
 				return;
 			}
@@ -139,7 +139,7 @@ namespace IED
 	{
 		const auto state = a_entry.data.state.get();
 
-		if (!state->ref)
+		if (!state->refNode)
 		{
 			return;
 		}

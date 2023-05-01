@@ -78,12 +78,12 @@ namespace IED
 			{
 				if (!std::filesystem::create_directories(path))
 				{
-					throw std::exception("Couldn't create base directory");
+					throw std::runtime_error("couldn't create base directory");
 				}
 			}
 			else if (!std::filesystem::is_directory(path))
 			{
-				throw std::exception("Root path is not a directory");
+				throw std::runtime_error("root path is not a directory");
 			}
 		}
 
@@ -92,6 +92,18 @@ namespace IED
 			try
 			{
 				return std::filesystem::exists(a_path);
+			}
+			catch (...)
+			{
+				return false;
+			}
+		}
+
+		bool IsDirectory(const fs::path& a_path)
+		{
+			try
+			{
+				return std::filesystem::is_directory(a_path);
 			}
 			catch (...)
 			{
@@ -125,29 +137,25 @@ namespace IED
 
 		std::uint32_t ExtractVersion(
 			const Json::Value& a_in,
-			std::uint32_t      a_current,
-			const char*        a_func)
+			std::uint32_t      a_current)
 		{
 			std::uint32_t version;
 
 			if (!ParseVersion(a_in, "version", version))
 			{
-				gLog.Error(
-					"%s: bad version data",
-					a_func);
-
-				throw std::exception("bad version data");
+				throw parser_exception("bad version data");
 			}
 
 			if (version > a_current)
 			{
-				gLog.Error(
-					"%s: unsupported version (%u > %u) ",
-					a_func,
+				char buf[64];
+				stl::snprintf(
+					buf,
+					"unsupported version (%u > %u) ",
 					version,
 					a_current);
 
-				throw std::exception("unsupported version");
+				throw parser_exception(buf);
 			}
 
 			return version;

@@ -297,24 +297,24 @@ namespace IED
 		}
 		catch (const std::exception& e)
 		{
-			m_lastException = e;
-
-			Error(
-				"%s: [%s] %s",
+			Exception(
+				e,
+				"%s: [%s]",
 				__FUNCTION__,
-				SafeGetPath(a_path).c_str(),
-				e.what());
+				SafeGetPath(a_path).c_str());
+
+			m_lastException = e;
 
 			return false;
 		}
 		catch (...)
 		{
-			m_lastException.clear();
-
 			Error(
 				"%s: [%s] unknown",
 				__FUNCTION__,
 				SafeGetPath(a_path).c_str());
+
+			m_lastException.clear();
 
 			return false;
 		}
@@ -344,11 +344,11 @@ namespace IED
 		{
 			m_lastException = e;
 
-			Error(
-				"%s: [%s] %s",
+			Exception(
+				e,
+				"%s: [%s]",
 				__FUNCTION__,
-				SafeGetPath(a_path).c_str(),
-				e.what());
+				SafeGetPath(a_path).c_str());
 
 			return false;
 		}

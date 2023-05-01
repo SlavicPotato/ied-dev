@@ -137,10 +137,13 @@ namespace IED
 				return;
 			}
 
-			const bool saveRes =
-				a_data ?
-					profile.Save(*a_data, true) :
-					profile.Save();
+			if (a_data)
+			{
+				profile.Data() = *a_data;
+				profile.MarkModified();
+			}
+
+			const bool saveRes = profile.Save();
 
 			if (!saveRes)
 			{

@@ -24,7 +24,7 @@ namespace IED
 				m_bound = std::make_unique<I3DIBoundingSphere>();
 				break;
 			default:
-				throw std::exception(__FUNCTION__ ": invalid bounding shape");
+				throw std::runtime_error(__FUNCTION__ ": invalid bounding shape");
 			}
 		}
 

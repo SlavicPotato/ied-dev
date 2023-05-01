@@ -13,7 +13,7 @@ namespace IED
 		{
 			if (!ParseFloatArray(a_in, a_out, 3))
 			{
-				throw std::exception(__FUNCTION__ ": malformed array");
+				throw parser_exception(__FUNCTION__ ": malformed array");
 			}
 
 			a_out.setW(0);

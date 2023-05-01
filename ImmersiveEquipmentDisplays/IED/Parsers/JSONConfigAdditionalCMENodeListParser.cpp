@@ -31,7 +31,7 @@ namespace IED
 			const Data::configAdditionalCMENodeList_t& a_data,
 			Json::Value&                           a_out) const
 		{
-			throw std::exception("not implemented");
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 
 	}

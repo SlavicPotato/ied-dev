@@ -113,7 +113,7 @@ namespace IED
 				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
-			virtual WindowLayoutData GetWindowDimensions() const;
+			virtual WindowLayoutData GetWindowDimensions() const override;
 
 			virtual UIPopupQueue& GetPopupQueue() override;
 

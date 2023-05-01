@@ -14,6 +14,15 @@ namespace IED
 {
 	namespace UI
 	{
+		enum class UIProfileEditorBaseFlags : std::uint8_t
+		{
+			kNone = 0,
+
+			kDisableSaveUnmodified = 1u << 0
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(UIProfileEditorBaseFlags);
+
 		namespace concepts
 		{
 			template <class T>
@@ -48,8 +57,9 @@ namespace IED
 
 		public:
 			UIProfileEditorBase(
-				UIProfileStrings a_title,
-				const char*      a_strid);
+				UIProfileStrings         a_title,
+				const char*              a_strid,
+				UIProfileEditorBaseFlags a_flags = UIProfileEditorBaseFlags::kNone);
 
 			virtual ~UIProfileEditorBase() noexcept = default;
 
@@ -72,18 +82,21 @@ namespace IED
 
 			void DrawMenuBar();
 
-			UIGenericFilter  m_filter;
-			UIProfileStrings m_title;
-			const char*      m_strid;
+			UIGenericFilter                     m_filter;
+			UIProfileStrings                    m_title;
+			const char*                         m_strid;
+			stl::flag<UIProfileEditorBaseFlags> m_flags;
 		};
 
 		template <class T>
 		UIProfileEditorBase<T>::UIProfileEditorBase(
-			UIProfileStrings a_title,
-			const char*      a_strid) :
+			UIProfileStrings         a_title,
+			const char*              a_strid,
+			UIProfileEditorBaseFlags a_flags) :
 			UIProfileBase<T>(),
 			m_title(a_title),
-			m_strid(a_strid)
+			m_strid(a_strid),
+			m_flags(a_flags)
 		{}
 
 		template <class T>
@@ -214,6 +227,10 @@ namespace IED
 
 						if (this->AllowSave())
 						{
+							const bool disabled = m_flags.test(UIProfileEditorBaseFlags::kDisableSaveUnmodified) && !profile.IsModified();
+
+							UICommon::PushDisabled(disabled);
+
 							if (ImGui::Button(UIL::LS(CommonStrings::Save, "1")))
 							{
 								auto& pm = GetProfileManager();
@@ -231,6 +248,8 @@ namespace IED
 										pm.GetLastException().what());
 								}
 							}
+
+							UICommon::PopDisabled(disabled);
 
 							ImGui::SameLine();
 						}
@@ -379,6 +398,7 @@ namespace IED
 									flags.test(ProfileFlags::kMergeOnly)))
 							{
 								flags.toggle(ProfileFlags::kMergeOnly);
+								it->second.MarkModified();
 							}
 
 							ImGui::Separator();

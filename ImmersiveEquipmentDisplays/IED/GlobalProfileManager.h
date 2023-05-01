@@ -2,13 +2,14 @@
 
 #include "IED/Parsers/JSONConfigConditionalVariablesHolderParser.h"
 #include "IED/Parsers/JSONConfigCustomHolderParser.h"
+#include "IED/Parsers/JSONConfigKeybindEntryHolderParser.h"
 #include "IED/Parsers/JSONConfigNodeOverrideHolderParser.h"
 #include "IED/Parsers/JSONConfigSlotHolderParser.h"
 #include "IED/Parsers/JSONFormFilterBaseParser.h"
-#include "IED/Parsers/JSONConfigKeybindEntryHolderParser.h"
 
 #include "IED/OM/Parsers/JSONConfigOutfitEntryHolderParser.h"
 #include "IED/OM/Parsers/JSONConfigOutfitFormListParser.h"
+
 
 #include "IED/Profile/Manager.h"
 
@@ -106,7 +107,7 @@ namespace IED
 		private:
 			using ProfileManager<OutfitFormListProfile>::ProfileManager;
 		};
-		
+
 		class ProfileManagerKeybind :
 			public ProfileManager<KeybindProfile>
 		{
@@ -116,7 +117,7 @@ namespace IED
 		private:
 			using ProfileManager<KeybindProfile>::ProfileManager;
 		};
-
+		
 	public:
 		template <class T>
 		[[nodiscard]] static constexpr auto& GetSingleton() noexcept

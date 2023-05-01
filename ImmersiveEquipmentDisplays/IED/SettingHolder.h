@@ -192,7 +192,7 @@ namespace IED
 
 				DefaultConfigType selectedDefaultConfImport{ DefaultConfigType::kUser };
 
-				UIStylePreset        stylePreset{ UIStylePreset::Dark };
+				stl::fixed_string    stylePreset;
 				float                alpha{ 1.0f };
 				stl::optional<float> bgAlpha;
 

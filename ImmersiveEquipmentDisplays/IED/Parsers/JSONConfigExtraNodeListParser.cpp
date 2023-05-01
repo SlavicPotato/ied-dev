@@ -29,7 +29,7 @@ namespace IED
 
 				if (!IED::Data::NodeMap::ValidateNodeName(tmp.name))
 				{
-					throw std::exception("illegal node name");
+					throw parser_exception("illegal node name");
 				}
 
 				a_out.emplace_back(std::move(tmp));
@@ -43,7 +43,7 @@ namespace IED
 			const Data::configExtraNodeList_t& a_data,
 			Json::Value&                       a_out) const
 		{
-			throw std::exception("not implemented");
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 	}
 }

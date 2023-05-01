@@ -24,7 +24,7 @@ namespace IED
 
 		UICustomEditorNPC::~UICustomEditorNPC() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<CustomProfile>().RemoveSink(this);
 		}
 
 		void UICustomEditorNPC::EditorInitialize()

@@ -20,7 +20,7 @@ namespace IED
 			{
 				stl::fixed_string              lang;
 				container_type                 data;
-				std::shared_ptr<FontGlyphData> glyph_data;
+				stl::smart_ptr<FontGlyphData>  glyph_data;
 			};
 
 			bool Load(const fs::path& a_path);

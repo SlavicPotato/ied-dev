@@ -13,13 +13,8 @@ namespace IED
 		class SlotKeyParser
 		{
 		public:
-			SlotKeyParser();
-
-			const char*      SlotToKey(Data::ObjectSlot a_slot) const noexcept;
-			Data::ObjectSlot KeyToSlot(const std::string& a_key) const;
-
-		private:
-			stl::unordered_map<std::string, Data::ObjectSlot> m_keyToSlot;
+			static const char*      SlotToKey(Data::ObjectSlot a_slot) noexcept;
+			static Data::ObjectSlot KeyToSlot(const std::string& a_key) noexcept;
 		};
 
 		template <class Th, class Tm>

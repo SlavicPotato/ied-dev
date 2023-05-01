@@ -81,7 +81,7 @@ namespace IED
 
 				if (fs::exists(m_root) && !fs::is_directory(m_root))
 				{
-					throw std::exception("bad root path");
+					throw stl::traced_exception("bad root path");
 				}
 
 				storage_type tmp;
@@ -154,12 +154,12 @@ namespace IED
 			{
 				if (!fs::exists(a_file) || !fs::is_regular_file(a_file))
 				{
-					throw std::exception("invalid path");
+					throw stl::traced_exception("invalid path");
 				}
 
 				if (!fs::remove(a_file))
 				{
-					throw std::exception("file remove failed");
+					throw stl::traced_exception("file remove failed");
 				}
 
 				return true;
@@ -256,7 +256,7 @@ namespace IED
 			auto key = stl::wstr_to_str(a_filename.stem().wstring());
 			if (key.empty())
 			{
-				throw std::exception("bad key");
+				throw stl::traced_exception("bad key");
 			}
 			return key;
 		}

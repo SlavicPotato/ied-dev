@@ -34,6 +34,11 @@ namespace IED
 			}
 		}
 
+		constexpr const char* ILocalization::LS(StringID a_id) const
+		{
+			return L(a_id).c_str();
+		}
+
 		const std::string& ILocalization::get_default_str(StringID a_id) const
 		{
 			if (auto& def = LocalizationDataManager::GetSingleton().GetDefaultTable())

@@ -444,7 +444,7 @@ namespace IED
 		void SetupUI();
 
 	private:
-		std::shared_ptr<FontGlyphData> GetCurrentGlyphData();
+		stl::smart_ptr<FontGlyphData> GetCurrentGlyphData();
 
 	public:
 		//void QueueClearVariableStorage(bool a_requestEval);

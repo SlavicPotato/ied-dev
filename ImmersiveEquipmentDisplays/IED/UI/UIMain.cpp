@@ -22,6 +22,7 @@
 #include "UISettings.h"
 #include "UISkeletonExplorer.h"
 #include "UIStats.h"
+#include "Style/UIStyleEditorWindow.h"
 
 #if defined(IED_ENABLE_OUTFIT)
 #	include "IED/OM/UI/Profile/UIOutfitProfileEditor.h"
@@ -90,7 +91,8 @@ namespace IED
 #endif
 					,
 				std::make_unique<UIGeneralInfo>(a_controller),
-				std::make_unique<UIProfileEditorKeybind>(a_controller)
+				std::make_unique<UIProfileEditorKeybind>(a_controller),
+				std::make_unique<UIStyleEditorWindow>(a_controller)
 		}
 		,
 			m_formLookupCache(a_controller),
@@ -398,6 +400,8 @@ namespace IED
 
 				ImGui::EndMenu();
 			}
+
+			DrawContextMenuItem<UIStyleEditorWindow>(UIProfileStrings::TitleStyle, "9");
 		}
 
 		void UIMain::DrawActionsMenu()

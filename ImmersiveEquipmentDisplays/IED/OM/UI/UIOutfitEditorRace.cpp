@@ -24,7 +24,7 @@ namespace IED
 
 			UIOutfitEditorRace::~UIOutfitEditorRace() noexcept
 			{
-				GetProfileManager().RemoveSink(this);
+				GlobalProfileManager::GetSingleton<OutfitProfile>().RemoveSink(this);
 			}
 
 			void UIOutfitEditorRace::EditorInitialize()

@@ -30,6 +30,7 @@ namespace IED
 			TitleConditionalVariables = 4519,
 			TitleOutfit               = 4520,
 			TitleKeybind              = 4521,
+			TitleStyle                = 4522,
 		};
 	}
 }

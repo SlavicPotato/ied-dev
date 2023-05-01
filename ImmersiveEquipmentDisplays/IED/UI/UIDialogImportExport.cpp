@@ -214,7 +214,7 @@ namespace IED
 								auto     fn = fs::path(stl::str_to_wstr(file)).filename();
 								if (!fn.has_filename())
 								{
-									throw std::exception("bad filename");
+									throw std::runtime_error("bad filename");
 								}
 								path /= fn;
 								path += ".json";

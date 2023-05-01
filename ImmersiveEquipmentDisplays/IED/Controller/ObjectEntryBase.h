@@ -277,7 +277,7 @@ namespace IED
 				{
 					if (const auto* const objParentParent = objParent->m_parent)
 					{
-						if (const auto* const refParent = ref->m_parent)
+						if (const auto* const refParent = refNode->m_parent)
 						{
 							return refParent != objParentParent;
 						}
@@ -293,15 +293,15 @@ namespace IED
 
 			[[nodiscard]] constexpr bool HasPhysicsNode() const noexcept
 			{
-				return static_cast<bool>(physics.get());
+				return static_cast<bool>(physicsNode.get());
 			}
 
 			TESForm*                                           form{ nullptr };
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
-			NiPointer<NiNode>                                  ref;
-			NiPointer<NiNode>                                  physics;
+			NiPointer<NiNode>                                  refNode;
+			NiPointer<NiNode>                                  physicsNode;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			stl::smart_ptr<PHYSimComponent>                    simComponent;
 			stl::fixed_string                                  currentSequence;

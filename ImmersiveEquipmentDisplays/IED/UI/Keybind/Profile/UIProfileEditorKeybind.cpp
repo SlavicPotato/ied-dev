@@ -19,7 +19,7 @@ namespace IED
 
 		UIProfileEditorKeybind::~UIProfileEditorKeybind() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<KeybindProfile>().RemoveSink(this);
 		}
 
 		void UIProfileEditorKeybind::Initialize()

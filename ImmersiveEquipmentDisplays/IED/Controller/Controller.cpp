@@ -2023,7 +2023,7 @@ namespace IED
 			INode::UpdateObjectTransform(
 				state->transform,
 				state->commonNodes.rootNode,
-				state->ref);
+				state->refNode);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
@@ -2136,8 +2136,8 @@ namespace IED
 				if (!simComponent)
 				{
 					simComponent = a_params.objects.CreateAndAddSimComponent(
-						state->physics.get(),
-						state->physics->m_localTransform,
+						state->physicsNode.get(),
+						state->physicsNode->m_localTransform,
 						conf);
 				}
 				else if (simComponent->GetConfig() != conf)
@@ -5826,11 +5826,18 @@ namespace IED
 		}
 	}
 
-	std::shared_ptr<FontGlyphData> Controller::GetCurrentGlyphData()
+	stl::smart_ptr<FontGlyphData> Controller::GetCurrentGlyphData()
 	{
 		const stl::lock_guard lock(m_lock);
 
-		return GetCurrentLanguageTable()->GetGlyphData();
+		if (const auto table = GetCurrentLanguageTable())
+		{
+			return table->GetGlyphData();
+		}
+		else
+		{
+			return {};
+		}
 	}
 
 }

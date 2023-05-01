@@ -49,7 +49,7 @@ namespace IED
 					reinterpret_cast<char*>(std::addressof(result)),
 					sizeof(T)))
 			{
-				throw std::exception("read error");
+				throw std::runtime_error("read error");
 			}
 
 			return

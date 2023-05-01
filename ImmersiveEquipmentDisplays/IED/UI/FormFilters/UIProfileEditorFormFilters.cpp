@@ -24,7 +24,7 @@ namespace IED
 
 		UIProfileEditorFormFilters::~UIProfileEditorFormFilters() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<FormFilterProfile>().RemoveSink(this);
 		}
 
 		void UIProfileEditorFormFilters::Initialize()

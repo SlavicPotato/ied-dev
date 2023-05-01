@@ -53,23 +53,13 @@ namespace IED
 		virtual ~ModelProfile() noexcept = default;
 
 		virtual bool Load() override;
-		virtual bool Save(const std::shared_ptr<ModelData>& a_data, bool a_store) override
-		{
-			return SaveImpl(a_data, a_store);
-		}
-
-		virtual bool Save(std::shared_ptr<ModelData>&& a_data, bool a_store) override
-		{
-			return SaveImpl(a_data, a_store);
-		}
+		virtual bool Save() override;
 
 		constexpr bool HasParserErrors() const noexcept
 		{
 			return false;
 		}
 
-	private:
-		bool SaveImpl(const std::shared_ptr<ModelData>& a_data, bool a_store);
 	};
 
 	struct D3DShaderData

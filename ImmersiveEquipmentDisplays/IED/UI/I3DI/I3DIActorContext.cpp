@@ -52,7 +52,7 @@ namespace IED
 		{
 			if (!a_data.assets.GetModel(I3DIModelID::kSphere))
 			{
-				throw std::exception("sphere model not loaded");
+				throw std::runtime_error("sphere model not loaded");
 			}
 
 			/*auto& activeWeaponNodes = a_holder.GetWeapNodes();
@@ -61,7 +61,7 @@ namespace IED
 
 			if (!movAnchorModel)
 			{
-				throw std::exception("anchor model not loaded");
+				throw std::runtime_error("anchor model not loaded");
 			}
 
 			for (auto& e : NodeOverrideData::GetWeaponNodeData())

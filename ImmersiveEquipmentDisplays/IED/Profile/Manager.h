@@ -23,7 +23,7 @@ namespace IED
 
 		virtual ~ProfileManager() noexcept = default;
 
-		ProfileManager(const ProfileManager<T>&) = delete;
+		ProfileManager(const ProfileManager<T>&)               = delete;
 		ProfileManager<T>& operator=(const ProfileManager<T>&) = delete;
 
 		bool Load(const fs::path& a_path);
@@ -56,7 +56,7 @@ namespace IED
 			return m_storage;
 		}
 
-		[[nodiscard]] constexpr const auto& Data() const noexcept
+		[[nodiscard]] constexpr auto& Data() const noexcept
 		{
 			return m_storage;
 		}
@@ -80,11 +80,11 @@ namespace IED
 
 		void sort();
 
-		storage_type       m_storage;
-		fs::path           m_root;
-		fs::path           m_ext{ ".json" };
-		except::descriptor m_lastExcept;
-		bool               m_isInitialized{ false };
+		storage_type               m_storage;
+		fs::path                   m_root;
+		const fs::path             m_ext{ ".json" };
+		mutable except::descriptor m_lastExcept;
+		bool                       m_isInitialized{ false };
 	};
 
 	template <class T>
@@ -110,17 +110,15 @@ namespace IED
 			{
 				if (!fs::create_directories(a_path))
 				{
-					throw std::exception("Couldn't create profile directory");
+					throw stl::traced_exception("Couldn't create profile directory");
 				}
 			}
 			else if (!fs::is_directory(a_path))
 			{
-				throw std::exception("Root path is not a directory");
+				throw stl::traced_exception("Root path is not a directory");
 			}
 
-			m_storage.clear();
-
-			m_root = a_path;
+			storage_type tmp;
 
 			for (const auto& entry : fs::directory_iterator(a_path))
 			{
@@ -138,28 +136,30 @@ namespace IED
 						continue;
 					}
 
-					T profile;
+					const auto profile = std::make_unique<T>();
 
-					profile.SetPath(path);
+					profile->SetPath(path);
 
-					if (!profile.Load())
+					if (!profile->Load())
 					{
 						Error(
 							"Failed loading profile '%s': %s",
-							profile.PathStr().c_str(),
-							profile.GetLastException().what());
+							profile->PathStr().c_str(),
+							profile->GetLastException().what());
 
 						continue;
 					}
 
-					if (profile.HasParserErrors())
+					if (profile->HasParserErrors())
 					{
 						Warning(
 							"Errors occured while parsing profile '%s'",
-							profile.PathStr().c_str());
+							profile->PathStr().c_str());
 					}
 
-					m_storage.emplace(profile.Name(), std::move(profile));
+					auto name = profile->Name();
+
+					tmp.emplace(std::move(name), std::move(*profile));
 				}
 				catch (const std::exception& e)
 				{
@@ -173,8 +173,12 @@ namespace IED
 				}
 			}
 
-			sort();
+			tmp.sortvec([](auto& a_lhs, auto& a_rhs) -> bool {
+				return stl::fixed_string::less_str{}(a_lhs->first, a_rhs->first);
+			});
 
+			m_root          = a_path;
+			m_storage       = std::move(tmp);
 			m_isInitialized = true;
 
 			Message("Loaded %zu profile(s)", m_storage.size());
@@ -183,8 +187,6 @@ namespace IED
 		}
 		catch (const std::exception& e)
 		{
-			m_storage.clear();
-
 			Error("%s: %s", __FUNCTION__, e.what());
 			m_lastExcept = e;
 
@@ -198,7 +200,7 @@ namespace IED
 		try
 		{
 			if (!m_isInitialized)
-				throw std::exception("Not initialized");
+				throw stl::traced_exception("Not initialized");
 
 			m_storage.clear();
 			m_root.clear();
@@ -224,24 +226,24 @@ namespace IED
 		try
 		{
 			if (!m_isInitialized)
-				throw std::exception("Not initialized");
+				throw stl::traced_exception("Not initialized");
 
 			if (!a_name.size())
-				throw std::exception("Profile name length == 0");
+				throw stl::traced_exception("Profile name length == 0");
 
 			fs::path path(m_root);
 
 			auto fn = fs::path(stl::str_to_wstr(a_name)).filename();
 			if (!fn.has_filename())
 			{
-				throw std::exception("Bad filename");
+				throw stl::traced_exception("Bad filename");
 			}
 
 			path /= fn;
 			path += m_ext;
 
 			if (fs::exists(path))
-				throw std::exception("Profile already exists");
+				throw stl::traced_exception("Profile already exists");
 
 			a_out.SetPath(path);
 
@@ -249,7 +251,7 @@ namespace IED
 			{
 				if (!a_out.Save())
 				{
-					throw std::exception(a_out.GetLastException().what());
+					throw stl::traced_exception(a_out.GetLastException().what());
 				}
 			}
 
@@ -270,13 +272,13 @@ namespace IED
 		try
 		{
 			if (!m_isInitialized)
-				throw std::exception("Not initialized");
+				throw stl::traced_exception("Not initialized");
 
-			auto& key = a_in.Name();
+			auto key = a_in.Name();
 
 			//CheckProfileKey(key);
 
-			auto r = m_storage.emplace(key, std::forward<Tp>(a_in));
+			auto r = m_storage.emplace(std::move(key), std::forward<Tp>(a_in));
 			if (r.second)
 			{
 				sort();
@@ -292,7 +294,7 @@ namespace IED
 			}
 			else
 			{
-				throw std::exception("Profile already exists");
+				throw stl::traced_exception("Profile already exists");
 			}
 
 			return true;
@@ -312,13 +314,13 @@ namespace IED
 		{
 			if (!m_isInitialized)
 			{
-				throw std::exception("Not initialized");
+				throw stl::traced_exception("Not initialized");
 			}
 
 			auto it = m_storage.find(a_name);
 			if (it == m_storage.end())
 			{
-				throw std::exception("No such profile exists");
+				throw stl::traced_exception("No such profile exists");
 			}
 
 			const auto& path = it->second.Path();
@@ -326,7 +328,7 @@ namespace IED
 			if (fs::exists(path) && fs::is_regular_file(path))
 			{
 				if (!fs::remove(path))
-					throw std::exception("Failed to remove the file");
+					throw stl::traced_exception("Failed to remove the file");
 			}
 
 			OnProfileDelete(it->second);
@@ -358,14 +360,14 @@ namespace IED
 		try
 		{
 			if (!m_isInitialized)
-				throw std::exception("Not initialized");
+				throw stl::traced_exception("Not initialized");
 
 			auto it = m_storage.find(a_oldName);
 			if (it == m_storage.end())
-				throw std::exception("No such profile exists");
+				throw stl::traced_exception("No such profile exists");
 
 			if (m_storage.find(a_newName) != m_storage.end())
-				throw std::exception("A profile with that name already exists");
+				throw stl::traced_exception("A profile with that name already exists");
 
 			fs::path newFilename(a_newName);
 			newFilename += m_ext;
@@ -374,20 +376,22 @@ namespace IED
 			newPath.replace_filename(newFilename);
 
 			if (fs::exists(newPath))
-				throw std::exception("A profile file with that name already exists");
+				throw stl::traced_exception("A profile file with that name already exists");
 
 			fs::rename(it->second.Path(), newPath);
 
 			it->second.SetPath(newPath);
 
-			auto r = m_storage.emplace(it->second.Name(), std::move(it->second));
+			auto newName = it->second.Name();
+
+			auto r = m_storage.emplace(std::move(newName), std::move(it->second));
 			m_storage.erase(it);
 
 			sort();
 
 			OnProfileRename(r.first->second, a_oldName);
 
-			auto oldName(a_oldName);
+			const auto oldName(a_oldName);
 
 			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileRename,
@@ -417,10 +421,13 @@ namespace IED
 		{
 			auto it = m_storage.find(a_name);
 			if (it == m_storage.end())
-				throw std::exception("No such profile exists");
+				throw stl::traced_exception("No such profile exists");
 
-			if (!it->second.Save(std::forward<Td>(a_in), true))
-				throw std::exception("Profile save failed");
+			it->second.Data() = std::forward<Td>(a_in);
+			it->second.MarkModified();
+
+			if (!it->second.Save())
+				throw stl::traced_exception(it->second.GetLastException().what());
 
 			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileSave,
@@ -448,10 +455,10 @@ namespace IED
 		{
 			auto it = m_storage.find(a_name);
 			if (it == m_storage.end())
-				throw std::exception("No such profile exists");
+				throw stl::traced_exception("No such profile exists");
 
 			if (!it->second.Save())
-				throw std::exception("Profile save failed");
+				throw stl::traced_exception(it->second.GetLastException().what());
 
 			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileSave,

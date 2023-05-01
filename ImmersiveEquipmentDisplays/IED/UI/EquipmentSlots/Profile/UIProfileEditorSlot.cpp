@@ -22,7 +22,7 @@ namespace IED
 
 		UIProfileEditorSlot::~UIProfileEditorSlot() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<SlotProfile>().RemoveSink(this);
 		}
 
 		void UIProfileEditorSlot::Initialize()

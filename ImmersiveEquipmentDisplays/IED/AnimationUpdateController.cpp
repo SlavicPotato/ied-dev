@@ -97,22 +97,7 @@ namespace IED
 		const auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(
 			BSStringHolder::GetSingleton()->m_bged);
 
-		if (!bged)
-		{
-			return nullptr;
-		}
-
-		if (bged->controlsBaseSkeleton)
-		{
-			return nullptr;
-		}
-
-		if (bged->behaviorGraphFile.empty())
-		{
-			return nullptr;
-		}
-
-		return bged;
+		return bged && !bged->controlsBaseSkeleton && !bged->behaviorGraphFile.empty() ? bged : nullptr;
 	}
 
 	bool AnimationUpdateController::CreateWeaponBehaviorGraph(

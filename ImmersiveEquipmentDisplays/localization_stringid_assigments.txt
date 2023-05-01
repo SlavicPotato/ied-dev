@@ -16,7 +16,7 @@
 5200-5299:		form browser
 5300-5399:		model group editor
 5400-5599:		extra cond 
-5600-5699:		style selector
+5600-5699:		style selector (REMOVED)
 5700-5799:		log
 5800-5899:		package type
 5900-5999:		effect shader editor
@@ -44,3 +44,4 @@
 8100-8199:		ofm
 8200-8299:		general info
 8300-8399:		weapon type
+8400-8499:		style editor widget

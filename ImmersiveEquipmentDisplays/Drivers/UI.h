@@ -4,6 +4,7 @@
 #include "Input/Handlers.h"
 #include "Render/Events.h"
 #include "UI/InputHandler.h"
+#include "UI/StyleProfileManager.h"
 #include "UI/Tasks.h"
 
 #include "Fonts/FontInfo.h"
@@ -39,11 +40,11 @@ namespace IED
 		{
 			struct UIFontUpdateData
 			{
-				float                          scale{ 1.0f };
-				stl::fixed_string              font;
-				std::optional<float>           fontsize;
-				stl::flag<GlyphPresetFlags>    extraGlyphPresets{ GlyphPresetFlags::kNone };
-				std::shared_ptr<FontGlyphData> langGlyphData;
+				float                         scale{ 1.0f };
+				stl::fixed_string             font;
+				std::optional<float>          fontsize;
+				stl::flag<GlyphPresetFlags>   extraGlyphPresets{ GlyphPresetFlags::kNone };
+				stl::smart_ptr<FontGlyphData> langGlyphData;
 
 				bool dirty{ false };
 			};
@@ -149,10 +150,34 @@ namespace IED
 				return m_Instance.m_currentFont;
 			}
 
-			static void SetStyle(UIStylePreset a_style) noexcept
+			[[nodiscard]] static constexpr const auto& GetCurrentStyle() noexcept
+			{
+				return m_Instance.m_currentStyle;
+			}
+
+			[[nodiscard]] static constexpr const auto& GetStyleData() noexcept
+			{
+				return m_Instance.m_styleProfileManager.Data();
+			}
+
+			[[nodiscard]] static constexpr auto& GetStyleProfileManager() noexcept
+			{
+				return m_Instance.m_styleProfileManager;
+			}
+
+			static void SetStyle(const stl::fixed_string& a_style, bool a_forceUpdate = false) noexcept
 			{
 				const stl::lock_guard lock(m_Instance.m_lock);
-				m_Instance.m_conf.style = a_style;
+
+				if (a_style != m_Instance.m_conf.style)
+				{
+					m_Instance.m_conf.style = a_style;
+				}
+
+				if (a_forceUpdate)
+				{
+					m_Instance.m_updateFlags.set(UpdateFlags::kStyle);
+				}
 			}
 
 			static void SetReleaseFontData(bool a_switch) noexcept
@@ -176,7 +201,7 @@ namespace IED
 			}
 
 			static void QueueSetExtraGlyphs(GlyphPresetFlags a_flags);
-			static void QueueSetLanguageGlyphData(const std::shared_ptr<FontGlyphData>& a_data);
+			static void QueueSetLanguageGlyphData(const stl::smart_ptr<FontGlyphData>& a_data);
 			static void QueueFontChange(const stl::fixed_string& a_font);
 			static void QueueSetFontSize(float a_size);
 			static void QueueResetFontSize();
@@ -253,7 +278,7 @@ namespace IED
 
 			void QueueSetScaleImpl(float a_scale);
 			void QueueSetExtraGlyphsImpl(GlyphPresetFlags a_flags);
-			void QueueSetLanguageGlyphDataImpl(const std::shared_ptr<FontGlyphData>& a_data);
+			void QueueSetLanguageGlyphDataImpl(const stl::smart_ptr<FontGlyphData>& a_data);
 			void QueueFontChangeImpl(const stl::fixed_string& a_font);
 			void QueueSetFontSizeImpl(float a_size);
 			void QueueResetFontSizeImpl();
@@ -267,23 +292,25 @@ namespace IED
 				font_data_container&     a_data,
 				const stl::fixed_string& a_font);
 
-			bool LoadFontMetadata(FontInfoMap& a_out);
-			bool LoadFontMetadata(const fs::path& a_path, FontInfoMap& a_out);
+			std::unique_ptr<FontInfoMap> MakeFontMetadata();
+			std::unique_ptr<FontInfoMap> LoadFontMetadata(const fs::path& a_path);
 
 			void AddFontRanges(
 				ImFontGlyphRangesBuilder& a_builder,
 				const fontGlyphRange_t&   a_range);
 
 			void AddFontRanges(
-				ImFontGlyphRangesBuilder& a_builder,
-				const FontGlyphData&      a_data);
+				ImFontGlyphRangesBuilder&            a_builder,
+				const stl::smart_ptr<FontGlyphData>& a_data);
 
 			bool BuildFonts(
 				const FontInfoMap&       a_in,
 				font_data_container&     a_out,
 				const stl::fixed_string& a_font);
 
-			void UpdateAvailableFontsImpl(const FontInfoMap& a_data);
+			std::optional<fs::path> GetFontPath(const FontInfoEntry& a_in);
+
+			void UpdateAvailableFontsImpl(const std::unique_ptr<FontInfoMap>& a_data);
 
 			WNDPROC m_pfnWndProc{ nullptr };
 
@@ -310,7 +337,7 @@ namespace IED
 			struct
 			{
 				std::string          imgui_ini;
-				UIStylePreset        style{ DEFAULT_STYLE };
+				stl::fixed_string    style;
 				float                alpha{ 1.0f };
 				stl::optional<float> bgAlpha;
 				bool                 releaseFontData{ false };
@@ -343,7 +370,7 @@ namespace IED
 			font_data_container                    m_fontData;
 			const font_data_container::value_type* m_currentFont{ nullptr };
 
-			UIStylePreset m_currentStyle{ DEFAULT_STYLE };
+			stl::fixed_string m_currentStyle;
 
 			stl::set<stl::fixed_string, stl::fixed_string::less_str> m_availableFonts;
 			stl::fixed_string                                        m_sDefaultFont{ DEFAULT_FONT_NAME };
@@ -351,6 +378,8 @@ namespace IED
 			std::uint64_t m_frameCount{ 0 };
 
 			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone };
+
+			StyleProfileManager m_styleProfileManager;
 
 			mutable stl::recursive_mutex m_lock;
 

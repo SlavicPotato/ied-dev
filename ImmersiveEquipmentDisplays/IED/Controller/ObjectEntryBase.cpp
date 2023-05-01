@@ -179,8 +179,8 @@ namespace IED
 			e.second.CleanupObject(a_handle);
 		}
 
-		ref.reset();
-		physics.reset();
+		refNode.reset();
+		physicsNode.reset();
 		arrowState.reset();
 
 		CleanupObject(a_handle);

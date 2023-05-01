@@ -20,7 +20,7 @@ namespace IED
 
 		UICustomEditorGlobal::~UICustomEditorGlobal() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<CustomProfile>().RemoveSink(this);
 		}
 
 		void UICustomEditorGlobal::EditorInitialize()

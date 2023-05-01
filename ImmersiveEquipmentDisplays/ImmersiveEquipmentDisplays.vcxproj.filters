@@ -213,9 +213,6 @@
     <Filter Include="Source\IED\UI\Widgets\EffectShader">
       <UniqueIdentifier>{47b6de0e-0807-40b5-9322-8a8b1b38e14b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\ImGui\Styles\adobe-spectrum">
-      <UniqueIdentifier>{58f4fed6-acf2-40a7-b6e4-b20166a2ff02}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\IED\JSONParsers\Config\NodeMonitor">
       <UniqueIdentifier>{9cdedbac-1a41-44d6-9842-0f8ee7deebf7}</UniqueIdentifier>
     </Filter>
@@ -296,6 +293,15 @@
     </Filter>
     <Filter Include="Source\IED\UI\KeyBind\Profile">
       <UniqueIdentifier>{0b709817-403d-4352-86f8-ce735833c2a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\ImGui">
+      <UniqueIdentifier>{5868b73d-33b3-4f22-98de-a6f2e5e67aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Style">
+      <UniqueIdentifier>{569e8877-575b-4355-8690-156828a146e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Style\Widgets">
+      <UniqueIdentifier>{2ee6c42b-bfa1-4b8c-9d14-1212c56b5c10}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1019,34 +1025,10 @@
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\UILogStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="ImGui\Styles\ita.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\steam-classic.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui\Styles\StylePreset.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\all.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\deep-dark.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\s56.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\corp-grey.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\dark-red.h">
       <Filter>Source\ImGui\Styles</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h">
@@ -1474,15 +1456,6 @@
     </ClInclude>
     <ClInclude Include="IED\UI\UIAllowedModelTypes.h">
       <Filter>Source\IED\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\adobe-spectrum\imgui_spectrum.h">
-      <Filter>Source\ImGui\Styles\adobe-spectrum</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\spectrum-dark.h">
-      <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Styles\enemymouse.h">
-      <Filter>Source\ImGui\Styles</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIKeyedInputLockReleaseHandler.h">
       <Filter>Source\IED\UI</Filter>
@@ -1993,6 +1966,33 @@
     </ClInclude>
     <ClInclude Include="IED\UI\UIWeaponTypeStrings.h">
       <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONImGuiStyleParser.h">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONImVec2Parser.h">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONImVec4Parser.h">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ImGuiStyleHolder.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONImGuiStyleHolderParser.h">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\UI\StyleProfileManager.h">
+      <Filter>Source\Drivers\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Style\Widgets\UIStyleEditorWidget.h">
+      <Filter>Source\IED\UI\Style\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Style\Widgets\UIStyleEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\Style\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Style\UIStyleEditorWindow.h">
+      <Filter>Source\IED\UI\Style</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3159,6 +3159,24 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\ObjectCloningTask.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONImGuiStyleParser.cpp">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONImVec2Parser.cpp">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONImVec4Parser.cpp">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONImGuiStyleHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Style\Widgets\UIStyleEditorWidget.cpp">
+      <Filter>Source\IED\UI\Style\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Style\UIStyleEditorWindow.cpp">
+      <Filter>Source\IED\UI\Style</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

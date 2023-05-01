@@ -703,18 +703,18 @@ namespace IED
 				}
 				catch (const std::exception& e)
 				{
-					Error(
-						"%s: %s - %s",
+					Exception(
+						e,
+						"%s: [%s]",
 						__FUNCTION__,
-						strPath.c_str(),
-						e.what());
+						strPath.c_str());
 
 					continue;
 				}
 				catch (...)
 				{
 					Error(
-						"%s: exception occured - %s",
+						"%s: [%s] exception occured",
 						__FUNCTION__,
 						strPath.c_str());
 
@@ -767,7 +767,7 @@ namespace IED
 
 		if (!parser.Parse(root, *result))
 		{
-			throw std::exception("parse failed");
+			throw parser_exception("parse failed");
 		}
 
 		return result;

@@ -14,12 +14,51 @@
 #include "Fonts/FontInfo.h"
 
 #include "IED/UI/UIChildWindowID.h"
+#include "IED/UI/Widgets/UIStylePresetSelectorWidget.h"
 
 namespace IED
 {
 	namespace Serialization
 	{
-		static constexpr std::uint32_t CURRENT_VERSION = 1;
+		static constexpr std::uint32_t CURRENT_VERSION = 2;
+
+		const char* preset_to_desc_trans(UIStylePreset a_preset) noexcept
+		{
+			switch (a_preset)
+			{
+			case UIStylePreset::Dark:
+				return "Default-Dark";
+			case UIStylePreset::Light:
+				return "Default-Light";
+			case UIStylePreset::Classic:
+				return "Default-Classic";
+			case UIStylePreset::DeepDark:
+				return "Deep Dark";
+			case UIStylePreset::DarkRed:
+				return "Dark Red";
+			case UIStylePreset::SteamClassic:
+				return "steam-classic";
+			case UIStylePreset::ItaDark:
+				return "ita-dark";
+			case UIStylePreset::ItaLight:
+				return "ita-light";
+			case UIStylePreset::S56:
+			case UIStylePreset::S56_2:
+				return "s56";
+			case UIStylePreset::CorpGrey:
+				return "corporate-grey";
+			case UIStylePreset::CorpGreyFlat:
+				return "corporate-grey-flat";
+			case UIStylePreset::ItaClassic:
+				return "ita-classic";
+			case UIStylePreset::SpectrumDark:
+				return "spectrum-dark";
+			case UIStylePreset::EnemyMouse:
+				return "enemymouse";
+			default:
+				return nullptr;
+			}
+		}
 
 		template <>
 		bool Parser<Data::SettingHolder::UserInterface>::Parse(
@@ -60,7 +99,7 @@ namespace IED
 			{
 				return false;
 			}
-			
+
 			if (!editorPanelParser.Parse(
 					data["outfit_editor"],
 					a_out.outfitEditor))
@@ -88,7 +127,7 @@ namespace IED
 			{
 				return false;
 			}
-			
+
 			if (!profileEditorParser.Parse(
 					data["outfit_profile_editor"],
 					a_out.outfitProfileEditor))
@@ -238,8 +277,15 @@ namespace IED
 			a_out.selectedDefaultConfImport = static_cast<Data::DefaultConfigType>(
 				data.get("sel_def_conf_import", stl::underlying(Data::DefaultConfigType::kUser)).asUInt());
 
-			a_out.stylePreset = static_cast<UIStylePreset>(
-				data.get("style_preset", stl::underlying(UIStylePreset::Dark)).asUInt());
+			if (version >= 2)
+			{
+				a_out.stylePreset = data.get("style_preset", "").asString();
+			}
+			else
+			{
+				a_out.stylePreset = preset_to_desc_trans(static_cast<UIStylePreset>(
+					data.get("style_preset", stl::underlying(UIStylePreset::Dark)).asUInt()));
+			}
 
 			a_out.alpha = data.get("alpha", 1.0f).asFloat();
 
@@ -294,7 +340,7 @@ namespace IED
 			profileEditorParser.Create(
 				a_data.transformProfileEditor,
 				data["transform_profile_editor"]);
-			
+
 			profileEditorParser.Create(
 				a_data.outfitProfileEditor,
 				data["outfit_profile_editor"]);
@@ -359,7 +405,7 @@ namespace IED
 			data["exit_on_last_window_close"] = a_data.exitOnLastWindowClose;
 			data["show_intro_banner"]         = a_data.showIntroBanner;
 			data["enable_notifications"]      = a_data.enableNotifications;
-			data["notification_threshold"]        = stl::underlying(a_data.notificationThreshold);
+			data["notification_threshold"]    = stl::underlying(a_data.notificationThreshold);
 
 			data["default_export_flags"] = stl::underlying(a_data.defaultExportFlags.value);
 
@@ -373,7 +419,7 @@ namespace IED
 
 			data["sel_def_conf_import"] = stl::underlying(a_data.selectedDefaultConfImport);
 
-			data["style_preset"] = stl::underlying(a_data.stylePreset);
+			data["style_preset"] = *a_data.stylePreset;
 			data["alpha"]        = a_data.alpha;
 
 			if (a_data.bgAlpha)

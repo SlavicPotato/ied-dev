@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	bool ModelProfile::SaveImpl(const std::shared_ptr<ModelData>& a_data, bool a_store)
+	bool ModelProfile::Save()
 	{
 		m_lastExcept = "unsupported";
 
@@ -13,11 +13,13 @@ namespace IED
 
 	bool ModelProfile::Load()
 	{
+		using namespace Serialization;
+
 		try
 		{
 			if (m_path.empty())
 			{
-				throw std::exception("bad path");
+				throw parser_exception("bad path");
 			}
 
 			Assimp::Importer importer;
@@ -28,37 +30,37 @@ namespace IED
 
 			if (!scene || !scene->mRootNode)
 			{
-				throw std::exception("no mesh was loaded");
+				throw parser_exception("no mesh was loaded");
 			}
 
 			if (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 			{
-				throw std::exception("incomplete scene");
+				throw parser_exception("incomplete scene");
 			}
 
 			if (!scene->mMeshes || scene->mNumMeshes < 1)
 			{
-				throw std::exception("no data");
+				throw parser_exception("no data");
 			}
 
-			const auto mesh = scene->mMeshes[0];
+			const auto* const mesh = scene->mMeshes[0];
 
 			if (!mesh->HasPositions())
 			{
-				throw std::exception("no vertices");
+				throw parser_exception("no vertices");
 			}
 
 			if (!mesh->HasFaces())
 			{
-				throw std::exception("no faces");
+				throw parser_exception("no faces");
 			}
 
-			auto numVertices = mesh->mNumVertices;
-			auto numFaces    = mesh->mNumFaces;
+			const auto numVertices = mesh->mNumVertices;
+			const auto numFaces    = mesh->mNumFaces;
 
 			if (numVertices > std::numeric_limits<std::uint16_t>::max())
 			{
-				throw std::exception("too many vertices (max. 2^16)");
+				throw parser_exception("too many vertices (max. 2^16)");
 			}
 
 			auto tmp = std::make_shared<ModelData>();
@@ -72,12 +74,12 @@ namespace IED
 
 			for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 			{
-				auto& e                   = mesh->mVertices[i];
+				const auto& e             = mesh->mVertices[i];
 				tmp->vertices[i].position = DirectX::XMFLOAT3(e.x, e.y, e.z);
 
 				if (hasNormals)
 				{
-					auto& f                 = mesh->mNormals[i];
+					const auto& f           = mesh->mNormals[i];
 					tmp->vertices[i].normal = DirectX::XMFLOAT3(f.x, f.y, f.z);
 				}
 				else
@@ -87,7 +89,7 @@ namespace IED
 
 				if (hasColors)
 				{
-					auto& f                = mesh->mColors[0][i];
+					const auto& f          = mesh->mColors[0][i];
 					tmp->vertices[i].color = DirectX::XMFLOAT4(f.r, f.g, f.b, 1.0f);
 				}
 				else
@@ -100,11 +102,11 @@ namespace IED
 
 			for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 			{
-				auto n = mesh->mFaces[i].mNumIndices;
+				const auto n = mesh->mFaces[i].mNumIndices;
 
 				if (n != 3)
 				{
-					throw std::exception("aiFace.mNumIndices != 3");
+					throw parser_exception("aiFace.mNumIndices != 3");
 				}
 
 				numIndices += n;
@@ -112,14 +114,14 @@ namespace IED
 
 			if (!numIndices)
 			{
-				throw std::exception("no indices");
+				throw parser_exception("no indices");
 			}
 
 			tmp->indices.reserve(numIndices);
 
 			for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 			{
-				auto& e = mesh->mFaces[i];
+				const auto& e = mesh->mFaces[i];
 
 				for (unsigned int j = 0; j < e.mNumIndices; j++)
 				{
@@ -131,12 +133,17 @@ namespace IED
 			tmp->numTriangles = numFaces;
 			tmp->numIndices   = numIndices;
 
-			m_data = std::move(tmp);
-
-			if (auto name = mesh->mName.C_Str())
+			if (const auto name = mesh->mName.C_Str())
 			{
 				SetDescription(name);
 			}
+			else
+			{
+				ClearDescription();
+			}
+
+			m_data     = std::move(tmp);
+			m_modified = false;
 
 			return true;
 		}

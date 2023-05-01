@@ -231,7 +231,7 @@ namespace IED
 
 				if (!parser.Parse(root, tmp, false))
 				{
-					throw std::exception("parse failed");
+					throw parser_exception("parse failed");
 				}
 
 				for (auto& e : tmp)

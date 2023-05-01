@@ -171,7 +171,7 @@ namespace IED
 					nullptr,
 					ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImGui::PushTextWrapPos(ImGui::GetFontSize() * (a_twsz ? *a_twsz : 25.0f));
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * (a_twsz ? *a_twsz : 50.0f));
 				ImGui::Text(a_text, args...);
 				ImGui::PopTextWrapPos();
 				ImGui::Spacing();

@@ -22,7 +22,7 @@ namespace IED
 
 			UIOutfitEditorGlobal::~UIOutfitEditorGlobal() noexcept
 			{
-				GetProfileManager().RemoveSink(this);
+				GlobalProfileManager::GetSingleton<OutfitProfile>().RemoveSink(this);
 			}
 
 			void UIOutfitEditorGlobal::EditorInitialize()

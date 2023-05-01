@@ -6,9 +6,7 @@
 
 #include "IED/Parsers/JSONFontInfoMapParser.h"
 
-#define SPECTRUM_USE_DARK_THEME
-
-#include "ImGui/Styles/all.h"
+//#include "IED/UI/Widgets/UIStylePresetSelectorWidget.h"
 
 namespace IED
 {
@@ -114,6 +112,8 @@ namespace IED
 				Error("ImGui initialization failed (DX11)");
 				return;
 			}
+
+			m_styleProfileManager.Load(PATHS::PROFILE_MANAGER_STYLES);
 
 			m_pfnWndProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtrA(
 				a_evn.m_pSwapChainDesc.OutputWindow,
@@ -562,7 +562,7 @@ namespace IED
 			m_Instance.QueueSetExtraGlyphsImpl(a_flags);
 		}
 
-		void UI::QueueSetLanguageGlyphData(const std::shared_ptr<FontGlyphData>& a_data)
+		void UI::QueueSetLanguageGlyphData(const stl::smart_ptr<FontGlyphData>& a_data)
 		{
 			m_Instance.QueueSetLanguageGlyphDataImpl(a_data);
 		}
@@ -589,8 +589,7 @@ namespace IED
 
 		void UI::UpdateAvailableFonts()
 		{
-			FontInfoMap info;
-			m_Instance.LoadFontMetadata(info);
+			auto info = m_Instance.MakeFontMetadata();
 
 			const stl::lock_guard lock(m_Instance.m_lock);
 
@@ -740,7 +739,7 @@ namespace IED
 		}
 
 		void UI::QueueSetLanguageGlyphDataImpl(
-			const std::shared_ptr<FontGlyphData>& a_data)
+			const stl::smart_ptr<FontGlyphData>& a_data)
 		{
 			const stl::lock_guard lock(m_lock);
 
@@ -830,9 +829,7 @@ namespace IED
 				return false;
 			}
 
-			FontInfoMap info;
-
-			LoadFontMetadata(info);
+			auto info = MakeFontMetadata();
 			UpdateAvailableFontsImpl(info);
 
 			auto requestedfont(
@@ -844,9 +841,7 @@ namespace IED
 
 			io.Fonts->Clear();
 
-			m_fontData.clear();
-
-			ASSERT(BuildFonts(info, m_fontData, requestedfont));
+			ASSERT(BuildFonts(*info, m_fontData, requestedfont));
 			ASSERT(!m_fontData.empty());
 
 			SetCurrentFont(requestedfont);
@@ -863,62 +858,33 @@ namespace IED
 
 		void UI::UpdateStyle()
 		{
-			using namespace IED::UI;
+			const auto& data = m_styleProfileManager.Data();
 
-			auto newStyle = std::make_unique<ImGuiStyle>();
+			const ImGuiStyle* presetStyle = nullptr;
 
-			switch (m_currentStyle)
+			if (!m_currentStyle.empty())
 			{
-			case UIStylePreset::Light:
-				ImGui::StyleColorsLight(newStyle.get());
-				break;
-			case UIStylePreset::Classic:
-				ImGui::StyleColorsClassic(newStyle.get());
-				break;
-			case UIStylePreset::ItaDark:
-				Styles::ITA::Setup(*newStyle, Styles::ITA::Template::Dark, 1.0f);
-				break;
-			case UIStylePreset::ItaLight:
-				Styles::ITA::Setup(*newStyle, Styles::ITA::Template::Light, 1.0f);
-				break;
-			case UIStylePreset::ItaClassic:
-				Styles::ITA::Setup(*newStyle, Styles::ITA::Template::Classic, 1.0f);
-				break;
-			case UIStylePreset::SteamClassic:
-				Styles::SteamClassic::Setup(*newStyle);
-				break;
-			case UIStylePreset::DeepDark:
-				Styles::DeepDark::Setup(*newStyle);
-				break;
-			case UIStylePreset::S56:
-				Styles::S56::Setup(*newStyle);
-				break;
-			case UIStylePreset::CorpGrey:
-				Styles::CorporateGrey::Setup(*newStyle, false);
-				break;
-			case UIStylePreset::CorpGreyFlat:
-				Styles::CorporateGrey::Setup(*newStyle, true);
-				break;
-			case UIStylePreset::DarkRed:
-				Styles::DarkRed::Setup(*newStyle);
-				break;
-			case UIStylePreset::SpectrumDark:
-				Styles::SpectrumDark::Setup(*newStyle);
-				break;
-			case UIStylePreset::EnemyMouse:
-				Styles::EnemyMouse::Setup(*newStyle);
-				break;
-			case UIStylePreset::S562:
-				Styles::S56::Setup(*newStyle, true);
-				break;
-			default:
-				ImGui::StyleColorsDark(newStyle.get());
-				break;
+				const auto it = data.find(m_currentStyle);
+				if (it != data.end())
+				{
+					presetStyle = std::addressof(it->second.Data().style);
+				}
+				else
+				{
+					m_currentStyle.clear();
+				}
 			}
 
-			ScaleStyle(*newStyle, m_fontUpdateData.scale);
-			ImGui::GetStyle() = *newStyle;
+			if (presetStyle)
+			{
+				ImGui::GetStyle() = *presetStyle;
+			}
+			else
+			{
+				ImGui::GetStyle() = {};
+			}
 
+			ScaleStyle(ImGui::GetStyle(), m_fontUpdateData.scale);
 			UpdateStyleAlpha();
 		}
 
@@ -938,14 +904,10 @@ namespace IED
 			font_data_container&     a_data,
 			const stl::fixed_string& a_font)
 		{
-			FontInfoMap info;
-
-			LoadFontMetadata(info);
+			const auto info = MakeFontMetadata();
 			UpdateAvailableFontsImpl(info);
 
-			a_data.clear();
-
-			if (!BuildFonts(info, a_data, a_font))
+			if (!BuildFonts(*info, a_data, a_font))
 			{
 				Error("%s: failed building font atlas", __FUNCTION__);
 				return false;
@@ -954,11 +916,13 @@ namespace IED
 			return true;
 		}
 
-		bool UI::LoadFontMetadata(FontInfoMap& a_out)
+		std::unique_ptr<FontInfoMap> UI::MakeFontMetadata()
 		{
-			if (!LoadFontMetadata(PATHS::FONT_META, a_out))
+			auto result = LoadFontMetadata(PATHS::FONT_META);
+
+			if (!result)
 			{
-				return false;
+				result = std::make_unique_for_overwrite<FontInfoMap>();
 			}
 
 			try
@@ -980,31 +944,23 @@ namespace IED
 						continue;
 					}
 
-					const auto strPath = Serialization::SafeGetPath(path);
+					const auto tmp = LoadFontMetadata(entry.path());
 
-					FontInfoMap result;
-
-					if (!LoadFontMetadata(entry.path(), result))
+					if (!tmp)
 					{
 						continue;
 					}
 
-					Debug(
-						"%s: loaded '%s' [%zu]",
-						__FUNCTION__,
-						strPath.c_str(),
-						result.fonts.size());
-
-					for (auto& e : result.fonts)
+					for (auto& e : tmp->fonts)
 					{
-						auto r = a_out.fonts.emplace(std::move(e));
+						auto r = result->fonts.emplace(std::move(e));
 
 						if (!r.second)
 						{
 							Warning(
 								"%s: [%s] duplicate entry '%s'",
 								__FUNCTION__,
-								strPath.c_str(),
+								Serialization::SafeGetPath(path).c_str(),
 								e.first.c_str());
 						}
 					}
@@ -1012,31 +968,44 @@ namespace IED
 			}
 			catch (const std::exception& e)
 			{
-				Error("%s: %s", __FUNCTION__, e.what());
+				Exception(e, "%s", __FUNCTION__);
 			}
 
-			return true;
+			return result;
 		}
 
-		bool UI::LoadFontMetadata(
-			const fs::path& a_path,
-			FontInfoMap&    a_out)
+		std::unique_ptr<FontInfoMap> UI::LoadFontMetadata(
+			const fs::path& a_path)
 		{
+			using namespace Serialization;
+
 			try
 			{
 				Json::Value root;
 
-				Serialization::ReadData(a_path, root);
+				ReadData(a_path, root);
 
-				Serialization::ParserState         state;
-				Serialization::Parser<FontInfoMap> parser(state);
+				auto result = std::make_unique_for_overwrite<FontInfoMap>();
 
-				return parser.Parse(root, a_out);
+				ParserState         state;
+				Parser<FontInfoMap> parser(state);
+
+				if (!parser.Parse(root, *result))
+				{
+					throw parser_exception("parse failed");
+				}
+
+				return result;
 			}
 			catch (const std::exception& e)
 			{
-				Error("%s: %s", __FUNCTION__, e.what());
-				return false;
+				Exception(
+					e,
+					"%s: [%s]",
+					__FUNCTION__,
+					SafeGetPath(a_path).c_str());
+
+				return {};
 			}
 		}
 
@@ -1060,8 +1029,8 @@ namespace IED
 		}
 
 		void UI::AddFontRanges(
-			ImFontGlyphRangesBuilder& a_builder,
-			const FontGlyphData&      a_data)
+			ImFontGlyphRangesBuilder&            a_builder,
+			const stl::smart_ptr<FontGlyphData>& a_data)
 		{
 			auto& io = ImGui::GetIO();
 
@@ -1071,86 +1040,89 @@ namespace IED
 			                     m_fontUpdateData.langGlyphData->glyph_preset_flags :
 			                     stl::flag<GlyphPresetFlags>(GlyphPresetFlags::kNone);
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kCyrilic) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kCyrilic)) ||
 			    langFlags.test(GlyphPresetFlags::kCyrilic) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kCyrilic))
 			{
 				a_builder.AddRanges(IGlyphData::get_glyph_ranges_cyrilic());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kJapanese) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kJapanese)) ||
 			    langFlags.test(GlyphPresetFlags::kJapanese) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kJapanese))
 			{
 				a_builder.AddRanges(io.Fonts->GetGlyphRangesJapanese());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kChineseSimplifiedCommon) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kChineseSimplifiedCommon)) ||
 			    langFlags.test(GlyphPresetFlags::kChineseSimplifiedCommon) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kChineseSimplifiedCommon))
 			{
 				a_builder.AddRanges(io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kChineseFull) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kChineseFull)) ||
 			    langFlags.test(GlyphPresetFlags::kChineseFull) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kChineseFull))
 			{
 				a_builder.AddRanges(io.Fonts->GetGlyphRangesChineseFull());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kKorean) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kKorean)) ||
 			    langFlags.test(GlyphPresetFlags::kKorean) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kKorean))
 			{
 				a_builder.AddRanges(io.Fonts->GetGlyphRangesKorean());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kLatinFull) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kLatinFull)) ||
 			    langFlags.test(GlyphPresetFlags::kLatinFull) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kLatinFull))
 			{
 				a_builder.AddRanges(IGlyphData::get_glyph_ranges_latin_full());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kGreek) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kGreek)) ||
 			    langFlags.test(GlyphPresetFlags::kGreek) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kGreek))
 			{
 				a_builder.AddRanges(IGlyphData::get_glyph_ranges_greek());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kArabic) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kArabic)) ||
 			    langFlags.test(GlyphPresetFlags::kArabic) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kArabic))
 			{
 				a_builder.AddRanges(IGlyphData::get_glyph_ranges_arabic());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kArrows) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kArrows)) ||
 			    langFlags.test(GlyphPresetFlags::kArrows) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kArrows))
 			{
 				a_builder.AddRanges(IGlyphData::get_glyph_ranges_arrows());
 			}
 
-			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kCommon) ||
+			if ((a_data && a_data->glyph_preset_flags.test(GlyphPresetFlags::kCommon)) ||
 			    langFlags.test(GlyphPresetFlags::kCommon) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kCommon))
 			{
 				a_builder.AddRanges(IGlyphData::get_glyph_ranges_common());
 			}
 
-			AddFontRanges(a_builder, a_data.glyph_ranges);
+			if (a_data)
+			{
+				AddFontRanges(a_builder, a_data->glyph_ranges);
+			}
 
 			if (m_fontUpdateData.langGlyphData)
 			{
 				AddFontRanges(a_builder, m_fontUpdateData.langGlyphData->glyph_ranges);
 			}
 
-			if (!a_data.extra_glyphs.empty())
+			if (a_data && !a_data->extra_glyphs.empty())
 			{
-				a_builder.AddText(a_data.extra_glyphs.c_str());
+				a_builder.AddText(a_data->extra_glyphs.c_str());
 			}
 
 			if (m_fontUpdateData.langGlyphData &&
@@ -1165,6 +1137,8 @@ namespace IED
 			font_data_container&     a_out,
 			const stl::fixed_string& a_font)
 		{
+			a_out.clear();
+
 			auto& io = ImGui::GetIO();
 
 			{
@@ -1172,7 +1146,10 @@ namespace IED
 
 				builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
 
-				AddFontRanges(builder, a_info.default_glyph_data.glyph_ranges);
+				if (auto& data = a_info.default_glyph_data)
+				{
+					AddFontRanges(builder, data->glyph_ranges);
+				}
 
 				const auto& fontsize = m_fontUpdateData.fontsize ?
 				                           *m_fontUpdateData.fontsize :
@@ -1197,37 +1174,40 @@ namespace IED
 			{
 				if (auto it = a_info.fonts.find(a_font); it != a_info.fonts.end())
 				{
-					ImFontGlyphRangesBuilder builder;
-
-					AddFontRanges(builder, it->second);
-
-					const auto& fontsize = m_fontUpdateData.fontsize ?
-					                           *m_fontUpdateData.fontsize :
-					                           it->second.size;
-
-					auto r = a_out.try_emplace(it->first, nullptr, fontsize);
-
-					builder.BuildRanges(std::addressof(r.first->second.ranges));
-
-					auto font = io.Fonts->AddFontFromFileTTF(
-						it->second.path.c_str(),
-						r.first->second.size * m_fontUpdateData.scale,
-						nullptr,
-						r.first->second.ranges.Data);
-
-					if (!font)
+					if (const auto fontPath = GetFontPath(it->second))
 					{
-						Error(
-							"%s: failed loading font '%s' from '%s'",
-							__FUNCTION__,
-							it->first.c_str(),
-							it->second.path.c_str());
+						ImFontGlyphRangesBuilder builder;
 
-						a_out.erase(r.first);
-					}
-					else
-					{
-						r.first->second.font = font;
+						AddFontRanges(builder, it->second.glyph_data);
+
+						const auto& fontsize = m_fontUpdateData.fontsize ?
+						                           *m_fontUpdateData.fontsize :
+						                           it->second.size;
+
+						auto r = a_out.try_emplace(it->first, nullptr, fontsize);
+
+						builder.BuildRanges(std::addressof(r.first->second.ranges));
+
+						auto font = io.Fonts->AddFontFromFileTTF(
+							Serialization::SafeGetPath(*fontPath).c_str(),
+							r.first->second.size * m_fontUpdateData.scale,
+							nullptr,
+							r.first->second.ranges.Data);
+
+						if (!font)
+						{
+							Error(
+								"%s: failed loading font '%s' from '%s'",
+								__FUNCTION__,
+								it->first.c_str(),
+								Serialization::SafeGetPath(*fontPath).c_str());
+
+							a_out.erase(r.first);
+						}
+						else
+						{
+							r.first->second.font = font;
+						}
 					}
 				}
 				else
@@ -1242,13 +1222,105 @@ namespace IED
 			return io.Fonts->Build();
 		}
 
-		void UI::UpdateAvailableFontsImpl(const FontInfoMap& a_data)
+		static bool try_build_valid_path(
+			const fs::path&                a_file,
+			fs::path&                      a_out,
+			std::function<bool(fs::path&)> a_func)
+		{
+			fs::path tmp;
+
+			if (!a_func(tmp))
+			{
+				return false;
+			}
+
+			tmp /= a_file;
+
+			if (!Serialization::FileExists(tmp))
+			{
+				return false;
+			}
+
+			a_out = std::move(tmp);
+
+			return true;
+		}
+
+		std::optional<fs::path> UI::GetFontPath(const FontInfoEntry& a_in)
+		{
+			try
+			{
+				const fs::path file(
+					stl::str_to_wstr(
+						a_in.path,
+						boost::locale::conv::method_type::stop));
+
+				if (file.is_absolute() || !a_in.win_font)
+				{
+					return file;
+				}
+
+				fs::path result;
+
+				if (try_build_valid_path(
+						file,
+						result,
+						[](fs::path& a_out) {
+							return WinApi::get_known_folder_path(
+								::FOLDERID_Fonts,
+								a_out);
+						}))
+				{
+					return result;
+				}
+
+				if (try_build_valid_path(
+						file,
+						result,
+						[](fs::path& a_out) {
+							if (WinApi::get_known_folder_path(
+									::FOLDERID_LocalAppData,
+									a_out))
+							{
+								a_out /= "Microsoft";
+								a_out /= "Windows";
+								a_out /= "Fonts";
+
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						}))
+				{
+					return result;
+				}
+
+				throw std::runtime_error("font not found");
+			}
+			catch (const std::exception& e)
+			{
+				Exception(
+					e,
+					"%s: [%s]",
+					__FUNCTION__,
+					a_in.path.c_str());
+
+				return {};
+			}
+		}
+
+		void UI::UpdateAvailableFontsImpl(const std::unique_ptr<FontInfoMap>& a_data)
 		{
 			m_availableFonts.clear();
 
-			for (auto& e : a_data.fonts)
+			if (a_data)
 			{
-				m_availableFonts.emplace(e.first);
+				for (auto& e : a_data->fonts)
+				{
+					m_availableFonts.emplace(e.first);
+				}
 			}
 
 			m_availableFonts.emplace(m_sDefaultFont);

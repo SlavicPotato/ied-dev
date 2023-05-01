@@ -27,18 +27,20 @@ namespace IED
 
 	using fontGlyphRange_t = stl::vector<std::pair<ImWchar, ImWchar>>;
 
-	struct FontGlyphData
+	struct FontGlyphData :
+		stl::intrusive_ref_counted
 	{
 		stl::flag<GlyphPresetFlags> glyph_preset_flags{ GlyphPresetFlags::kNone };
 		std::string                 extra_glyphs;
 		fontGlyphRange_t            glyph_ranges;
 	};
 
-	struct FontInfoEntry :
-		public FontGlyphData
+	struct FontInfoEntry
 	{
-		std::string path;
-		float       size;
+		std::string                   path;
+		float                         size;
+		bool                          win_font{ false };
+		stl::smart_ptr<FontGlyphData> glyph_data;
 	};
 
 	struct FontInfoMap
@@ -47,9 +49,9 @@ namespace IED
 			stl::fixed_string,
 			FontInfoEntry>;
 
-		font_map_t    fonts;
-		FontGlyphData default_glyph_data;
-		float         default_font_size{ 13.0f };
+		font_map_t                    fonts;
+		stl::smart_ptr<FontGlyphData> default_glyph_data;
+		float                         default_font_size{ 13.0f };
 	};
 
 }

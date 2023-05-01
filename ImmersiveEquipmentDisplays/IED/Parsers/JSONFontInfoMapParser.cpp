@@ -8,18 +8,18 @@ namespace IED
 {
 	namespace Serialization
 	{
-		static constexpr std::uint32_t CURRENT_VERSION = 1;
+		static constexpr std::uint32_t CURRENT_VERSION = 2;
 
 		template <>
 		bool Parser<FontInfoMap>::Parse(
 			const Json::Value& a_in,
-			FontInfoMap&     a_out) const
+			FontInfoMap&       a_out) const
 		{
 			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
-			Parser<FontInfoEntry>  parser(m_state);
+			Parser<FontInfoEntry>    parser(m_state);
 			Parser<fontGlyphRange_t> rangeParser(m_state);
 
 			for (auto it = data.begin(); it != data.end(); ++it)
@@ -38,13 +38,20 @@ namespace IED
 
 			auto& def = a_in["default_font"];
 
-			Parser<FontGlyphData> gparser(m_state);
-
-			if (!gparser.Parse(
-					def["glyphs"],
-					a_out.default_glyph_data))
+			if (auto& glyphs = def["glyphs"])
 			{
-				return false;
+				Parser<FontGlyphData> gparser(m_state);
+
+				auto tmp = stl::make_smart_for_overwrite<FontGlyphData>();
+
+				if (!gparser.Parse(
+						glyphs,
+						*tmp))
+				{
+					return false;
+				}
+
+				a_out.default_glyph_data = std::move(tmp);
 			}
 
 			a_out.default_font_size = std::max(def.get("size", 13.0f).asFloat(), 1.0f);
@@ -55,8 +62,9 @@ namespace IED
 		template <>
 		void Parser<FontInfoMap>::Create(
 			const FontInfoMap& a_data,
-			Json::Value&         a_out) const
+			Json::Value&       a_out) const
 		{
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 
 	}

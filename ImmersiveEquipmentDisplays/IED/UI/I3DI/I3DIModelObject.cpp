@@ -99,7 +99,7 @@ namespace IED
 					m_world);
 				break;
 			default:
-				throw std::exception(__FUNCTION__ ": bad bounding shape type");
+				throw std::runtime_error(__FUNCTION__ ": bad bounding shape type");
 			}
 		}
 

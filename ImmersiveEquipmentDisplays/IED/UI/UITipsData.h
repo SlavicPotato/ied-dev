@@ -116,6 +116,13 @@ namespace IED
 			MatchNPCOrTemplate                  = 1108,
 			SunAngle                            = 1109,
 			HideGeometry                        = 1110,
+			ButtonTextAlign                     = 1111,
+			SelectableTextAlign                 = 1112,
+			DisplaySafeAreaPadding              = 1113,
+			AntiAliasedLines                    = 1114,
+			AntiAliasedLinesUseTex              = 1115,
+			CircleTessellationMaxError          = 1116,
+			DisabledAlpha                       = 1117,
 		};
 
 	}

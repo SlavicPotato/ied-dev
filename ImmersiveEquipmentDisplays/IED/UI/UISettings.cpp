@@ -10,6 +10,8 @@
 #include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 
+#include "IED/UI/Style/UIStyleEditorWindow.h"
+
 #include "Widgets/UIWidgetCommonStrings.h"
 
 #include "Drivers/UI.h"
@@ -499,8 +501,13 @@ namespace IED
 				auto& settings = m_controller.GetSettings();
 				auto& ui       = settings.data.ui;
 
-				if (settings.mark_if(UIStylePresetSelectorWidget::DrawStylePresetSelector(ui.stylePreset)))
+				auto cstyle = Drivers::UI::GetCurrentStyle();
+
+				if (UIStylePresetSelectorWidget::DrawStylePresetSelector(
+						Drivers::UI::GetStyleData(),
+						cstyle))
 				{
+					settings.set(ui.stylePreset, std::move(cstyle));
 					Drivers::UI::SetStyle(ui.stylePreset);
 				}
 
@@ -1048,7 +1055,7 @@ namespace IED
 
 				auto& settings = m_controller.GetSettings();
 				auto& ldm      = Localization::LocalizationDataManager::GetSingleton();
-				auto& current  = m_controller.GetCurrentLanguageTable();
+				auto  current  = m_controller.GetCurrentLanguageTable();
 
 				if (ImGui::BeginCombo(
 						UIL::LS(CommonStrings::Language, "1"),

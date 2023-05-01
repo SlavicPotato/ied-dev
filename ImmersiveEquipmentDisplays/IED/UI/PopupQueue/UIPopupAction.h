@@ -22,6 +22,8 @@ namespace IED
 			using func_type      = std::function<void(const UIPopupAction&)>;
 			using func_type_draw = std::function<bool()>;
 
+			static constexpr std::size_t BUFFER_SIZE = 8192;
+
 		public:
 			UIPopupAction() = delete;
 
@@ -38,8 +40,11 @@ namespace IED
 				m_key(a_key)
 			{
 				make_key();
-				stl::snprintf(
-					m_buf,
+
+				::_snprintf_s(
+					m_buf.get(),
+					BUFFER_SIZE,
+					_TRUNCATE,
 					a_fmt,
 					a_args...);
 			}
@@ -126,7 +131,7 @@ namespace IED
 			std::string m_key;
 			std::string m_input;
 
-			char m_buf[512]{ 0 };
+			std::unique_ptr<char[]> m_buf{ std::make_unique<char[]>(BUFFER_SIZE) };
 
 			UIPopupType    m_type;
 			bool           a_allowEmpty{ false };

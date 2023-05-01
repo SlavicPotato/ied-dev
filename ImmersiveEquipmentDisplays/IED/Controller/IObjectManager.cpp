@@ -704,7 +704,7 @@ namespace IED
 
 			itemRoot->AttachChild(objectAttachmentNode, true);
 
-			state->physics = objectAttachmentNode;
+			state->physicsNode = objectAttachmentNode;
 		}
 		else
 		{
@@ -771,8 +771,8 @@ namespace IED
 			    pv && !pv->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
 				state->simComponent = a_params.objects.CreateAndAddSimComponent(
-					state->physics.get(),
-					state->physics->m_localTransform,
+					state->physicsNode.get(),
+					state->physicsNode->m_localTransform,
 					*pv);
 			}
 		}
@@ -876,6 +876,7 @@ namespace IED
 		}
 
 		a_objectEntry.data.state = std::move(state);
+		a_objectEntry.data.cloningTask.reset();
 
 		if (a_visible)
 		{
@@ -885,8 +886,6 @@ namespace IED
 				a_objectEntry,
 				true);
 		}
-
-		a_objectEntry.data.cloningTask.reset();
 
 		return AttachObjectResult::kSucceeded;
 	}
@@ -1096,7 +1095,7 @@ namespace IED
 
 			groupRoot->AttachChild(objectAttachmentNode, true);
 
-			state->physics = objectAttachmentNode;
+			state->physicsNode = objectAttachmentNode;
 		}
 		else
 		{
@@ -1260,8 +1259,8 @@ namespace IED
 			    pv && !pv->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
 				state->simComponent = a_params.objects.CreateAndAddSimComponent(
-					state->physics.get(),
-					state->physics->m_localTransform,
+					state->physicsNode.get(),
+					state->physicsNode->m_localTransform,
 					*pv);
 			}
 		}
@@ -1278,6 +1277,7 @@ namespace IED
 		state->flags.set(ObjectEntryFlags::kIsGroup);
 
 		a_objectEntry.data.state = std::move(state);
+		a_objectEntry.data.cloningTask.reset();
 
 		if (a_visible)
 		{
@@ -1303,7 +1303,7 @@ namespace IED
 		a_state->form                 = a_form;
 		a_state->commonNodes.rootNode = a_rootNode;
 		a_state->commonNodes.object   = a_objectNode;
-		a_state->ref                  = std::move(a_targetNodes.ref);
+		a_state->refNode              = std::move(a_targetNodes.ref);
 		a_state->nodeDesc             = a_config.targetNode;
 		a_state->atmReference         = a_config.targetNode.managed() || a_config.flags.test(Data::BaseFlags::kReferenceMode);
 		a_state->owner                = a_actor->formID;
@@ -1484,7 +1484,7 @@ namespace IED
 			a_atmReference,
 			a_root,
 			state->commonNodes.rootNode,
-			state->ref);
+			state->refNode);
 
 		if (result)
 		{

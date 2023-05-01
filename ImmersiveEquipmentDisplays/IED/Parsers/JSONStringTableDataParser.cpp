@@ -59,14 +59,14 @@ namespace IED
 				}
 			}
 
-			if (a_in.isMember("glyphs"))
+			if (auto& glyphs = a_in["glyphs"])
 			{
 				Parser<FontGlyphData> gparser(m_state);
 
-				auto tmp = std::make_shared<FontGlyphData>();
+				auto tmp = stl::make_smart_for_overwrite<FontGlyphData>();
 
 				if (!gparser.Parse(
-						a_in["glyphs"],
+						glyphs,
 						*tmp))
 				{
 					return false;
@@ -83,6 +83,7 @@ namespace IED
 			const Localization::StringTable::table_data& a_data,
 			Json::Value&                                 a_out) const
 		{
+			throw parser_exception(__FUNCTION__ ": " PARSER_NOT_IMPL_STR);
 		}
 
 	}

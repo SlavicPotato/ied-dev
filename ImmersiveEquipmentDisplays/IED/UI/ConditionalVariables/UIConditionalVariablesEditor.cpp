@@ -22,7 +22,7 @@ namespace IED
 
 		UIConditionalVariablesEditor::~UIConditionalVariablesEditor() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<CondVarProfile>().RemoveSink(this);
 		}
 
 		void UIConditionalVariablesEditor::EditorInitialize()

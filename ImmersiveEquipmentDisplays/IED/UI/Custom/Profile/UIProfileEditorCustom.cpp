@@ -23,7 +23,7 @@ namespace IED
 
 		UIProfileEditorCustom::~UIProfileEditorCustom() noexcept
 		{
-			GetProfileManager().RemoveSink(this);
+			GlobalProfileManager::GetSingleton<CustomProfile>().RemoveSink(this);
 		}
 
 		void UIProfileEditorCustom::Initialize()
