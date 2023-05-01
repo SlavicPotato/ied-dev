@@ -1,3 +1,7 @@
+/*
+	Uses style editing code from ImGui demos
+*/
+
 #include "pch.h"
 
 #include "UIStyleEditorWidget.h"
@@ -168,7 +172,7 @@ namespace IED
 
 					result |= ImGui::Checkbox("Anti-aliased fill", &a_data.AntiAliasedFill);
 					ImGui::PushItemWidth(ImGui::GetFontSize() * 8);
-					ImGui::DragFloat("Curve Tessellation Tolerance", &a_data.CurveTessellationTol, 0.02f, 0.10f, 10.0f, "%.2f");
+					result |= ImGui::DragFloat("Curve Tessellation Tolerance", &a_data.CurveTessellationTol, 0.02f, 0.10f, 10.0f, "%.2f");
 					if (a_data.CurveTessellationTol < 0.10f)
 						a_data.CurveTessellationTol = 0.10f;
 
