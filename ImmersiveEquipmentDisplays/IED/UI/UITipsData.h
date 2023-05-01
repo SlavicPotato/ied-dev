@@ -123,6 +123,7 @@ namespace IED
 			AntiAliasedLinesUseTex              = 1115,
 			CircleTessellationMaxError          = 1116,
 			DisabledAlpha                       = 1117,
+			GlobalAlpha                         = 1118,
 		};
 
 	}

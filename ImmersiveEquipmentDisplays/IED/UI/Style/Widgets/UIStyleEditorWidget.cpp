@@ -57,8 +57,10 @@ namespace IED
 
 			if (ImGui::BeginTabItem(UIL::LS(UIStyleEditorWidgetStrings::TabSizes, "tab_sizes")))
 			{
-				if (ImGui::BeginChild("size_child"))
+				if (ImGui::BeginChild("child"))
 				{
+					ImGui::PushItemWidth(ImGui::GetFontSize() * -15.5f);
+
 					ImGui::SeparatorText(UIL::LS(UIStyleEditorWidgetStrings::SizesSectMain));
 					result |= ImGui::SliderFloat2("WindowPadding", (float*)&a_data.WindowPadding, 0.0f, 20.0f, "%.0f");
 					result |= ImGui::SliderFloat2("FramePadding", (float*)&a_data.FramePadding, 0.0f, 20.0f, "%.0f");
@@ -109,6 +111,8 @@ namespace IED
 					ImGui::SeparatorText(UIL::LS(UIStyleEditorWidgetStrings::SizesSectMisc));
 					result |= ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&a_data.DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
 					UITipsInterface::DrawTip(UITip::DisplaySafeAreaPadding);
+
+					ImGui::PopItemWidth();
 				}
 
 				ImGui::EndChild();
@@ -128,11 +132,13 @@ namespace IED
 				ImGui::Separator();
 
 				if (ImGui::BeginChild(
-						"col_child",
+						"child",
 						{ 0, 0 },
 						false,
 						ImGuiWindowFlags_NavFlattened))
 				{
+					ImGui::PushItemWidth(ImGui::GetFontSize() * -13);
+
 					for (ImGuiCol i = 0; i < ImGuiCol_COUNT; i++)
 					{
 						const auto name = ImGui::GetStyleColorName(i);
@@ -147,6 +153,8 @@ namespace IED
 						ImGui::TextUnformatted(name);
 						ImGui::PopID();
 					}
+
+					ImGui::PopItemWidth();
 				}
 
 				ImGui::EndChild();
@@ -162,7 +170,7 @@ namespace IED
 
 			if (ImGui::BeginTabItem(UIL::LS(UIStyleEditorWidgetStrings::TabRendering, "tab_rend")))
 			{
-				if (ImGui::BeginChild("rend_child"))
+				if (ImGui::BeginChild("child"))
 				{
 					result |= ImGui::Checkbox("Anti-aliased lines", &a_data.AntiAliasedLines);
 					UITipsInterface::DrawTip(UITip::AntiAliasedLines);
@@ -214,6 +222,7 @@ namespace IED
 					UITipsInterface::DrawTip(UITip::CircleTessellationMaxError);
 
 					result |= ImGui::DragFloat("Global Alpha", &a_data.Alpha, 0.005f, 0.20f, 1.0f, "%.2f");  // Not exposing zero here so user doesn't "lose" the UI (zero alpha clips all widgets). But application code could have a toggle to switch between zero and non-zero.
+					UITipsInterface::DrawTip(UITip::GlobalAlpha);
 					result |= ImGui::DragFloat("Disabled Alpha", &a_data.DisabledAlpha, 0.005f, 0.0f, 1.0f, "%.2f");
 					UITipsInterface::DrawTip(UITip::DisabledAlpha);
 					ImGui::PopItemWidth();
