@@ -2,158 +2,23 @@
 
 #include "UIClipboard.h"
 
+#include "IED/ConfigCustom.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		UIClipboard UIClipboard::m_Instance;
 
-		void UIClipboard::clear()
+		const Data::configCustom_t& UIClipboard::get_value(
+			const Data::configCustomNameValue_t& a_data) noexcept
 		{
-			if (!m_Instance.m_data.data)
-			{
-				return;
-			}
-
-			switch (m_Instance.m_data.type)
-			{
-			case DataType::ConfigSlot:
-				erase<Data::configSlot_t>();
-				break;
-			case DataType::ConfigSlotPriority:
-				erase<Data::configSlotPriority_t>();
-				break;
-			case DataType::ConfigCustom:
-				erase<Data::configCustomNameValue_t>();
-				break;
-			case DataType::ConfigBase:
-				erase<Data::configBase_t>();
-				break;
-			case DataType::ConfigBaseValues:
-				erase<Data::configBaseValues_t>();
-				break;
-			case DataType::EquipmentOverride:
-				erase<Data::equipmentOverride_t>();
-				break;
-			case DataType::EquipmentOverrideCondition:
-				erase<Data::equipmentOverrideCondition_t>();
-				break;
-			case DataType::EquipmentOverrideConditionList:
-				erase<Data::equipmentOverrideConditionList_t>();
-				break;
-			case DataType::FormSet:
-				erase<Data::configFormSet_t>();
-				break;
-			case DataType::FormList:
-				erase<Data::configFormList_t>();
-				break;
-			case DataType::NodeOverrideHolder:
-				erase<Data::configNodeOverrideHolderClipboardData_t>();
-				break;
-			case DataType::NodeOverrideTransform:
-				erase<Data::configNodeOverrideTransform_t>();
-				break;
-			case DataType::NodeOverridePlacement:
-				erase<Data::configNodeOverridePlacement_t>();
-				break;
-			case DataType::NodeOverridePlacementOverride:
-				erase<Data::configNodeOverridePlacementOverride_t>();
-				break;
-			case DataType::NodeOverridePlacementOverrideList:
-				erase<Data::configNodeOverridePlacementOverrideList_t>();
-				break;
-			case DataType::NodeOverridePlacementValues:
-				erase<Data::configNodeOverridePlacementValues_t>();
-				break;
-			case DataType::NodeOverridePhysicsOverride:
-				erase<Data::configNodeOverridePhysicsOverride_t>();
-				break;
-			case DataType::NodeOverridePhysics:
-				erase<Data::configNodeOverridePhysics_t>();
-				break;
-			case DataType::NodeOverridePhysicsOverrideList:
-				erase<Data::configNodeOverridePhysicsOverrideList_t>();
-				break;
-			case DataType::NodePhysicsValues:
-				erase<Data::configNodePhysicsValues_t>();
-				break;
-			case DataType::NodeOverrideTransformValues:
-				erase<Data::configNodeOverrideTransformValues_t>();
-				break;
-			case DataType::NodeOverrideOffset:
-				erase<Data::configNodeOverrideOffset_t>();
-				break;
-			case DataType::NodeOverrideOffsetList:
-				erase<Data::configNodeOverrideOffsetList_t>();
-				break;
-			case DataType::NodeOverrideOffsetConditionList:
-				erase<Data::configNodeOverrideConditionList_t>();
-				break;
-			case DataType::ConfigTransform:
-				erase<Data::configTransform_t>();
-				break;
-			case DataType::FormFilter:
-				erase<Data::configFormFilter_t>();
-				break;
-			case DataType::EffectShaderList:
-				erase<Data::effectShaderList_t>();
-				break;
-			case DataType::EffectShaderHolder:
-				erase<Data::configEffectShaderHolder_t>();
-				break;
-			case DataType::EquipmentOverrideList:
-				erase<Data::equipmentOverrideList_t>();
-				break;
-			case DataType::EffectShaderData:
-				erase<Data::configEffectShaderData_t>();
-				break;
-			case DataType::FixedStringSet:
-				erase<Data::configFixedStringSet_t>();
-				break;
-			case DataType::FixedStringList:
-				erase<Data::configFixedStringList_t>();
-				break;
-			case DataType::EffectShaderFunction:
-				erase<Data::configEffectShaderFunction_t>();
-				break;
-			case DataType::EffectShaderFunctionList:
-				erase<Data::configEffectShaderFunctionList_t>();
-				break;
-			case DataType::BipedObjectList:
-				erase<Data::configBipedObjectList_t>();
-				break;
-			case DataType::ConditionalVariablesEntry:
-				erase<Data::configConditionalVariablesEntryListValue_t>();
-				break;
-			case DataType::ConditionalVariablesList:
-				erase<Data::configConditionalVariablesList_t>();
-				break;
-			case DataType::ConditionalVariable:
-				erase<Data::configConditionalVariable_t>();
-				break;
-			case DataType::ObjectSlotList:
-				erase<Data::configObjectSlotList_t>();
-				break;
-			case DataType::Outfit:
-				erase<Data::OM::configOutfit_t>();
-				break;
-			case DataType::OutfitOverrideList:
-				erase<Data::OM::outfitOverrideList_t>();
-				break;
-			case DataType::OutfitOverride:
-				erase<Data::OM::outfitOverride_t>();
-				break;
-			case DataType::OutfitEntry:
-				erase<Data::OM::configOutfitEntry_t>();
-				break;
-			default:
-				assert(false);
-			}
+			return a_data.data(a_data.sex);
 		}
 
-		UIClipboard::~UIClipboard()
+		void UIClipboard::Clear()
 		{
-			clear();
+			m_Instance.m_data.reset();
 		}
 
 	}
