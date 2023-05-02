@@ -28,13 +28,8 @@ namespace IED
 		}
 
 		NodeOverrideCommonResult UINodeOverrideConditionWidget::DrawConditionContextMenu(
-			const stl::fixed_string&             a_name,
-			NodeOverrideDataType                 a_type,
-			entryNodeOverrideData_t&             a_data,
-			Data::configNodeOverrideCondition_t& a_entry,
-			const bool                           a_exists,
-			const bool                           a_ignoreNode,
-			update_func_t                        a_updateFunc)
+			NodeOverrideDataType a_type,
+			const bool           a_ignoreNode)
 		{
 			NodeOverrideCommonResult result;
 
@@ -352,12 +347,43 @@ namespace IED
 						ImGui::CloseCurrentPopup();
 					}
 
+					ImGui::Separator();
+
+					auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>();
+
+					if (ImGui::MenuItem(
+							UIL::LS(CommonStrings::Paste, "PA"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						result.action = NodeOverrideCommonAction::Paste;
+					}
+
 					ImGui::EndMenu();
 				}
 
 				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "2")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
+				}
+
+				ImGui::Separator();
+
+				if (UIL::LCG_MI(CommonStrings::Copy, "3"))
+				{
+					result.action = NodeOverrideCommonAction::Copy;
+				}
+
+				auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>();
+
+				if (ImGui::MenuItem(
+						UIL::LS(CommonStrings::PasteOver, "4"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					result.action = NodeOverrideCommonAction::PasteOver;
 				}
 
 				ImGui::EndPopup();
@@ -783,6 +809,26 @@ namespace IED
 						ImGui::CloseCurrentPopup();
 					}
 
+					ImGui::Separator();
+
+					auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>();
+
+					if (ImGui::MenuItem(
+							UIL::LS(CommonStrings::Paste, "PA"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						if (clipData)
+						{
+							a_entry.emplace_back(*clipData);
+
+							a_updateFunc();
+
+							result = NodeOverrideCommonAction::Insert;
+						}
+					}
+
 					ImGui::EndMenu();
 				}
 
@@ -959,13 +1005,8 @@ namespace IED
 					ImGui::TableSetColumnIndex(0);
 
 					const auto result = DrawConditionContextMenu(
-						a_name,
 						a_type,
-						a_data,
-						*it,
-						a_exists,
-						a_ignoreNode,
-						a_updateFunc);
+						a_ignoreNode);
 
 					switch (result.action)
 					{
@@ -1057,16 +1098,46 @@ namespace IED
 
 						break;
 					case NodeOverrideCommonAction::Delete:
+
 						it = a_entry.erase(it);
 
 						a_updateFunc();
 
 						break;
 					case NodeOverrideCommonAction::Swap:
+
 						if (IterSwap(a_entry, it, result.dir))
 						{
 							a_updateFunc();
 						}
+
+						break;
+					case NodeOverrideCommonAction::Copy:
+
+						UIClipboard::Set(*it);
+
+						break;
+					case NodeOverrideCommonAction::PasteOver:
+
+						if (auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>())
+						{
+							*it = *clipData;
+
+							a_updateFunc();
+						}
+
+						break;
+					case NodeOverrideCommonAction::Paste:
+
+						if (auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>())
+						{
+							it = a_entry.emplace(
+								it,
+								*clipData);
+
+							a_updateFunc();
+						}
+
 						break;
 					}
 

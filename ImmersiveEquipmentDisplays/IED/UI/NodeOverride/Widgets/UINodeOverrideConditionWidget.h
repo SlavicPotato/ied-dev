@@ -26,13 +26,8 @@ namespace IED
 			UINodeOverrideConditionWidget(Controller& a_controller);
 
 			NodeOverrideCommonResult DrawConditionContextMenu(
-				const stl::fixed_string&             a_name,
 				NodeOverrideDataType                 a_type,
-				entryNodeOverrideData_t&             a_data,
-				Data::configNodeOverrideCondition_t& a_entry,
-				const bool                           a_exists,
-				const bool                           a_ignoreNode,
-				update_func_t                        a_updateFunc);
+				const bool                           a_ignoreNode);
 
 			NodeOverrideCommonAction DrawConditionHeaderContextMenu(
 				const stl::fixed_string&                 a_name,
