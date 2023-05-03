@@ -715,7 +715,7 @@ namespace IED
 			{
 				ImGui::PushID(i);
 
-				auto result = DrawVariableHeaderControls(a_holder, a_data, *it);
+				const auto result = DrawVariableHeaderControls(a_holder, a_data, *it);
 
 				switch (result.action)
 				{

@@ -1117,23 +1117,21 @@ namespace IED
 						UIClipboard::Set(*it);
 
 						break;
+					case NodeOverrideCommonAction::Paste:
 					case NodeOverrideCommonAction::PasteOver:
 
 						if (auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>())
 						{
-							*it = *clipData;
-
-							a_updateFunc();
-						}
-
-						break;
-					case NodeOverrideCommonAction::Paste:
-
-						if (auto clipData = UIClipboard::Get<Data::configNodeOverrideCondition_t>())
-						{
-							it = a_entry.emplace(
-								it,
-								*clipData);
+							if (result.action == NodeOverrideCommonAction::Paste)
+							{
+								it = a_entry.emplace(
+									it,
+									*clipData);
+							}
+							else
+							{
+								*it = *clipData;
+							}
 
 							a_updateFunc();
 						}

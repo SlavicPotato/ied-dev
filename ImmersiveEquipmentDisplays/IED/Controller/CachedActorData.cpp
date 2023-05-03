@@ -62,7 +62,7 @@ namespace IED
 
 	constexpr std::size_t CachedPerkData::GetSignature(Actor* a_actor) noexcept
 	{
-		auto result = hash::fnv1::fnv_offset_basis;
+		auto result = hasher::traits::initial_value;
 
 		if (a_actor == *g_thePlayer &&
 		    a_actor->processManager &&
@@ -74,8 +74,8 @@ namespace IED
 				{
 					if (const auto* const perk = e->perk)
 					{
-						result = hash::fnv1::_append_hash_fnv1a(result, perk->formID);
-						result = hash::fnv1::_append_hash_fnv1a(result, e->currentRank);
+						result = hasher::hash_bytes(perk->formID.get(), result);
+						result = hasher::hash_bytes(e->currentRank, result);
 					}
 				}
 			}
@@ -122,14 +122,14 @@ namespace IED
 		const ExtraFactionChanges* a_factionChanges,
 		TESNPC*                    a_npc) noexcept
 	{
-		auto result = hash::fnv1::fnv_offset_basis;
+		auto result = hasher::traits::initial_value;
 
 		visit_factions(
 			a_factionChanges,
 			a_npc,
 			[&](const auto& a_info) noexcept [[msvc::forceinline]] {
-				result = hash::fnv1::_append_hash_fnv1a(result, a_info.faction->formID);
-				result = hash::fnv1::_append_hash_fnv1a(result, a_info.rank);
+				result = hasher::hash_bytes(a_info.faction->formID.get(), result);
+				result = hasher::hash_bytes(a_info.rank, result);
 			});
 
 		return result;
@@ -189,7 +189,7 @@ namespace IED
 	constexpr std::size_t CachedActiveEffectData::GetSignature(
 		RE::BSSimpleList<ActiveEffect*>* a_list) noexcept
 	{
-		auto result = hash::fnv1::fnv_offset_basis;
+		auto result = hasher::traits::initial_value;
 
 		constexpr auto hashflags =
 			ActiveEffect::Flag::kDispelled |
@@ -198,8 +198,8 @@ namespace IED
 		visit_effects(
 			a_list,
 			[&](const auto* a_effect, const auto* a_mgef) noexcept [[msvc::forceinline]] {
-				result = hash::fnv1::_append_hash_fnv1a(result, a_mgef->formID);
-				result = hash::fnv1::_append_hash_fnv1a(result, a_effect->flags & hashflags);
+				result = hasher::hash_bytes(a_mgef->formID.get(), result);
+				result = hasher::hash_bytes(a_effect->flags & hashflags, result);
 			});
 
 		return result;

@@ -64,7 +64,7 @@ namespace IED
 				{
 					auto& front = m_queue.front();
 
-					if (hash::stricmp(front.text, a_message) == 0)
+					if (stl::stricmp(front.text, a_message) == 0)
 					{
 						front = {
 							std::forward<Tm>(a_message),
@@ -85,10 +85,10 @@ namespace IED
 			}
 
 		private:
-			stl::queue<ToastMessage>                        m_queue;
-			std::optional<luid_tag>                         m_currentTag;
+			stl::queue<ToastMessage>                              m_queue;
+			std::optional<luid_tag>                               m_currentTag;
 			UICommon::float_anim_stepper<float, 0.0f, 1.0f, 8.0f> m_animbg;
-			stl::mutex                                      m_lock;
+			stl::mutex                                            m_lock;
 
 			Tasks::UIRenderTaskBase& m_owner;
 		};

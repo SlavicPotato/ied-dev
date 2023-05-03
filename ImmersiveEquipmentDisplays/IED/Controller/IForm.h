@@ -65,7 +65,7 @@ namespace IED
 		std::uint8_t             type;
 		std::uint32_t            formFlags;
 		stl::flag<FormInfoFlags> flags;
-		std::string              name;
+		stl::fixed_string        name;
 		std::uint32_t            extraType;
 
 		std::unique_ptr<const BaseExtraFormInfo> extraInfo;

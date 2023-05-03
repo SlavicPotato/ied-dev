@@ -125,6 +125,9 @@ namespace IED
 				T current{ _Min };
 			};
 
+			std::string SanitizeInputText(const std::string& a_text);
+			std::string SanitizeInputText(const char* a_text);
+
 		}
 	}
 }

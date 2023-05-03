@@ -12,6 +12,7 @@
 #include "Keybind/UIKeyBindEditorWindow.h"
 #include "NodeOverride/Profile/UIProfileEditorNodeOverride.h"
 #include "NodeOverride/UINodeOverrideEditorWindow.h"
+#include "Style/UIStyleEditorWindow.h"
 #include "UIActorInfo.h"
 #include "UIDialogImportExport.h"
 #include "UIDisplayManagement.h"
@@ -22,7 +23,6 @@
 #include "UISettings.h"
 #include "UISkeletonExplorer.h"
 #include "UIStats.h"
-#include "Style/UIStyleEditorWindow.h"
 
 #if defined(IED_ENABLE_OUTFIT)
 #	include "IED/OM/UI/Profile/UIOutfitProfileEditor.h"
@@ -166,8 +166,6 @@ namespace IED
 
 		void UIMain::Draw()
 		{
-			//ImGui::ShowDemoWindow();
-
 			ILRHBegin();
 
 			DrawMenuBarMain();

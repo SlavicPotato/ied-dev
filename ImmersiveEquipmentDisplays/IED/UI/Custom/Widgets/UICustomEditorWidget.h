@@ -430,14 +430,12 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Input,
-					 UIL::LS(UIWidgetCommonStrings::NewItem),
+					 UIL::LS(CommonStrings::Rename),
 					 "%s",
 					 UIL::LS(UIWidgetCommonStrings::RenamePrompt))
 				.set_input(*a_data.name)
 				.call([this, oldName = a_data.name](const auto& a_p) {
-					stl::fixed_string newName(a_p.GetInput());
-
-					if (newName.empty())
+					if (a_p.GetInput().empty())
 					{
 						return;
 					}
@@ -454,30 +452,30 @@ namespace IED
 						return;
 					}
 
-					auto itn = current.data->data.find(newName);
-					if (itn == current.data->data.end())
+					const stl::fixed_string newName(a_p.GetInput());
+
+					const CustomConfigRenameParams params{
+						oldName,
+						newName
+					};
+
+					if (!current.data->data.contains(newName) &&
+				        OnRename(current.handle, params))
 					{
-						CustomConfigRenameParams params{
-							oldName,
-							newName
-						};
+						auto tmp = ito->second;
 
-						if (OnRename(current.handle, params))
-						{
-							auto tmp = ito->second;
-
-							current.data->data.erase(ito);
-							current.data->data.insert_or_assign(newName, tmp);
-
-							return;
-						}
+						current.data->data.erase(ito);
+						current.data->data.insert_or_assign(newName, tmp);
 					}
-
-					GetPopupQueue().push(
-						UIPopupType::Message,
-						UIL::LS(CommonStrings::Error),
-						"%s",
-						UIL::LS(UIWidgetCommonStrings::ItemAlreadyExists));
+					else
+					{
+						GetPopupQueue().push(
+							UIPopupType::Message,
+							UIL::LS(CommonStrings::Error),
+							"%s [%s]",
+							UIL::LS(UIWidgetCommonStrings::ItemAlreadyExists),
+							newName.c_str());
+					}
 				});
 		}
 
@@ -553,7 +551,7 @@ namespace IED
 		void UICustomEditorWidget<T>::EditorDrawMenuBarItems()
 		{
 			const bool disabled = !GetCurrentData() || (this->GetDefaultConfigForced() && !this->IsProfileEditor());
-			
+
 			UICommon::PushDisabled(disabled);
 
 			if (ImGui::MenuItem(UIL::LS(CommonStrings::New, "1")))

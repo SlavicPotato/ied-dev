@@ -295,7 +295,8 @@ namespace IED
 								.call([this, item = *this->m_state.selected](const auto& a_p) {
 									auto& newName = a_p.GetInput();
 
-									if (newName.empty())
+									if (newName.empty() || 
+										stl::fixed_string::key_type::test_equal(newName, *item))
 									{
 										return;
 									}

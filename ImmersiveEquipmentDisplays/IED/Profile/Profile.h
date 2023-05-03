@@ -21,6 +21,18 @@ namespace IED
 
 		ProfileBase() = default;
 
+		explicit ProfileBase(const T& a_data) :
+			m_data(a_data),
+			m_modified(true)
+		{
+		}
+
+		explicit ProfileBase(T&& a_data) :
+			m_data(std::move(a_data)),
+			m_modified(true)
+		{
+		}
+
 		virtual bool Load() = 0;
 		virtual bool Save() = 0;
 

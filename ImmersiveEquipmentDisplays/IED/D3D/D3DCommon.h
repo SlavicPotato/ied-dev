@@ -163,6 +163,8 @@ namespace IED
 
 		stl::flag<D3DCommonFlags> m_flags{ DEFAULT_FLAGS };
 
-		D3D11StateBackupImpl m_backup;
+		std::unique_ptr<D3D11StateBackupImpl> m_backup{
+			std::make_unique<D3D11StateBackupImpl>()
+		};
 	};
 }

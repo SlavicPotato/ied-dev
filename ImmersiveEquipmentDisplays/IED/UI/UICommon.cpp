@@ -171,6 +171,20 @@ namespace IED
 				}
 			}
 
+			std::string SanitizeInputText(const std::string& a_text)
+			{
+				using namespace boost::locale::conv;
+
+				return utf_to_utf<char>(a_text, skip);
+			}
+
+			std::string SanitizeInputText(const char* a_text)
+			{
+				using namespace boost::locale::conv;
+
+				return utf_to_utf<char>(a_text, skip);
+			}
+
 			/*bool TextCopyable(const char* a_fmt, ...)
 			{
 				if (ImGui::GetCurrentWindow()->SkipItems)

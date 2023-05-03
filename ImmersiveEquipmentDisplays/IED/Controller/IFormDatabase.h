@@ -14,16 +14,16 @@ namespace IED
 		{
 			Game::FormID             formid;
 			stl::flag<FormInfoFlags> flags;
-			std::string              name;
+			stl::fixed_string        name;
 
-			inline friend constexpr bool operator<(
+			[[nodiscard]] friend constexpr bool operator<(
 				const entry_t& a_lhs,
 				const entry_t& a_rhs) noexcept
 			{
 				return a_lhs.formid < a_rhs.formid;
 			}
 
-			inline friend constexpr bool operator==(
+			[[nodiscard]] friend constexpr bool operator==(
 				const entry_t& a_lhs,
 				const entry_t& a_rhs) noexcept
 			{

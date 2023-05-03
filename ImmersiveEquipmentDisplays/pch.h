@@ -14,7 +14,7 @@
 #include <ext/Calendar.h>
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
-#include <ext/Hash.h>
+//#include <ext/Hash.h>
 #include <ext/IDebugLog.h>
 #include <ext/ILUID.h>
 #include <ext/IOS.h>
@@ -82,6 +82,7 @@
 #include <execution>
 #include <filesystem>
 #include <functional>
+#include <limits>
 #include <list>
 #include <memory>
 #include <numbers>

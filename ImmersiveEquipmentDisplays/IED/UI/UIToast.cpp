@@ -28,10 +28,12 @@ namespace IED
 			{
 				auto& front = m_queue.front();
 
-				const auto m = static_cast<float>(
-					std::min(
-						m_queue.size(),
-						decltype(m_queue)::size_type(4)));
+				const auto m =
+					static_cast<float>(
+						std::min(
+							m_queue.size(),
+							decltype(m_queue)::size_type(4))) /
+					std::clamp(static_cast<float>(front.text.size()) * 0.01f, 1.0f, 5.0f);
 
 				front.lifetime -= io.DeltaTime * m;
 
@@ -40,7 +42,7 @@ namespace IED
 					m_queue.pop();
 				}
 			}
-
+			
 			if (m_queue.empty())
 			{
 				m_currentTag.reset();
@@ -48,12 +50,12 @@ namespace IED
 				return;
 			}
 
-			ImGui::PushStyleColor(ImGuiCol_Text, { 1.0f, 1.0f, 1.0f, 1.0f });
+			/*ImGui::PushStyleColor(ImGuiCol_Text, { 1.0f, 1.0f, 1.0f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.0f, 0.0f, 0.0f, 0.75f });
 			ImGui::PushStyleColor(ImGuiCol_Border, { 0.5f, 0.5f, 0.5f, 0.5f });
 			ImGui::PushStyleColor(ImGuiCol_BorderShadow, { 0.0f, 0.0f, 0.0f, 0.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.0f);*/
 
 			const auto& front = m_queue.front();
 
@@ -105,12 +107,12 @@ namespace IED
 			ImGui::End();
 
 			ImGui::PopStyleVar();
+			/*ImGui::PopStyleVar();
 			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();*/
 		}
 	}
 }

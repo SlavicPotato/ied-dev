@@ -336,13 +336,13 @@ namespace IED
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return stl::fixed_string::less_str{}(a_rhs->name, a_lhs->name);
+							return a_rhs->name < a_lhs->name;
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return stl::fixed_string::greater_str{}(a_rhs->name, a_lhs->name);
+							return a_rhs->name > a_lhs->name;
 						};
 					}
 				case 3:

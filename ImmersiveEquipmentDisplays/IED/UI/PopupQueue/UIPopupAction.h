@@ -85,6 +85,7 @@ namespace IED
 				requires(std::is_assignable_v<std::string, const Ts&>)
 			{
 				m_input = a_text;
+				sanitize_input();
 				return *this;
 			}
 
@@ -94,6 +95,7 @@ namespace IED
 				requires(std::is_assignable_v<std::string, Ts &&>)
 			{
 				m_input = std::move(a_text);
+				sanitize_input();
 				return *this;
 			}
 
@@ -114,19 +116,9 @@ namespace IED
 			}
 
 		private:
-			void make_key()
-			{
-				if (auto it = std::find(
-						m_key.begin(),
-						m_key.end(),
-						'#');
-				    it != m_key.end())
-				{
-					m_key.erase(it, m_key.end());
-				}
+			void sanitize_input();
 
-				m_key += "###pa_key";
-			}
+			void make_key();
 
 			std::string m_key;
 			std::string m_input;

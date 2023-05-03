@@ -255,7 +255,15 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 		DXGI_FORMAT              IndexBufferFormat;
 		ID3D11InputLayout*       InputLayout;
 	};
-	BACKUP_DX11_STATE old = {};
+#if defined(SKMP_USE_TLS)
+	thread_local const auto __state_backup_heap = std::make_unique_for_overwrite<BACKUP_DX11_STATE>();
+
+	std::memset(__state_backup_heap.get(), 0x0, sizeof(BACKUP_DX11_STATE));
+
+	auto& old = *__state_backup_heap;
+#else
+	BACKUP_DX11_STATE old{};
+#endif
 	old.ScissorRectsCount = old.ViewportsCount =
 		D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
 	ctx->RSGetScissorRects(&old.ScissorRectsCount, old.ScissorRects);

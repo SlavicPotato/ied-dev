@@ -72,8 +72,7 @@ namespace IED
 			};
 
 			template <class T>
-			class Entry :
-				public EntryAdapter
+			class Entry : public EntryAdapter
 			{
 			public:
 				using value_type = stl::strip_type<T>;
@@ -93,6 +92,15 @@ namespace IED
 			template <class T>
 			const T* GetImpl() const noexcept
 			{
+				/*constexpr auto v = stl::detail::extract_type_name<T>();
+
+				std::string s(v);
+
+				auto h1 = stl::type_hash<T>();
+				auto h2 = stl::hash_string_fnv<stl::fnv1a_32>(s.c_str());
+
+				_DMESSAGE("%.8X | %.8X | %d", h1, h2, h1 == h2);*/
+
 				auto& data = m_data;
 
 				if (!data)

@@ -2,6 +2,8 @@
 
 #include "UIStyleEditorWindow.h"
 
+#include "IED/UI/UIClipboard.h"
+
 #include "Drivers/UI.h"
 
 #include "IED/Controller/Controller.h"
@@ -27,6 +29,25 @@ namespace IED
 		void UIStyleEditorWindow::Initialize()
 		{
 			InitializeProfileBase();
+		}
+
+		void UIStyleEditorWindow::DrawProfileEditorMenuBarItems()
+		{
+			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Actions, "peb_1")))
+			{
+				if (m_state.selected)
+				{
+					auto& data = GetProfileManager().Data();
+
+					auto it = data.find(*m_state.selected);
+					if (it != data.end())
+					{
+						DrawActionMenuItems(it->first, it->second);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
 		}
 
 		void UIStyleEditorWindow::OnOpen()
@@ -109,6 +130,33 @@ namespace IED
 		void UIStyleEditorWindow::SelectCurrentStyle()
 		{
 			SetSelected(Drivers::UI::GetCurrentStyle());
+		}
+
+		void UIStyleEditorWindow::DrawActionMenuItems(
+			const stl::fixed_string& a_name,
+			StyleProfile&            a_data)
+		{
+			if (UIL::LCG_MI(CommonStrings::Copy, "1"))
+			{
+				UIClipboard::Set(a_data.Data());
+			}
+
+			auto clipData = UIClipboard::Get<Data::ImGuiStyleHolder>();
+
+			if (ImGui::MenuItem(
+					UIL::LS(CommonStrings::PasteOver, "2"),
+					nullptr,
+					false,
+					clipData != nullptr))
+			{
+				if (clipData)
+				{
+					a_data.Data() = *clipData;
+					a_data.MarkModified();
+
+					Drivers::UI::SetStyle(a_name, true);
+				}
+			}
 		}
 	}
 }

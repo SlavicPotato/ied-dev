@@ -4,6 +4,8 @@
 
 #include <ext/Node.h>
 
+#include "Data.h"
+
 namespace IED
 {
 	void ISkeletonInfo::QueueSkeletonInfoLookup(
@@ -79,6 +81,11 @@ namespace IED
 		bool         a_loadedSkeleton,
 		SI_Root&     a_root)
 	{
+		if (a_actor != Data::IData::GetPlayerRefID())
+		{
+			a_firstPerson = false;
+		}
+
 		auto actor = a_actor.As<Actor>();
 		if (!actor)
 		{
@@ -147,7 +154,7 @@ namespace IED
 				return nullptr;
 			}
 
-			char        buffer[MAX_PATH];
+			char buffer[MAX_PATH];
 
 			const auto out = ::Util::Model::MakePath("meshes", path, buffer);
 

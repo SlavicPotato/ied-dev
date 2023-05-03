@@ -374,7 +374,7 @@ namespace IED
 						ImGui::GetFontSize() + (ImGui::GetStyle().ItemInnerSpacing.y * 2.f) + 3.f;
 
 					inputResult = ImGui::InputTextMultiline(
-						"##text_input_ml",
+						"##mlt_input",
 						std::addressof(a_out),
 						{ -1, -offsetY },
 						a_flags);
@@ -382,7 +382,7 @@ namespace IED
 				else
 				{
 					inputResult = ImGui::InputText(
-						"##text_input",
+						"##slt_input",
 						std::addressof(a_out),
 						a_flags);
 				}

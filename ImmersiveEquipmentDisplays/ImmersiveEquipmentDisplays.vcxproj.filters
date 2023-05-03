@@ -3178,6 +3178,9 @@
     <ClCompile Include="IED\UI\Style\UIStyleEditorWindow.cpp">
       <Filter>Source\IED\UI\Style</Filter>
     </ClCompile>
+    <ClCompile Include="IED\UI\PopupQueue\UIPopupAction.cpp">
+      <Filter>Source\IED\UI\PopupQueue</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

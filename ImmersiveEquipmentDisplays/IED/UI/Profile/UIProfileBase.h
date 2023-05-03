@@ -30,12 +30,11 @@ namespace IED
 
 			UIProfileBase() = default;
 
-			void DrawCreateNew(const typename T::base_type* a_data = nullptr);
+			void DrawCreateNew(std::unique_ptr<typename T::base_type> a_data = {});
 
 			virtual ProfileManager<T>& GetProfileManager() const         = 0;
 			virtual UIPopupQueue&      GetPopupQueue_ProfileBase() const = 0;
 
-			virtual bool InitializeProfile(T& a_profile);
 			virtual bool AllowCreateNew() const;
 			virtual bool AllowSave() const;
 			virtual void OnItemSelected(const stl::fixed_string& a_item);
@@ -50,6 +49,7 @@ namespace IED
 			virtual void Receive(const ProfileManagerEvent<T>& a_evn) override;
 
 			void SetSelected(const stl::fixed_string& a_item);
+			void SetSelected(stl::fixed_string&& a_item);
 
 			struct
 			{
@@ -85,7 +85,8 @@ namespace IED
 		}
 
 		template <class T>
-		void UIProfileBase<T>::DrawCreateNew(const typename T::base_type* a_data)
+		void UIProfileBase<T>::DrawCreateNew(
+			std::unique_ptr<typename T::base_type> a_data)
 		{
 			if (TextInputDialog(
 					UIL::LS(UIProfileStrings::NewProfile, POPUP_NEW_ID),
@@ -107,12 +108,19 @@ namespace IED
 
 			auto& pm = GetProfileManager();
 
-			T profile;
+			const auto profile =
+				a_data ?
+					std::make_unique<T>(std::move(*a_data)) :
+					std::make_unique<T>();
 
-			if (!pm.CreateProfile(m_state.new_input.c_str(), profile, false))
+			const bool createResult =
+				pm.CreateProfile(m_state.new_input, *profile, true);
+
+			m_state.new_input.clear();
+
+			if (!createResult)
 			{
 				m_state.lastException = pm.GetLastException();
-				m_state.new_input.clear();
 
 				GetPopupQueue_ProfileBase().push(
 					UIPopupType::Message,
@@ -124,46 +132,11 @@ namespace IED
 				return;
 			}
 
-			m_state.new_input.clear();
+			const auto name(profile->Name());
 
-			if (!InitializeProfile(profile))
+			if (pm.AddProfile(std::move(*profile)))
 			{
-				GetPopupQueue_ProfileBase().push(
-					UIPopupType::Message,
-					UIL::LS(CommonStrings::Error),
-					"%s",
-					UIL::LS(UIProfileStrings::InitError));
-
-				return;
-			}
-
-			if (a_data)
-			{
-				profile.Data() = *a_data;
-				profile.MarkModified();
-			}
-
-			const bool saveRes = profile.Save();
-
-			if (!saveRes)
-			{
-				m_state.lastException = profile.GetLastException();
-
-				GetPopupQueue_ProfileBase().push(
-					UIPopupType::Message,
-					UIL::LS(CommonStrings::Error),
-					"%s\n\n%s",
-					UIL::LS(UIProfileStrings::SaveError),
-					pm.GetLastException().what());
-
-				return;
-			}
-
-			const auto name(profile.Name());
-
-			if (pm.AddProfile(std::move(profile)))
-			{
-				SetSelected(name);
+				SetSelected(std::move(name));
 			}
 			else
 			{
@@ -179,12 +152,6 @@ namespace IED
 		}
 
 		template <class T>
-		bool UIProfileBase<T>::InitializeProfile(T& a_profile)
-		{
-			return true;
-		}
-
-		template <class T>
 		bool UIProfileBase<T>::AllowCreateNew() const
 		{
 			return true;
@@ -197,7 +164,8 @@ namespace IED
 		}
 
 		template <class T>
-		void UIProfileBase<T>::OnItemSelected(const stl::fixed_string& a_item)
+		void UIProfileBase<T>::OnItemSelected(
+			const stl::fixed_string& a_item)
 		{
 		}
 
@@ -216,7 +184,8 @@ namespace IED
 		}
 
 		template <class T>
-		void UIProfileBase<T>::OnProfileDelete(const stl::fixed_string& a_item)
+		void UIProfileBase<T>::OnProfileDelete(
+			const stl::fixed_string& a_item)
 		{
 		}
 
@@ -259,6 +228,13 @@ namespace IED
 		void UIProfileBase<T>::SetSelected(const stl::fixed_string& a_item)
 		{
 			m_state.selected = a_item;
+			OnItemSelected(*m_state.selected);
+		}
+
+		template <class T>
+		void UIProfileBase<T>::SetSelected(stl::fixed_string&& a_item)
+		{
+			m_state.selected = std::move(a_item);
 			OnItemSelected(*m_state.selected);
 		}
 

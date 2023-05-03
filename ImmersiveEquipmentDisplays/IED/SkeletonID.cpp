@@ -11,8 +11,13 @@ namespace IED
 {
 	SkeletonID::SkeletonID(NiNode* a_root) noexcept
 	{
-		using namespace hash::fnv1;
 		using namespace ::Util::Node;
+
+		using hasher = stl::hasher<
+			stl::fnv_hasher<
+				std::uint64_t,
+				stl::fnv_variant::fnv1a>,
+			stl::charproc_toupper_l1s>;
 
 		const auto sh = BSStringHolder::GetSingleton();
 
@@ -20,17 +25,17 @@ namespace IED
 
 		stl::flag<PresenceFlags> pflags{ PresenceFlags::kNone };
 
-		auto signature = fnv_offset_basis;
+		auto signature = hasher::traits::initial_value;
 
-		signature = _append_hash_istring_fnv1a(
-			signature,
-			a_root->m_name.data());
+		signature = hasher::hash_string(
+			a_root->m_name.data(),
+			signature);
 
 		if (auto rtti = a_root->GetRTTI(); rtti && rtti->name)
 		{
-			signature = _append_hash_istring_fnv1a(
-				signature,
-				rtti->name);
+			signature = hasher::hash_string(
+				rtti->name,
+				signature);
 		}
 
 		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
@@ -38,17 +43,17 @@ namespace IED
 		{
 			m_id.emplace(extra->m_data);
 
-			signature = _append_hash_fnv1a(
-				signature,
-				extra->m_data);
+			signature = hasher::hash_bytes(
+				extra->m_data,
+				signature);
 		}
 
 		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
 				sh->m_bsx))
 		{
-			signature = _append_hash_fnv1a(
-				signature,
-				extra->m_data);
+			signature = hasher::hash_bytes(
+				extra->m_data,
+				signature);
 		}
 
 		if (a_root->GetIndexOf(sh->m_BSBoneLOD) > -1)
@@ -72,40 +77,40 @@ namespace IED
 				{
 					m_xpmse_version.emplace(extra->m_data);
 
-					signature = _append_hash_fnv1a(
-						signature,
-						extra->m_data);
+					signature = hasher::hash_bytes(
+						extra->m_data,
+						signature);
 				}
 
 				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_rigVersion);
 				    extra && extra->m_pString)
 				{
-					signature = _append_hash_istring_fnv1a(
-						signature,
-						extra->m_pString);
+					signature = hasher::hash_string(
+						extra->m_pString,
+						signature);
 				}
 
 				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_rigPerspective);
 				    extra && extra->m_pString)
 				{
-					signature = _append_hash_istring_fnv1a(
-						signature,
-						extra->m_pString);
+					signature = hasher::hash_string(
+						extra->m_pString,
+						signature);
 				}
 
 				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_species);
 				    extra && extra->m_pString)
 				{
-					signature = _append_hash_istring_fnv1a(
-						signature,
-						extra->m_pString);
+					signature = hasher::hash_string(
+						extra->m_pString,
+						signature);
 				}
 			}
 		}
 
-		m_signature = _append_hash_fnv1a(signature, pflags);
+		m_signature = hasher::hash_bytes(pflags.value, signature);
 	}
 }

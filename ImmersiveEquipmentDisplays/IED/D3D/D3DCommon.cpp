@@ -173,7 +173,7 @@ namespace IED
 	{
 		m_context->RSSetViewports(1, std::addressof(m_viewport));
 
-		ASSERT(m_backup.RenderTargetViews[0] != nullptr);
+		ASSERT(m_backup->RenderTargetViews[0] != nullptr);
 
 		//ResetRDV(true, true);
 
@@ -272,15 +272,15 @@ namespace IED
 		if (a_depth)
 		{
 			m_context->OMSetRenderTargets(
-				m_backup.numRenderTargetViews,
-				m_backup.RenderTargetViews,
-				m_backup.DepthStencilView);
+				m_backup->numRenderTargetViews,
+				m_backup->RenderTargetViews,
+				m_backup->DepthStencilView);
 		}
 		else
 		{
 			m_context->OMSetRenderTargets(
-				m_backup.numRenderTargetViews,
-				m_backup.RenderTargetViews,
+				m_backup->numRenderTargetViews,
+				m_backup->RenderTargetViews,
 				m_depthStencilView.Get());
 		}
 	}
@@ -301,10 +301,10 @@ namespace IED
 	{
 		if (a_memzero)
 		{
-			std::memset(std::addressof(m_backup), 0x0, sizeof(m_backup));
+			std::memset(m_backup.get(), 0x0, sizeof(decltype(m_backup)::element_type));
 		}
 
-		return m_backup;
+		return *m_backup;
 	}
 
 	void D3DCommon::CreateTextureResourceFromView(

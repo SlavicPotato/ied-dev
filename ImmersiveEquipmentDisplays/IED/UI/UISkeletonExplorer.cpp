@@ -92,12 +92,12 @@ namespace IED
 
 			ImGui::SameLine();
 
-			if (settings.mark_if(
-					ImGui::Checkbox(
-						UIL::LS(UISkeletonExplorerStrings::FirstPersonSkeleton),
-						std::addressof(settings.data.ui.skeletonExplorer.firstPerson))))
+			if (m_listCurrent && m_listCurrent->handle == Data::IData::GetPlayerRefID())
 			{
-				if (m_listCurrent)
+				if (settings.mark_if(
+						ImGui::Checkbox(
+							UIL::LS(UISkeletonExplorerStrings::FirstPersonSkeleton),
+							std::addressof(settings.data.ui.skeletonExplorer.firstPerson))))
 				{
 					m_listCurrent->data = GetData(m_listCurrent->handle);
 				}

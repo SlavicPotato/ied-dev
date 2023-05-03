@@ -39,6 +39,8 @@ namespace IED
 				Game::FormID,
 				std::int8_t>;
 
+		using hasher = stl::fnv1a_64;
+
 	public:
 		CachedPerkData(Actor* a_actor) noexcept;
 
@@ -59,7 +61,7 @@ namespace IED
 
 		container_type data;
 
-		std::size_t currentSignature{ 0 };
+		hasher::value_type currentSignature{ 0 };
 	};
 
 	class CachedFactionData
@@ -68,6 +70,8 @@ namespace IED
 			stl::cache_aligned::flat_map<
 				TESFaction*,
 				std::int8_t>;
+		
+		using hasher = stl::fnv1a_64;
 
 	public:
 		CachedFactionData(Actor* a_actor) noexcept;
@@ -99,7 +103,7 @@ namespace IED
 
 		container_type data;
 
-		std::size_t currentSignature{ 0 };
+		hasher::value_type currentSignature{ 0 };
 	};
 
 	template <class Tf>
@@ -133,6 +137,8 @@ namespace IED
 	class CachedActiveEffectData
 	{
 		using container_type = stl::cache_aligned::flat_set<EffectSetting*>;
+		
+		using hasher = stl::fnv1a_64;
 
 	public:
 		CachedActiveEffectData(Actor* a_actor) noexcept;
@@ -159,7 +165,7 @@ namespace IED
 
 		container_type data;
 
-		std::size_t currentSignature{ hash::fnv1::fnv_offset_basis };
+		hasher::value_type currentSignature{ hasher::traits::initial_value };
 	};
 
 	template <class Tf>

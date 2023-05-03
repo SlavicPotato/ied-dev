@@ -2,6 +2,8 @@
 
 #include "IED/UI/UILocalizationInterface.h"
 
+#include "IED/UI/UICommon.h"
+
 namespace IED
 {
 	namespace UI
@@ -106,6 +108,7 @@ namespace IED
 						a_index);
 
 					stl::snprintf(m_current->buffer, "%s", a_text);
+					UICommon::SanitizeInputText(m_current->buffer);
 				}
 			}
 

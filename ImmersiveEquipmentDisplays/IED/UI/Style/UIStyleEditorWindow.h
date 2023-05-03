@@ -32,6 +32,8 @@ namespace IED
 			}
 
 		private:
+			void DrawProfileEditorMenuBarItems() override;
+
 			void OnOpen() override;
 
 			void DrawItem(StyleProfile& a_profile) override;
@@ -59,6 +61,9 @@ namespace IED
 			WindowLayoutData GetWindowDimensions() const override;
 
 			void SelectCurrentStyle();
+			void DrawActionMenuItems(
+				const stl::fixed_string& a_name,
+				StyleProfile&            a_data);
 
 			bool m_wantSelectCurrent{ false };
 

@@ -37,7 +37,7 @@ namespace IED
 		void UIDescriptionPopupWidget::SetDescriptionPopupBuffer(
 			const std::string& a_text)
 		{
-			m_buffer = a_text;
+			m_buffer = UICommon::SanitizeInputText(a_text);
 		}
 
 	}
