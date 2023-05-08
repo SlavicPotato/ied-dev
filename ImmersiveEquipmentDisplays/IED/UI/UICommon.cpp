@@ -7,6 +7,8 @@
 
 #include <shellapi.h>
 
+#include "Widgets/UIPopupToggleButtonWidget.h"
+
 namespace IED
 {
 	namespace UI
@@ -183,6 +185,30 @@ namespace IED
 				using namespace boost::locale::conv;
 
 				return utf_to_utf<char>(a_text, skip);
+			}
+
+			void ContextMenu(
+				const char*           a_imid,
+				std::function<void()> a_func)
+			{
+				ImGui::PushID(a_imid);
+
+				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+				UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+				//ImGui::PopStyleVar();
+
+				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+				if (ImGui::BeginPopup("context_menu"))
+				{
+					a_func();
+
+					ImGui::EndPopup();
+				}
+
+				ImGui::PopID();
 			}
 
 			/*bool TextCopyable(const char* a_fmt, ...)

@@ -294,8 +294,8 @@ namespace IED
 		auto UIStats::get_sort_comp_lambda_default()
 			-> sort_comp_func_t
 		{
-			return [](auto& a_rhs, auto& a_lhs) {
-				return a_rhs->obj.first < a_lhs->obj.first;
+			return [](auto& a_lhs, auto& a_rhs) {
+				return a_lhs->obj.first < a_rhs->obj.first;
 			};
 		}
 
@@ -315,114 +315,114 @@ namespace IED
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.first > a_lhs->obj.first;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.first > a_rhs->obj.first;
 						};
 					}
 				case 1:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.GetHandle() < a_lhs->obj.second.GetHandle();
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.second.GetHandle() < a_rhs->obj.second.GetHandle();
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.GetHandle() > a_lhs->obj.second.GetHandle();
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.second.GetHandle() > a_rhs->obj.second.GetHandle();
 						};
 					}
 				case 2:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->name < a_lhs->name;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return stl::stricmp(a_lhs->name.c_str(), a_rhs->name.c_str()) < 0;
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->name > a_lhs->name;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return stl::stricmp(a_lhs->name.c_str(), a_rhs->name.c_str()) > 0;
 						};
 					}
 				case 3:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.GetNPCFormID() < a_lhs->obj.second.GetNPCFormID();
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.second.GetNPCFormID() < a_rhs->obj.second.GetNPCFormID();
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.GetNPCFormID() > a_lhs->obj.second.GetNPCFormID();
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.second.GetNPCFormID() > a_rhs->obj.second.GetNPCFormID();
 						};
 					}
 				case 4:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->race < a_lhs->race;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->race < a_rhs->race;
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->race > a_lhs->race;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->race > a_rhs->race;
 						};
 					}
 				case 5:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->nslot < a_lhs->nslot;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->nslot < a_rhs->nslot;
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->nslot > a_lhs->nslot;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->nslot > a_rhs->nslot;
 						};
 					}
 				case 6:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->ncust < a_lhs->ncust;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->ncust < a_rhs->ncust;
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->ncust > a_lhs->ncust;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->ncust > a_rhs->ncust;
 						};
 					}
 				case 7:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->age < a_lhs->age;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->age < a_rhs->age;
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->age > a_lhs->age;
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->age > a_rhs->age;
 						};
 					}
 				case 8:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.IsActive() <
-							       a_lhs->obj.second.IsActive();
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.second.IsActive() <
+							       a_rhs->obj.second.IsActive();
 						};
 					}
 					else
 					{
-						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.IsActive() >
-							       a_lhs->obj.second.IsActive();
+						return [](auto& a_lhs, auto& a_rhs) {
+							return a_lhs->obj.second.IsActive() >
+							       a_rhs->obj.second.IsActive();
 						};
 					}
 				default:

@@ -638,13 +638,13 @@ namespace IED
 		{
 			m_queuedModels.emplace(std::move(a_entry));
 		}
-		
+
 		constexpr void AddQueuedModel(const ObjectDatabaseEntry& a_entry) noexcept
 		{
 			m_queuedModels.emplace(a_entry);
 		}
 
-		bool EraseQueuedModel(const ObjectDatabaseEntry &a_entry) noexcept;
+		bool EraseQueuedModel(const ObjectDatabaseEntry& a_entry) noexcept;
 
 		bool ProcessQueuedModels() noexcept;
 
@@ -657,8 +657,8 @@ namespace IED
 		{
 			return !m_queuedModels.empty();
 		}
-		
-		[[nodiscard]] bool HasQueuedCloningTasks() const noexcept;
+
+		[[nodiscard]] bool        HasQueuedCloningTasks() const noexcept;
 		[[nodiscard]] std::size_t GetNumQueuedCloningTasks() const noexcept;
 
 	private:

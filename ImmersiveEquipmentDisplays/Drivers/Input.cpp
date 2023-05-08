@@ -29,15 +29,13 @@ namespace IED
 				ProcessPriorityEvents(a_evns);
 			}
 
-			if (m_inputBlocked.load(std::memory_order_relaxed))
-			{
-				constexpr InputEvent* const dummy[] = { nullptr };
+			static constexpr InputEvent* dummy[] = { nullptr };
 
-				m_inputEventProc_o(a_dispatcher, dummy);
-			}
-			else
+			m_inputEventProc_o(a_dispatcher, m_inputBlocked.load() == BlockState::kNotBlocked ? a_evns : dummy);
+
+			if (auto state = m_inputBlocked.load(); state == BlockState::kWantUnblock)
 			{
-				m_inputEventProc_o(a_dispatcher, a_evns);
+				m_inputBlocked.compare_exchange_strong(state, BlockState::kNotBlocked);
 			}
 		}
 
@@ -83,8 +81,6 @@ namespace IED
 							continue;
 						}
 
-						//_DMESSAGE("%X | %f | %f", keyCode, buttonEvent->value, buttonEvent->heldDownSecs);
-
 						if (buttonEvent->IsDown())
 						{
 							DispatchPriorityKeyEvent(
@@ -101,7 +97,7 @@ namespace IED
 					break;
 				case INPUT_EVENT_TYPE::kMouseMove:
 					{
-						auto mouseMoveEvent = static_cast<const MouseMoveEvent*>(it);
+						const auto mouseMoveEvent = static_cast<const MouseMoveEvent*>(it);
 
 						DispatchPriorityKeyEvent(mouseMoveEvent);
 					}
@@ -166,6 +162,23 @@ namespace IED
 			else
 			{
 				return false;
+			}
+		}
+
+		void Input::SetInputBlocked(BlockState a_desiredState) noexcept
+		{
+			switch (a_desiredState)
+			{
+			case BlockState::kNotBlocked:
+			case BlockState::kBlocked:
+				m_Instance.m_inputBlocked.store(a_desiredState);
+				break;
+			case BlockState::kWantUnblock:
+				{
+					auto expected = BlockState::kBlocked;
+					m_Instance.m_inputBlocked.compare_exchange_strong(expected, a_desiredState);
+				}
+				break;
 			}
 		}
 

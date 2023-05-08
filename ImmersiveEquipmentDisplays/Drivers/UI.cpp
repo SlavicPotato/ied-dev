@@ -146,9 +146,9 @@ namespace IED
 				return;
 			}
 
-			m_drawing = true;
-
 			m_uiRenderPerf.timer.Begin();
+
+			m_drawing = true;
 
 			if (m_updateFlags.consume(UpdateFlags::kResetInput))
 			{
@@ -196,7 +196,7 @@ namespace IED
 
 				ImGui::PopID();
 
-				if (!res || it->second->m_stopMe)
+				if (!res || it->second->m_stopMe.load(std::memory_order_relaxed))
 				{
 					OnTaskRemove(it->second.get());
 					it = m_drawTasks.erase(it);
@@ -231,6 +231,14 @@ namespace IED
 			else
 			{
 				ProcessReleaseQueue();
+			}
+
+			if (m_updateFlags.consume(UpdateFlags::kEvaluateTaskState))
+			{
+				if (!m_suspended.load(std::memory_order_relaxed))
+				{
+					EvaluateTaskStateImpl();
+				}
 			}
 
 			m_drawing = false;
@@ -352,7 +360,11 @@ namespace IED
 		void UI::LockControls(bool a_switch)
 		{
 			m_state.controlsLocked = a_switch;
-			Input::SetInputBlocked(a_switch);
+
+			Input::SetInputBlocked(
+				a_switch ?
+					Input::BlockState::kBlocked :
+					Input::BlockState::kWantUnblock);
 
 			ITaskPool::AddTask([this, a_switch]() {
 				const stl::lock_guard lock(m_lock);
@@ -418,7 +430,7 @@ namespace IED
 			auto it = m_Instance.m_drawTasks.find(a_id);
 			if (it != m_Instance.m_drawTasks.end())
 			{
-				it->second->m_stopMe = true;
+				it->second->StopMe();
 			}
 
 			m_Instance.m_addQueue.erase(a_id);
@@ -426,14 +438,16 @@ namespace IED
 
 		void UI::EvaluateTaskState()
 		{
-			m_Instance.EvaluateTaskStateImpl();
-		}
+			const stl::lock_guard lock(m_Instance.m_lock);
 
-		void UI::QueueEvaluateTaskState()
-		{
-			ITaskPool::AddTask([] {
-				EvaluateTaskState();
-			});
+			if (m_Instance.m_drawing)
+			{
+				m_Instance.m_updateFlags.set(UpdateFlags::kEvaluateTaskState);
+			}
+			else
+			{
+				m_Instance.EvaluateTaskStateImpl();
+			}
 		}
 
 		template <class T, class U>
@@ -459,8 +473,6 @@ namespace IED
 
 		void UI::EvaluateTaskStateImpl()
 		{
-			const stl::lock_guard lock(m_lock);
-
 			for (auto& [i, e] : m_drawTasks)
 			{
 				eval_opt(e->m_options.lockControls, e->m_state.holdsControlLock, m_state.lockCounter);
@@ -705,7 +717,7 @@ namespace IED
 			}
 
 			a_task->m_state.running = false;
-			a_task->m_stopMe        = false;
+			a_task->m_stopMe.store(false, std::memory_order_relaxed);
 
 			a_task->OnTaskStop();
 

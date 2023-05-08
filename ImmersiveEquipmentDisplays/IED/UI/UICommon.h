@@ -128,6 +128,10 @@ namespace IED
 			std::string SanitizeInputText(const std::string& a_text);
 			std::string SanitizeInputText(const char* a_text);
 
+			void ContextMenu(
+				const char*            a_imid,
+				std::function<void()>  a_func);
+
 		}
 	}
 }

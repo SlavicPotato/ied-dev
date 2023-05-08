@@ -61,6 +61,9 @@ namespace IED
 			ClearBipedCache                  = 4451,
 			RemoveBipedCacheTempForms        = 4452,
 			RemoveBipedCacheDeletedTempForms = 4453,
+			StyleSection                     = 4454,
+			GeneralSection                   = 4455,
+			ShowEditor                       = 4456,
 		};
 	}
 }

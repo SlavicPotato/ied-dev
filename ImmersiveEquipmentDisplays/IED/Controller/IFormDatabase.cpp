@@ -27,18 +27,9 @@ namespace IED
 		{
 			return data;
 		}
-
-		const stl::lock_guard lock(m_lock);
-
-		if (auto data = m_data.lock())
-		{
-			return data;
-		}
 		else
 		{
-			auto p = Create();
-			m_data = p;
-			return p;
+			return CreateOrGetDatabase();
 		}
 	}
 
@@ -148,6 +139,23 @@ namespace IED
 				[](auto& a_rhs, auto& a_lhs) {
 					return a_rhs.formid < a_lhs.formid;
 				});
+		}
+	}
+
+	auto IFormDatabase::CreateOrGetDatabase()
+		-> result_type
+	{
+		const stl::lock_guard lock(m_lock);
+
+		if (auto data = m_data.lock())
+		{
+			return data;
+		}
+		else
+		{
+			auto p = Create();
+			m_data = p;
+			return p;
 		}
 	}
 

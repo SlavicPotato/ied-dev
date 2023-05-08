@@ -408,22 +408,26 @@ namespace IED
 				{
 					auto& v = static_cast<const ExtraFormInfoTESWeather&>(a_info);
 
-					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::WeatherClass));
-					ImGui::SameLine();
-					ImGui::TextUnformatted(UIWeatherClassSelectorWidget{}.weather_class_to_desc(v.classFlags));
+					ImGui::Text(
+						"%s: %s",
+						UIL::LS(UIWidgetCommonStrings::WeatherClass),
+						UIWeatherClassSelectorWidget{}.weather_class_to_desc(v.classFlags));
 				}
 				break;
 			case ExtraFormInfoTESObjectWEAP::FORM_TYPE::kTypeID:
 				{
 					auto& v = static_cast<const ExtraFormInfoTESObjectWEAP&>(a_info);
 
-					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::WeaponType));
-					ImGui::SameLine();
-					ImGui::Text("%hhu [%s]", v.weaponType, UIL::LS(weapon_type_to_strid(v.weaponType)));
+					ImGui::Text(
+						"%s: %hhu [%s]",
+						UIL::LS(UIWidgetCommonStrings::WeaponType),
+						v.weaponType,
+						UIL::LS(weapon_type_to_strid(v.weaponType)));
 
-					ImGui::Text("%s:", UIL::LS(CommonStrings::Playable));
-					ImGui::SameLine();
-					ImGui::TextUnformatted(UIL::LS(v.flags.test(TESObjectWEAP::Data::Flag::kNonPlayable) ? CommonStrings::No : CommonStrings::Yes));
+					ImGui::Text(
+						"%s: %s",
+						UIL::LS(CommonStrings::Playable),
+						UIL::LS(v.flags.test(TESObjectWEAP::Data::Flag::kNonPlayable) ? CommonStrings::No : CommonStrings::Yes));
 
 					if (v.flags2.test(TESObjectWEAP::Data::Flag2::kBoundWeapon))
 					{
@@ -435,13 +439,25 @@ namespace IED
 				{
 					auto& v = static_cast<const ExtraFormInfoTESAmmo&>(a_info);
 
-					ImGui::Text("%s:", UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt));
-					ImGui::SameLine();
-					ImGui::TextUnformatted(UIL::LS(v.flags.test(AMMO_DATA::Flag::kNonBolt) ? CommonStrings::No : CommonStrings::Yes));
+					ImGui::Text(
+						"%s: %s",
+						UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt),
+						UIL::LS(v.flags.test(AMMO_DATA::Flag::kNonBolt) ? CommonStrings::No : CommonStrings::Yes));
 
-					ImGui::Text("%s:", UIL::LS(CommonStrings::Playable));
-					ImGui::SameLine();
-					ImGui::TextUnformatted(UIL::LS(v.flags.test(AMMO_DATA::Flag::kNonPlayable) ? CommonStrings::No : CommonStrings::Yes));
+					ImGui::Text(
+						"%s: %s",
+						UIL::LS(CommonStrings::Playable),
+						UIL::LS(v.flags.test(AMMO_DATA::Flag::kNonPlayable) ? CommonStrings::No : CommonStrings::Yes));
+				}
+				break;
+			case ExtraFormInfoTESObjectARMA::FORM_TYPE::kTypeID:
+				{
+					auto& v = static_cast<const ExtraFormInfoTESObjectARMA&>(a_info);
+
+					ImGui::Text(
+						"%s: %f",
+						UIL::LS(UINodeOverrideEditorWidgetStrings::WeaponAdjust),
+						v.weaponAdjust);
 				}
 				break;
 			}

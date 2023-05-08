@@ -896,8 +896,6 @@ namespace IED
 	{
 		if (auto actor = a_refr->As<Actor>())
 		{
-			//m_Instance.Debug("%s: GC: %X", __FUNCTION__, a_refr->formID);
-
 			m_Instance.m_controller->RemoveActor(
 				actor->formID,
 				ControllerUpdateFlags::kDestroyed);

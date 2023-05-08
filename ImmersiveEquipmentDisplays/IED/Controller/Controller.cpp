@@ -129,7 +129,7 @@ namespace IED
 	{
 		assert(m_iniconf);
 
-		m_configData.settings = std::make_unique<Data::SettingHolder>();
+		m_configData.settings = std::make_unique_for_overwrite<SettingHolder>();
 
 		auto& settings = *m_configData.settings;
 

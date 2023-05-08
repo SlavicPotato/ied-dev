@@ -56,17 +56,28 @@ namespace IED
 
 		stl::flag<AMMO_DATA::Flag> flags;
 	};
+	
+	class ExtraFormInfoTESObjectARMA :
+		public BaseExtraFormInfo
+	{
+	public:
+		using FORM_TYPE = TESObjectARMA;
+
+		ExtraFormInfoTESObjectARMA(const FORM_TYPE* a_form);
+
+		float weaponAdjust;
+	};
 
 	struct FormInfoData
 	{
 		FormInfoData(TESForm* a_form);
 
 		Game::FormID             id;
-		std::uint8_t             type;
-		std::uint32_t            formFlags;
-		stl::flag<FormInfoFlags> flags;
-		stl::fixed_string        name;
 		std::uint32_t            extraType;
+		std::uint32_t            formFlags;
+		std::uint8_t             type;
+		stl::flag<FormInfoFlags> flags;
+		std::string              name;
 
 		std::unique_ptr<const BaseExtraFormInfo> extraInfo;
 	};
@@ -81,9 +92,9 @@ namespace IED
 			return base ? *base : form;
 		}
 
-		[[nodiscard]] inline bool is_ref() const noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR bool is_ref() const noexcept
 		{
-			return static_cast<bool>(base.get());
+			return static_cast<bool>(base);
 		}
 	};
 
@@ -93,7 +104,7 @@ namespace IED
 		using info_result               = std::unique_ptr<FormInfoResult>;
 		using form_lookup_result_func_t = std::function<void(info_result)>;
 
-		static std::uint32_t GetFormExtraType(TESForm* a_form);
+		static std::uint32_t GetFormExtraType(const TESForm* a_form) noexcept;
 		static info_result   LookupFormInfo(Game::FormID a_form);
 	};
 }

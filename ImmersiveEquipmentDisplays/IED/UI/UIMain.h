@@ -3,7 +3,6 @@
 #include "PopupQueue/UIPopupQueue.h"
 #include "UIAboutModal.h"
 #include "UIContext.h"
-#include "UIFormBrowser.h"
 #include "UIFormInfoCache.h"
 #include "UIKeyedInputLockReleaseHandler.h"
 #include "UILocalizationInterface.h"
@@ -25,6 +24,8 @@ namespace IED
 
 	namespace UI
 	{
+		class UIFormBrowser;
+
 		class UIMain :
 			public UIContext,
 			public UIWindow,
@@ -83,7 +84,7 @@ namespace IED
 				return m_childWindows[stl::underlying(T::CHILD_ID)].get();
 			}
 
-			[[nodiscard]] inline auto* GetChildContext(ChildWindowID a_id) const noexcept
+			[[nodiscard]] SKMP_143_CONSTEXPR auto GetChildContext(ChildWindowID a_id) const noexcept
 			{
 				assert(a_id < ChildWindowID::kMax);
 
@@ -100,12 +101,7 @@ namespace IED
 				return static_cast<T*>(ptr);
 			}
 
-			[[nodiscard]] constexpr auto& GetFormBrowser() noexcept
-			{
-				auto result = GetChild<UIFormBrowser>();
-				assert(result);
-				return *result;
-			}
+			[[nodiscard]] UIFormBrowser& GetFormBrowser() noexcept;
 
 		private:
 			virtual void Receive(const UIContextStateChangeEvent& a_evn) override;
@@ -152,8 +148,7 @@ namespace IED
 				std::unique_ptr<UIContext>,
 				stl::underlying(ChildWindowID::kMax)>;
 
-			child_window_container_type m_childWindows;
-
+			child_window_container_type  m_childWindows;
 			UIFormInfoCache              m_formLookupCache;
 			UIPopupQueue                 m_popupQueue;
 			std::optional<ChildWindowID> m_lastClosedChild;

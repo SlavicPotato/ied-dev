@@ -496,168 +496,202 @@ namespace IED
 				ImGui::PushID("5");
 
 				ImGui::Spacing();
-				ImGui::Indent();
 
 				auto& settings = m_controller.GetSettings();
 				auto& ui       = settings.data.ui;
 
-				auto cstyle = Drivers::UI::GetCurrentStyle();
-
-				if (UIStylePresetSelectorWidget::DrawStylePresetSelector(
-						Drivers::UI::GetStyleData(),
-						cstyle))
+				ImGui::SeparatorText(UIL::LS(UISettingsStrings::GeneralSection));
 				{
-					settings.set(ui.stylePreset, std::move(cstyle));
-					Drivers::UI::SetStyle(ui.stylePreset);
+					ImGui::PushID("gopt_ctl");
+
+					ImGui::Indent();
+					ImGui::Spacing();
+
+					ImGui::Columns(2, nullptr, false);
+
+					if (settings.mark_if(ImGui::Checkbox(
+							UIL::LS(UISettingsStrings::ShowIntroBanner, "1"),
+							std::addressof(ui.showIntroBanner))))
+					{
+						if (!ui.showIntroBanner)
+						{
+							Drivers::UI::QueueRemoveTask(-0xFFFF);
+						}
+					}
+
+					settings.mark_if(ImGui::Checkbox(
+						UIL::LS(UISettingsStrings::CloseOnEsc, "2"),
+						std::addressof(ui.closeOnESC)));
+
+					UITipsInterface::DrawTip(UITip::CloseOnESC);
+
+					if (settings.mark_if(ImGui::Checkbox(
+							UIL::LS(UISettingsStrings::ControlLock, "3"),
+							std::addressof(ui.enableControlLock))))
+					{
+						m_owner.SetControlLock(ui.enableControlLock);
+						Drivers::UI::EvaluateTaskState();
+					}
+					UITipsInterface::DrawTip(UITip::ControlLock);
+
+					settings.mark_if(ImGui::Checkbox(
+						UIL::LS(UISettingsStrings::ExitOnLastWindowClose, "4"),
+						std::addressof(ui.exitOnLastWindowClose)));
+
+					ImGui::NextColumn();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							UIL::LS(UISettingsStrings::FreezeTime, "5"),
+							std::addressof(ui.enableFreezeTime))))
+					{
+						m_owner.SetFreezeTime(ui.enableFreezeTime);
+						Drivers::UI::EvaluateTaskState();
+					}
+					UITipsInterface::DrawTip(UITip::FreezeTime);
+
+					settings.mark_if(ImGui::Checkbox(
+						UIL::LS(UISettingsStrings::SelectCrosshairActor, "6"),
+						std::addressof(ui.selectCrosshairActor)));
+
+					UITipsInterface::DrawTip(UITip::SelectCrosshairActor);
+
+					if (settings.mark_if(ImGui::Checkbox(
+							UIL::LS(UISettingsStrings::EnableRestrictions, "7"),
+							std::addressof(ui.enableRestrictions))))
+					{
+						m_owner.EnableRestrictions(ui.enableRestrictions);
+					}
+					UITipsInterface::DrawTip(UITip::EnableRestrictions);
+
+					ImGui::Columns();
+
+					ImGui::Spacing();
+					ImGui::Unindent();
+
+					ImGui::PopID();
 				}
 
-				if (settings.mark_if(ImGui::SliderFloat(
-						UIL::LS(UISettingsStrings::Alpha, "1"),
-						std::addressof(ui.alpha),
-						0.15f,
-						1.0f,
-						"%.2f")))
-				{
-					Drivers::UI::SetAlpha(ui.alpha);
-				}
+				ImGui::Spacing();
 
-				DrawCommonResetContextMenu(
-					"ctx_rst_bg",
-					static_cast<Localization::StringID>(CommonStrings::Reset),
-					ui.bgAlpha.has(),
-					[&] {
-						ui.bgAlpha.clear();
-						Drivers::UI::SetBGAlpha(ui.bgAlpha);
+				ImGui::SeparatorText(UIL::LS(UISettingsStrings::StyleSection));
+				{
+					ImGui::PushID("style_ctl");
+
+					ImGui::Indent();
+					ImGui::Spacing();
+
+					UICommon::ContextMenu("1_c", [&] {
+						auto& context = m_owner.As<IUIRenderTaskMain>().GetContext();
+						auto  window  = context.GetChildContext<UIStyleEditorWindow>();
+
+						if (ImGui::MenuItem(
+								UIL::LS(UISettingsStrings::ShowEditor, "1"),
+								nullptr,
+								window && window->IsContextOpen(),
+								static_cast<bool>(window)))
+						{
+							if (window)
+							{
+								window->ToggleOpenState();
+							}
+						}
 					});
 
-				const bool hasAlpha = ui.bgAlpha.has();
+					auto cstyle = Drivers::UI::GetCurrentStyle();
 
-				float tmpbga = hasAlpha ?
-				                   *ui.bgAlpha :
-				                   ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w;
-
-				if (!hasAlpha)
-				{
-					ImGui::PushStyleVar(
-						ImGuiStyleVar_Alpha,
-						ImGui::GetStyle().Alpha * 0.65f);
-				}
-
-				if (settings.mark_if(ImGui::SliderFloat(
-						UIL::LS(UISettingsStrings::BGAlpha, "2"),
-						std::addressof(tmpbga),
-						0.1f,
-						1.0f,
-						"%.2f")))
-				{
-					ui.bgAlpha = tmpbga;
-					Drivers::UI::SetBGAlpha(ui.bgAlpha);
-				}
-
-				if (!hasAlpha)
-				{
-					ImGui::PopStyleVar();
-				}
-
-				ImGui::Spacing();
-				ImGui::Separator();
-				ImGui::Spacing();
-
-				ImGui::Columns(2, nullptr, false);
-
-				if (settings.mark_if(ImGui::Checkbox(
-						UIL::LS(UISettingsStrings::ShowIntroBanner, "3"),
-						std::addressof(ui.showIntroBanner))))
-				{
-					if (!ui.showIntroBanner)
+					if (UIStylePresetSelectorWidget::DrawStylePresetSelector(
+							Drivers::UI::GetStyleData(),
+							cstyle))
 					{
-						Drivers::UI::QueueRemoveTask(-0xFFFF);
+						settings.set(ui.stylePreset, std::move(cstyle));
+						Drivers::UI::SetStyle(ui.stylePreset);
 					}
-				}
 
-				settings.mark_if(ImGui::Checkbox(
-					UIL::LS(UISettingsStrings::CloseOnEsc, "4"),
-					std::addressof(ui.closeOnESC)));
-
-				UITipsInterface::DrawTip(UITip::CloseOnESC);
-
-				if (settings.mark_if(ImGui::Checkbox(
-						UIL::LS(UISettingsStrings::ControlLock, "6"),
-						std::addressof(ui.enableControlLock))))
-				{
-					m_owner.SetControlLock(ui.enableControlLock);
-					Drivers::UI::EvaluateTaskState();
-				}
-				UITipsInterface::DrawTip(UITip::ControlLock);
-
-				settings.mark_if(ImGui::Checkbox(
-					UIL::LS(UISettingsStrings::ExitOnLastWindowClose, "7"),
-					std::addressof(ui.exitOnLastWindowClose)));
-
-				ImGui::NextColumn();
-
-				if (settings.mark_if(ImGui::Checkbox(
-						UIL::LS(UISettingsStrings::FreezeTime, "M"),
-						std::addressof(ui.enableFreezeTime))))
-				{
-					m_owner.SetFreezeTime(ui.enableFreezeTime);
-					Drivers::UI::EvaluateTaskState();
-				}
-				UITipsInterface::DrawTip(UITip::FreezeTime);
-
-				settings.mark_if(ImGui::Checkbox(
-					UIL::LS(UISettingsStrings::SelectCrosshairActor, "N"),
-					std::addressof(ui.selectCrosshairActor)));
-
-				UITipsInterface::DrawTip(UITip::SelectCrosshairActor);
-
-				if (settings.mark_if(ImGui::Checkbox(
-						UIL::LS(UISettingsStrings::EnableRestrictions, "O"),
-						std::addressof(ui.enableRestrictions))))
-				{
-					m_owner.EnableRestrictions(ui.enableRestrictions);
-				}
-				UITipsInterface::DrawTip(UITip::EnableRestrictions);
-
-				ImGui::Columns();
-
-				ImGui::Spacing();
-
-				auto tmp = m_scaleTemp ?
-				               *m_scaleTemp :
-				               ui.scale;
-
-				if (ImGui::SliderFloat(
-						UIL::LS(CommonStrings::Scale, "P"),
-						std::addressof(tmp),
-						0.2f,
-						5.0f,
-						"%.2f",
-						ImGuiSliderFlags_AlwaysClamp))
-				{
-					m_scaleTemp = tmp;
-				}
-				UITipsInterface::DrawTip(UITip::UIScale);
-
-				if (m_scaleTemp)
-				{
-					if (ImGui::Button(UIL::LS(CommonStrings::Apply, "R")))
+					if (settings.mark_if(ImGui::SliderFloat(
+							UIL::LS(UISettingsStrings::Alpha, "1"),
+							std::addressof(ui.alpha),
+							0.15f,
+							1.0f,
+							"%.2f")))
 					{
-						Drivers::UI::QueueSetScale(*m_scaleTemp);
-						settings.set(ui.scale, m_scaleTemp.clear_and_get());
+						Drivers::UI::SetAlpha(ui.alpha);
 					}
+
+					DrawCommonResetContextMenu(
+						"ctx_rst_bg",
+						static_cast<Localization::StringID>(CommonStrings::Reset),
+						ui.bgAlpha.has(),
+						[&] {
+							ui.bgAlpha.clear();
+							Drivers::UI::SetBGAlpha(ui.bgAlpha);
+						});
+
+					const bool hasAlpha = ui.bgAlpha.has();
+
+					float tmpbga = hasAlpha ?
+					                   *ui.bgAlpha :
+					                   ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w;
+
+					if (!hasAlpha)
+					{
+						ImGui::PushStyleVar(
+							ImGuiStyleVar_Alpha,
+							ImGui::GetStyle().Alpha * 0.65f);
+					}
+
+					if (settings.mark_if(ImGui::SliderFloat(
+							UIL::LS(UISettingsStrings::BGAlpha, "2"),
+							std::addressof(tmpbga),
+							0.1f,
+							1.0f,
+							"%.2f")))
+					{
+						ui.bgAlpha = tmpbga;
+						Drivers::UI::SetBGAlpha(ui.bgAlpha);
+					}
+
+					if (!hasAlpha)
+					{
+						ImGui::PopStyleVar();
+					}
+
+					auto tmp = m_scaleTemp ?
+					               *m_scaleTemp :
+					               ui.scale;
+
+					if (ImGui::SliderFloat(
+							UIL::LS(CommonStrings::Scale, "3"),
+							std::addressof(tmp),
+							0.2f,
+							5.0f,
+							"%.2f",
+							ImGuiSliderFlags_AlwaysClamp))
+					{
+						m_scaleTemp = tmp;
+					}
+					UITipsInterface::DrawTip(UITip::UIScale);
+
+					if (m_scaleTemp)
+					{
+						if (ImGui::Button(UIL::LS(CommonStrings::Apply, "4")))
+						{
+							Drivers::UI::QueueSetScale(*m_scaleTemp);
+							settings.set(ui.scale, m_scaleTemp.clear_and_get());
+						}
+					}
+
+					ImGui::Spacing();
+					ImGui::Unindent();
+
+					ImGui::PopID();
 				}
 
 				ImGui::Spacing();
-				ImGui::Separator();
-				ImGui::Spacing();
 
-				if (TreeEx(
-						"font_ctl",
-						true,
-						"%s",
-						UIL::LS(CommonStrings::Fonts)))
+				ImGui::SeparatorText(UIL::LS(CommonStrings::Fonts));
 				{
+					ImGui::PushID("font_ctl");
+
 					ImGui::Indent();
 					ImGui::Spacing();
 
@@ -670,19 +704,15 @@ namespace IED
 					ImGui::Spacing();
 					ImGui::Unindent();
 
-					ImGui::TreePop();
+					ImGui::PopID();
 				}
 
 				ImGui::Spacing();
-				ImGui::Separator();
-				ImGui::Spacing();
 
-				if (TreeEx(
-						"if_toggle",
-						true,
-						"%s",
-						UIL::LS(UISettingsStrings::InterfaceOpenKeys)))
+				ImGui::SeparatorText(UIL::LS(UISettingsStrings::InterfaceOpenKeys));
 				{
+					ImGui::PushID("if_toggle");
+
 					ImGui::Indent();
 					ImGui::Spacing();
 
@@ -729,21 +759,19 @@ namespace IED
 					ImGui::Spacing();
 					ImGui::Unindent();
 
-					ImGui::TreePop();
+					ImGui::PopID();
 				}
 
-				if (TreeEx(
-						"rel_keys",
-						false,
-						"%s",
-						UIL::LS(UISettingsStrings::ReleaseControlLockKeys)))
+				ImGui::Spacing();
+
+				ImGui::SeparatorText(UIL::LS(UISettingsStrings::ReleaseControlLockKeys));
 				{
-					auto& task = m_owner.As<IUIRenderTaskMain>();
+					ImGui::PushID("rel_keys");
+
+					auto& context = m_owner.As<IUIRenderTaskMain>().GetContext();
 
 					ImGui::Indent();
 					ImGui::Spacing();
-
-					auto& context = task.GetContext();
 
 					auto tmpk = context.ILRHGetComboKey();
 
@@ -796,10 +824,9 @@ namespace IED
 					ImGui::Spacing();
 					ImGui::Unindent();
 
-					ImGui::TreePop();
+					ImGui::PopID();
 				}
 
-				ImGui::Unindent();
 				ImGui::Spacing();
 
 				ImGui::PopID();
@@ -1589,18 +1616,7 @@ namespace IED
 			bool                   a_enabled,
 			std::function<void()>  a_func)
 		{
-			ImGui::PushID(a_imid);
-
-			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
-
-			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
-
-			//ImGui::PopStyleVar();
-
-			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
+			UICommon::ContextMenu(a_imid, [&] {
 				if (ImGui::MenuItem(
 						UIL::LS(a_strid, "1"),
 						nullptr,
@@ -1609,11 +1625,7 @@ namespace IED
 				{
 					a_func();
 				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopID();
+			});
 		}
 
 	}

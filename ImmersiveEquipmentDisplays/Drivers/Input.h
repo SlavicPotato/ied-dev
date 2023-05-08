@@ -11,6 +11,13 @@ namespace IED
 			public BSTEventSink<InputEvent*>
 		{
 		public:
+			enum class BlockState
+			{
+				kNotBlocked  = 0,
+				kBlocked     = 1,
+				kWantUnblock = 2
+			};
+
 			static void RegisterForPriorityKeyEvents(
 				::Events::EventSink<Handlers::KeyEvent>* const a_handler);
 
@@ -29,10 +36,7 @@ namespace IED
 			static void InstallPriorityHook();
 			static bool SinkToInputDispatcher();
 
-			inline static void SetInputBlocked(bool a_enabled) noexcept
-			{
-				m_Instance.m_inputBlocked.store(a_enabled, std::memory_order_relaxed);
-			}
+			static void SetInputBlocked(BlockState a_desiredState) noexcept;
 
 			FN_NAMEPROC("Input");
 
@@ -49,7 +53,7 @@ namespace IED
 
 			void ProcessPriorityEventsImpl(
 				BSTEventSource<InputEvent*>* a_dispatcher,
-				InputEvent* const*     a_evns);
+				InputEvent* const*           a_evns);
 
 			void ProcessPriorityEvents(const InputEvent* const* a_evns);
 
@@ -68,7 +72,7 @@ namespace IED
 			::Events::EventDispatcher<Handlers::MouseMoveEvent> m_prioMMHandlers;
 			::Events::EventDispatcher<Handlers::KeyEvent>       m_handlers;
 
-			std::atomic_bool m_inputBlocked{ false };
+			std::atomic<BlockState> m_inputBlocked { BlockState::kNotBlocked };
 
 			decltype(&BSTEventSource_InputEvent_SendEvent_Hook) m_inputEventProc_o{ nullptr };
 

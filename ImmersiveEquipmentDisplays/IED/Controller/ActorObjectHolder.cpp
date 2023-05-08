@@ -139,7 +139,7 @@ namespace IED
 				CreateExtraMovNodes(a_npcroot, m_skeletonID);
 				if (npcroot1p)
 				{
-					SkeletonID skelid1p(npcroot1p);
+					const SkeletonID skelid1p(m_root1p);
 
 					CreateExtraMovNodes(npcroot1p, skelid1p);
 				}

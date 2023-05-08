@@ -216,6 +216,13 @@ namespace IED
 			return m_controller.GetSettings().data.ui;
 		}
 
+		UIFormBrowser& UIMain::GetFormBrowser() noexcept
+		{
+			auto result = GetChild<UIFormBrowser>();
+			assert(result);
+			return *result;
+		}
+
 		void UIMain::Receive(const UIContextStateChangeEvent& a_evn)
 		{
 			const auto id = static_cast<ChildWindowID>(a_evn.context.GetContextID());

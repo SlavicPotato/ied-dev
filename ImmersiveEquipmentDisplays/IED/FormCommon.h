@@ -27,7 +27,7 @@ namespace IED
 		static bool IsValidSlotForm(const TESForm* a_form) noexcept;
 		static bool IsEquippableForm(const TESForm* a_form) noexcept;
 
-		static stl::flag<FormInfoFlags> GetFormFlags(TESForm* a_form) noexcept;
+		static stl::flag<FormInfoFlags> GetFormFlags(const TESForm* a_form) noexcept;
 
 		static std::string GetFormName(TESForm* a_form);
 

@@ -117,6 +117,11 @@ namespace IED
 				return dynamic_cast<T*>(this);
 			}
 
+			inline void StopMe() noexcept
+			{
+				m_stopMe.store(true, std::memory_order_relaxed);
+			}
+
 		protected:
 			virtual bool Run() = 0;
 			virtual void PrepareGameData(){};
@@ -150,7 +155,7 @@ namespace IED
 			TaskOptions m_options;
 			TaskState   m_state;
 
-			bool m_stopMe{ false };
+			std::atomic_bool m_stopMe{ false };
 
 		private:
 			virtual void OnTaskStart(){};

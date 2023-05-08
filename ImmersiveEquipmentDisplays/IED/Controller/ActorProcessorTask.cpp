@@ -829,6 +829,7 @@ namespace IED
 	{
 		{
 			std::unique_lock lock(m_mutex);
+			assert(m_runState == 0);
 			m_runState = 1;
 		}
 		m_cond.notify_one();
@@ -840,8 +841,8 @@ namespace IED
 
 		while (wait_for_signal())
 		{
-			auto& data = m_owner.m_shared;
-			auto& task = m_owner.m_owner;
+			const auto& data = m_owner.m_shared;
+			auto&       task = m_owner.m_owner;
 
 			for (auto& e : m_list)
 			{

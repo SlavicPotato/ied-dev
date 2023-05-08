@@ -77,9 +77,10 @@ namespace IED
 			{
 				kNone = 0,
 
-				kResetInput = 1ui8 << 0,
-				kStyle      = 1ui8 << 1,
-				kStyleAlpha = 1ui8 << 2,
+				kResetInput        = 1ui8 << 0,
+				kStyle             = 1ui8 << 1,
+				kStyleAlpha        = 1ui8 << 2,
+				kEvaluateTaskState = 1ui8 << 3,
 
 				kStyleMask = kStyle |
 				             kStyleAlpha
@@ -97,7 +98,6 @@ namespace IED
 			static void QueueRemoveTask(std::int32_t a_id);
 
 			static void EvaluateTaskState();
-			static void QueueEvaluateTaskState();
 
 			[[nodiscard]] inline static bool HasCallback(std::int32_t a_id)
 			{

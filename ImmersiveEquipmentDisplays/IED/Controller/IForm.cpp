@@ -6,21 +6,22 @@
 
 namespace IED
 {
-	std::uint32_t IForm::GetFormExtraType(TESForm* a_form)
+	std::uint32_t IForm::GetFormExtraType(const TESForm* a_form) noexcept
 	{
-		if (auto armor = ::RTTI<TESObjectARMO>()(a_form))
+		switch (a_form->formType)
 		{
-			if (!armor->IsShield())
+		case TESObjectARMO::kTypeID:
+			if (!static_cast<const TESObjectARMO*>(a_form)->IsShield())
 			{
 				return IFormDatabase::EXTRA_TYPE_ARMOR;
 			}
-		}
-		else if (auto light = ::RTTI<TESObjectLIGH>()(a_form))
-		{
-			if (!light->CanCarry())
+			break;
+		case TESObjectLIGH::kTypeID:
+			if (!static_cast<const TESObjectLIGH*>(a_form)->CanCarry())
 			{
 				return IFormDatabase::EXTRA_TYPE_LIGHT;
 			}
+			break;
 		}
 
 		return 0;
@@ -30,7 +31,7 @@ namespace IED
 		Game::FormID a_form)
 		-> info_result
 	{
-		auto form = a_form.Lookup();
+		const auto form = a_form.Lookup();
 		if (!form)
 		{
 			return nullptr;
@@ -41,8 +42,8 @@ namespace IED
 			return nullptr;
 		}*/
 
-		auto ref  = ::RTTI<TESObjectREFR>()(form);
-		auto base = ref ? ref->baseForm : nullptr;
+		const auto ref  = ::RTTI<const TESObjectREFR>()(form);
+		auto       base = ref ? ref->baseForm : nullptr;
 
 		return std::make_unique<FormInfoResult>(
 			form,
@@ -73,6 +74,7 @@ namespace IED
 			EXTRA_FORM_INFO_CREATE(ExtraFormInfoTESWeather);
 			EXTRA_FORM_INFO_CREATE(ExtraFormInfoTESObjectWEAP);
 			EXTRA_FORM_INFO_CREATE(ExtraFormInfoTESAmmo);
+			EXTRA_FORM_INFO_CREATE(ExtraFormInfoTESObjectARMA);
 		default:
 			return nullptr;
 		}
@@ -102,6 +104,13 @@ namespace IED
 		const FORM_TYPE* a_form) :
 		BaseExtraFormInfo(a_form),
 		flags(a_form->settings.flags)
+	{
+	}
+
+	ExtraFormInfoTESObjectARMA::ExtraFormInfoTESObjectARMA(
+		const FORM_TYPE* a_form) :
+		BaseExtraFormInfo(a_form),
+		weaponAdjust(a_form->data.weaponAdjust)
 	{
 	}
 

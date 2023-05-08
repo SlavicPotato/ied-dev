@@ -150,7 +150,7 @@ namespace IED
 		}
 	}
 
-	stl::flag<FormInfoFlags> IFormCommon::GetFormFlags(TESForm* a_form) noexcept
+	stl::flag<FormInfoFlags> IFormCommon::GetFormFlags(const TESForm* a_form) noexcept
 	{
 		stl::flag<FormInfoFlags> result{ FormInfoFlags::kNone };
 

@@ -14,7 +14,7 @@ namespace IED
 		{
 			Game::FormID             formid;
 			stl::flag<FormInfoFlags> flags;
-			stl::fixed_string        name;
+			std::string              name;
 
 			[[nodiscard]] friend constexpr bool operator<(
 				const entry_t& a_lhs,
@@ -49,6 +49,7 @@ namespace IED
 		result_type GetDatabase();
 
 	private:
+		result_type        CreateOrGetDatabase();
 		static result_type Create();
 
 		std::weak_ptr<container_type> m_data;

@@ -205,13 +205,13 @@ namespace IED
 			if (m_held)
 			{
 				SetHeldTaskOptions();
-				Drivers::UI::QueueEvaluateTaskState();
 			}
 			else
 			{
 				ILRHResetTaskOptions();
-				Drivers::UI::EvaluateTaskState();
 			}
+
+			Drivers::UI::EvaluateTaskState();
 		}
 	}
 }
