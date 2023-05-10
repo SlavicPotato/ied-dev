@@ -38,10 +38,16 @@ namespace IED
 
 	namespace UI
 	{
+		namespace concepts
+		{
+			template <class T>
+			concept valid_clipboard_entry_data_type = (!std::is_reference_v<T> && !std::is_pointer_v<T>);
+		}
+
 		class UIClipboard
 		{
 		private:
-			template <class T>
+			template <concepts::valid_clipboard_entry_data_type T>
 			class Entry;
 
 			class EntryAdapter
@@ -71,11 +77,11 @@ namespace IED
 				const std::uint32_t id;
 			};
 
-			template <class T>
+			template <concepts::valid_clipboard_entry_data_type T>
 			class Entry : public EntryAdapter
 			{
 			public:
-				using value_type = stl::strip_type<T>;
+				using value_type = std::remove_const_t<T>;
 
 				template <class... Args>
 				explicit Entry(Args&&... a_args) :
@@ -92,15 +98,6 @@ namespace IED
 			template <class T>
 			const T* GetImpl() const noexcept
 			{
-				/*constexpr auto v = stl::detail::extract_type_name<T>();
-
-				std::string s(v);
-
-				auto h1 = stl::type_hash<T>();
-				auto h2 = stl::hash_string_fnv<stl::fnv1a_32>(s.c_str());
-
-				_DMESSAGE("%.8X | %.8X | %d", h1, h2, h1 == h2);*/
-
 				auto& data = m_data;
 
 				if (!data)
@@ -181,7 +178,7 @@ namespace IED
 
 		public:
 			template <class T>
-			[[nodiscard]] static const auto* Get() noexcept
+			[[nodiscard]] static auto Get() noexcept
 			{
 				using data_type = Entry<T>::value_type;
 

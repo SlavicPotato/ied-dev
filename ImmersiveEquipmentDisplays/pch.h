@@ -135,8 +135,6 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 
-#define IMGUI_DEFINE_MATH_OPERATORS
-
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
@@ -152,8 +150,6 @@ namespace fs = std::filesystem;
 
 //#define IED_ENABLE_STATS_G
 //#define IED_ENABLE_STATS_T
-
-#define IED_ENABLE_I3DI
 
 #if (defined(IED_USE_MIMALLOC_COLLECTOR) || defined(IED_USE_MIMALLOC_SIMCOMPONENT) || defined(SKMP_SC_USE_MIMALLOC) || SKMP_CUSTOM_ALLOCATOR == 1)
 #	define IED_MIMALLOC_IN_USE 1

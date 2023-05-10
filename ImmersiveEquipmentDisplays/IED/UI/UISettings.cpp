@@ -1548,6 +1548,11 @@ namespace IED
 					e.clear();
 				}
 
+				for (auto& e : settings.data.ui.outfitEditor.colStates)
+				{
+					e.clear();
+				}
+
 				settings.data.ui.slotProfileEditor.colStates.clear();
 				settings.data.ui.customProfileEditor.colStates.clear();
 				settings.data.ui.transformProfileEditor.colStates.clear();
@@ -1555,6 +1560,7 @@ namespace IED
 				settings.data.ui.actorInfo.colStates.clear();
 				settings.data.ui.condVarEditor.colStates.clear();
 				settings.data.ui.condVarProfileEditor.colStates.clear();
+				settings.data.ui.outfitProfileEditor.colStates.clear();
 
 				settings.mark_dirty();
 			}

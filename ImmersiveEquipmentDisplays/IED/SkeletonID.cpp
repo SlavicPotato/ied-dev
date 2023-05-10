@@ -25,17 +25,13 @@ namespace IED
 
 		stl::flag<PresenceFlags> pflags{ PresenceFlags::kNone };
 
-		auto signature = hasher::traits::initial_value;
+		hasher h;
 
-		signature = hasher::hash_string(
-			a_root->m_name.data(),
-			signature);
+		h.append_string(a_root->m_name.data());
 
 		if (auto rtti = a_root->GetRTTI(); rtti && rtti->name)
 		{
-			signature = hasher::hash_string(
-				rtti->name,
-				signature);
+			h.append_string(rtti->name);
 		}
 
 		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
@@ -43,25 +39,21 @@ namespace IED
 		{
 			m_id.emplace(extra->m_data);
 
-			signature = hasher::hash_bytes(
-				extra->m_data,
-				signature);
+			h.append_type(extra->m_data);
 		}
 
 		if (auto extra = a_root->GetExtraDataSafe<NiIntegerExtraData>(
 				sh->m_bsx))
 		{
-			signature = hasher::hash_bytes(
-				extra->m_data,
-				signature);
+			h.append_type(extra->m_data);
 		}
 
-		if (a_root->GetIndexOf(sh->m_BSBoneLOD) > -1)
+		if (a_root->GetExtraDataSafe(sh->m_BSBoneLOD))
 		{
 			pflags.set(PresenceFlags::kHasBoneLODExtraData);
 		}
 
-		if (a_root->GetIndexOf(sh->m_BBX) > -1)
+		if (a_root->GetExtraDataSafe(sh->m_BBX))
 		{
 			pflags.set(PresenceFlags::kHasBoundExtraData);
 		}
@@ -77,40 +69,34 @@ namespace IED
 				{
 					m_xpmse_version.emplace(extra->m_data);
 
-					signature = hasher::hash_bytes(
-						extra->m_data,
-						signature);
+					h.append_type(extra->m_data);
 				}
 
 				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_rigVersion);
 				    extra && extra->m_pString)
 				{
-					signature = hasher::hash_string(
-						extra->m_pString,
-						signature);
+					h.append_string(extra->m_pString);
 				}
 
 				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_rigPerspective);
 				    extra && extra->m_pString)
 				{
-					signature = hasher::hash_string(
-						extra->m_pString,
-						signature);
+					h.append_string(extra->m_pString);
 				}
 
 				if (auto extra = parent->GetExtraDataSafe<NiStringExtraData>(
 						sh->m_species);
 				    extra && extra->m_pString)
 				{
-					signature = hasher::hash_string(
-						extra->m_pString,
-						signature);
+					h.append_string(extra->m_pString);
 				}
 			}
 		}
 
-		m_signature = hasher::hash_bytes(pflags.value, signature);
+		h.append_type(pflags.value);
+
+		m_signature = h.finish();
 	}
 }
