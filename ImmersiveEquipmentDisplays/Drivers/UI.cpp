@@ -185,8 +185,6 @@ namespace IED
 
 			ImGui::NewFrame();
 
-			ImGui::PushFont(m_currentFont->second.font);
-
 			for (auto it = m_drawTasks.begin();
 			     it != m_drawTasks.end();)
 			{
@@ -206,8 +204,6 @@ namespace IED
 					++it;
 				}
 			}
-
-			ImGui::PopFont();
 
 			for (auto& e : m_drawTasks)
 			{
@@ -552,19 +548,16 @@ namespace IED
 				ok = true;
 			}
 
-			if (ok)
-			{
-				m_currentFont = std::addressof(*it);
-			}
-			else
+			if (!ok)
 			{
 				it = m_fontData.find(m_sDefaultFont);
 
 				ASSERT(it != m_fontData.end());
 				ASSERT(it->second.font->IsLoaded());
-
-				m_currentFont = std::addressof(*it);
 			}
+
+			m_currentFont              = std::addressof(*it);
+			ImGui::GetIO().FontDefault = it->second.font;
 
 			return ok;
 		}
