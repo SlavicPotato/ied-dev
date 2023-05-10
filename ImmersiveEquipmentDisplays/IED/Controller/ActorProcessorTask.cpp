@@ -709,17 +709,10 @@ namespace IED
 	void ActorProcessorTask::StartAPThreadPool()
 	{
 #if defined(IED_PERF_BUILD)
-		auto& updateProc = m_updateProc;
-
-		if (updateProc->IsEnabled())
-		{
-			return;
-		}
-
 		const auto numThreads = WinApi::GetNumPhysicalCores();
 		if (numThreads >= 2)
 		{
-			updateProc->Start(std::min(numThreads, 12u));
+			m_updateProc->Start(std::min(numThreads, 12u));
 		}
 #endif
 	}
@@ -820,7 +813,7 @@ namespace IED
 	{
 		std::unique_lock lock(m_mutex);
 
-		m_cond.wait(lock, [&] {
+		m_cond.wait(lock, [this]() noexcept [[msvc::forceinline]] {
 			return m_runState == 0;
 		});
 	}
@@ -839,14 +832,14 @@ namespace IED
 	{
 		gLog.Debug("%s: starting %u", __FUNCTION__, threadID);
 
-		while (wait_for_signal())
-		{
-			const auto& data = m_owner.m_shared;
-			auto&       task = m_owner.m_owner;
+		const auto& data      = m_owner.m_shared;
+		auto&       processor = m_owner.m_owner;
 
-			for (auto& e : m_list)
+		while (wait_for_tasks())
+		{
+			for (const auto& e : m_list)
 			{
-				task.DoActorUpdate<true>(
+				processor.DoActorUpdate<true>(
 					data.interval,
 					*data.stepMuls,
 					*data.physUpdData,
@@ -854,7 +847,7 @@ namespace IED
 					data.updateEffects);
 			}
 
-			reset_state();
+			tasks_complete();
 		}
 
 		gLog.Debug("%s: stopping %u", __FUNCTION__, threadID);
@@ -862,20 +855,21 @@ namespace IED
 		return 0;
 	}
 
-	bool ActorProcessorTask::ThreadPool::Thread::wait_for_signal() noexcept
+	bool ActorProcessorTask::ThreadPool::Thread::wait_for_tasks() noexcept
 	{
 		std::unique_lock lock(m_mutex);
-		m_cond.wait(lock, [&] {
+		m_cond.wait(lock, [this]() noexcept [[msvc::forceinline]] {
 			return m_runState != 0;
 		});
 
 		return m_runState != -1;
 	}
 
-	void ActorProcessorTask::ThreadPool::Thread::reset_state() noexcept
+	void ActorProcessorTask::ThreadPool::Thread::tasks_complete() noexcept
 	{
 		{
 			std::unique_lock lock(m_mutex);
+			assert(m_runState == 1);
 			m_runState = 0;
 		}
 		m_cond.notify_one();
@@ -898,7 +892,7 @@ namespace IED
 		{
 			{
 				std::unique_lock lock(e->m_mutex);
-				e->m_cond.wait(lock, [&] {
+				e->m_cond.wait(lock, [&]() noexcept [[msvc::forceinline]] {
 					return e->m_runState == 0;
 				});
 				e->m_runState = -1;
@@ -917,10 +911,7 @@ namespace IED
 	void ActorProcessorTask::ThreadPool::Start(
 		std::uint32_t a_numThreads)
 	{
-		if (!m_workers.empty())
-		{
-			return;
-		}
+		ASSERT(m_workers.empty());
 
 		m_workers.reserve(a_numThreads);
 
@@ -954,7 +945,7 @@ namespace IED
 	void ActorProcessorTask::ThreadPool::allocate_workers(
 		std::size_t a_numTasks) noexcept
 	{
-		const auto n = std::clamp<std::size_t>(a_numTasks / 2, 2, m_workers.size());
+		const auto n = std::max<std::size_t>(std::min<std::size_t>(a_numTasks / 2, 2), m_workers.size());
 
 		m_workersInUse.clear();
 
@@ -970,6 +961,8 @@ namespace IED
 	void ActorProcessorTask::ThreadPool::distribute_tasks(
 		const ActorObjectMap::vector_type& a_data) const noexcept
 	{
+		assert(!m_workersInUse.empty());
+
 		const auto                              maxIndex = m_workersInUse.size() - 1;
 		std::remove_const_t<decltype(maxIndex)> curIndex = 0;
 
@@ -979,14 +972,7 @@ namespace IED
 
 			thrd->m_list.emplace_back(std::addressof(e->second));
 
-			if (curIndex == maxIndex)
-			{
-				curIndex = 0;
-			}
-			else
-			{
-				++curIndex;
-			}
+			curIndex = curIndex == maxIndex ? 0 : curIndex + 1;
 		}
 	}
 }

@@ -53,13 +53,13 @@ namespace IED
 				DWORD Run() override;
 
 			private:
-				bool wait_for_signal() noexcept;
-				void reset_state() noexcept;
+				bool wait_for_tasks() noexcept;
+				void tasks_complete() noexcept;
 
 				stl::vector<ActorObjectHolder*> m_list;
-				stl::fast_spin_lock             m_mutex;
-				std::condition_variable_any     m_cond;
 				std::int32_t                    m_runState{ 0 };
+				mutable stl::fast_spin_lock     m_mutex;
+				std::condition_variable_any     m_cond;
 				ThreadPool&                     m_owner;
 			};
 
@@ -95,8 +95,6 @@ namespace IED
 
 			void allocate_workers(std::size_t a_numTasks) noexcept;
 			void distribute_tasks(const ActorObjectMap::vector_type& a_data) const noexcept;
-
-			using worker_container_type = stl::vector<std::unique_ptr<Thread>>;
 
 			stl::vector<std::unique_ptr<Thread>> m_workers;
 			stl::vector<Thread*>                 m_workersInUse;
@@ -261,7 +259,7 @@ namespace IED
 
 		private:
 			stl::cache_aligned::vector<T> m_queue;
-			stl::fast_spin_lock           m_lock;
+			mutable stl::fast_spin_lock   m_lock;
 		};
 
 #if defined(IED_PERF_BUILD)
