@@ -5,25 +5,33 @@
 namespace IED
 {
 
-	CachedPerkData::CachedPerkData(Actor* a_actor) noexcept
+	CachedPerkData::CachedPerkData(Actor* a_actor) noexcept :
+		currentSignature(GetSignature(a_actor))
 	{
-		if (auto npc = a_actor->GetActorBase())
-		{
-			UpdatePerks(a_actor, npc);
-		}
+		const auto npc = a_actor->GetActorBase();
+		assert(npc);
+		GenerateData(a_actor, npc);
 	}
 
 	bool CachedPerkData::UpdatePerks(Actor* a_actor, TESNPC* a_npc) noexcept
 	{
 		const auto sig = GetSignature(a_actor);
 
-		if (sig == currentSignature)
+		if (sig != currentSignature)
+		{
+			currentSignature = sig;
+
+			GenerateData(a_actor, a_npc);
+			return true;
+		}
+		else
 		{
 			return false;
 		}
+	}
 
-		currentSignature = sig;
-
+	void CachedPerkData::GenerateData(Actor* a_actor, TESNPC* a_npc) noexcept
+	{
 		data.clear();
 
 		if (a_actor->processManager &&
@@ -43,53 +51,51 @@ namespace IED
 				}
 			}
 
-			if (a_npc->perks)
-			{
-				for (std::uint32_t i = 0; i < a_npc->perkCount; i++)
-				{
-					const auto& e = a_npc->perks[i];
-
-					if (const auto* const perk = e.perk)
-					{
-						data.emplace(perk->formID, e.currentRank);
-					}
-				}
-			}
+			a_npc->VisitPerks([&](const auto& a_perkRankData) noexcept [[msvc::forceinline]] {
+				data.emplace(a_perkRankData.perk->formID, a_perkRankData.currentRank);
+			});
 		}
-
-		return true;
 	}
 
-	constexpr std::size_t CachedPerkData::GetSignature(Actor* a_actor) noexcept
+	auto CachedPerkData::GetSignature(Actor* a_actor) noexcept
+		-> hasher::value_type
 	{
-		auto result = hasher::traits::initial_value;
+		hasher h;
 
-		if (a_actor == *g_thePlayer &&
-		    a_actor->processManager &&
+		if (a_actor->processManager &&
 		    a_actor->processManager->middleProcess)
 		{
-			for (const auto* const e : static_cast<const PlayerCharacter*>(a_actor)->addedPerks)
+			h.append_type<std::uint8_t>(1);
+
+			if (a_actor == *g_thePlayer)
 			{
-				if (e)
+				for (const auto* const e : static_cast<const PlayerCharacter*>(a_actor)->addedPerks)
 				{
-					if (const auto* const perk = e->perk)
+					if (e)
 					{
-						result = hasher::hash_bytes(perk->formID.get(), result);
-						result = hasher::hash_bytes(e->currentRank, result);
+						if (const auto* const perk = e->perk)
+						{
+							h.append_type(e->currentRank);
+							h.append_type(perk->formID.get());
+						}
 					}
 				}
 			}
 		}
 
-		return result;
+		return h.finish();
 	}
 
 	CachedFactionData::CachedFactionData(Actor* a_actor) noexcept
 	{
-		if (auto npc = a_actor->GetActorBase())
-		{
-			UpdateFactions(a_actor, npc);
-		}
+		const auto* const extraFactionChanges =
+			a_actor->extraData.Get<ExtraFactionChanges>();
+
+		const auto npc = a_actor->GetActorBase();
+		assert(npc);
+
+		currentSignature = GetSignature(extraFactionChanges, npc);
+		GenerateData(extraFactionChanges, npc);
 	}
 
 	bool CachedFactionData::UpdateFactions(Actor* a_actor, TESNPC* a_npc) noexcept
@@ -99,45 +105,57 @@ namespace IED
 
 		const auto sig = GetSignature(extraFactionChanges, a_npc);
 
-		if (sig == currentSignature)
+		if (sig != currentSignature)
+		{
+			currentSignature = sig;
+			GenerateData(extraFactionChanges, a_npc);
+
+			return true;
+		}
+		else
 		{
 			return false;
 		}
+	}
 
-		currentSignature = sig;
-
+	void CachedFactionData::GenerateData(
+		const ExtraFactionChanges* a_factionChanges,
+		TESNPC*                    a_npc) noexcept
+	{
 		data.clear();
 
 		visit_factions(
-			extraFactionChanges,
+			a_factionChanges,
 			a_npc,
 			[&](const auto& a_info) noexcept {
 				data.emplace(a_info.faction, a_info.rank);
 			});
-
-		return true;
 	}
 
-	constexpr std::size_t CachedFactionData::GetSignature(
+	auto CachedFactionData::GetSignature(
 		const ExtraFactionChanges* a_factionChanges,
 		TESNPC*                    a_npc) noexcept
+		-> hasher::value_type
 	{
-		auto result = hasher::traits::initial_value;
+		hasher h;
 
 		visit_factions(
 			a_factionChanges,
 			a_npc,
 			[&](const auto& a_info) noexcept [[msvc::forceinline]] {
-				result = hasher::hash_bytes(a_info.faction->formID.get(), result);
-				result = hasher::hash_bytes(a_info.rank, result);
+				h.append_type(a_info.rank);
+				h.append_type(a_info.faction->formID.get());
 			});
 
-		return result;
+		return h.finish();
 	}
 
 	CachedActiveEffectData::CachedActiveEffectData(Actor* a_actor) noexcept
 	{
-		UpdateEffects(a_actor);
+		const auto list = a_actor->GetActiveEffectList();
+
+		currentSignature = GetSignature(list);
+		GenerateData(list);
 	}
 
 	bool CachedActiveEffectData::UpdateEffects(Actor* a_actor) noexcept
@@ -146,27 +164,18 @@ namespace IED
 
 		const auto sig = GetSignature(list);
 
-		if (sig == currentSignature)
+		if (sig != currentSignature)
+		{
+			currentSignature = sig;
+
+			GenerateData(list);
+
+			return true;
+		}
+		else
 		{
 			return false;
 		}
-
-		currentSignature = sig;
-
-		data.clear();
-
-		visit_effects(
-			list,
-			[&](const auto* a_effect, auto* a_mgef) noexcept [[msvc::forceinline]] {
-				if (!a_effect->flags.test_any(
-						ActiveEffect::Flag::kDispelled |
-						ActiveEffect::Flag::kInactive))
-				{
-					data.emplace(a_mgef);
-				}
-			});
-
-		return true;
 	}
 
 	bool CachedActiveEffectData::HasEffectWithKeyword(
@@ -186,10 +195,28 @@ namespace IED
 		return false;
 	}
 
-	constexpr std::size_t CachedActiveEffectData::GetSignature(
+	void CachedActiveEffectData::GenerateData(
 		RE::BSSimpleList<ActiveEffect*>* a_list) noexcept
 	{
-		auto result = hasher::traits::initial_value;
+		data.clear();
+
+		visit_effects(
+			a_list,
+			[&](const auto* a_effect, auto* a_mgef) noexcept [[msvc::forceinline]] {
+				if (!a_effect->flags.test_any(
+						ActiveEffect::Flag::kDispelled |
+						ActiveEffect::Flag::kInactive))
+				{
+					data.emplace(a_mgef);
+				}
+			});
+	}
+
+	auto CachedActiveEffectData::GetSignature(
+		RE::BSSimpleList<ActiveEffect*>* a_list) noexcept
+		-> hasher::value_type
+	{
+		hasher h;
 
 		constexpr auto hashflags =
 			ActiveEffect::Flag::kDispelled |
@@ -198,11 +225,11 @@ namespace IED
 		visit_effects(
 			a_list,
 			[&](const auto* a_effect, const auto* a_mgef) noexcept [[msvc::forceinline]] {
-				result = hasher::hash_bytes(a_mgef->formID.get(), result);
-				result = hasher::hash_bytes(a_effect->flags & hashflags, result);
+				h.append_type(a_effect->flags & hashflags);
+				h.append_type(a_mgef->formID.get());
 			});
 
-		return result;
+		return h.finish();
 	}
 
 	CachedActorData::CachedActorData(Actor* a_actor) noexcept :
@@ -270,7 +297,7 @@ namespace IED
 		state_var_update(arrested, a_actor->IsArrested(), result);
 		state_var_update(beingRidden, a_actor->IsMountRidden(), result);
 
-		if (auto npc = a_actor->GetActorBase())
+		if (const auto npc = a_actor->GetActorBase())
 		{
 			state_var_update(
 				baseFlags.value,
@@ -309,7 +336,7 @@ namespace IED
 	{
 		bool result = false;
 
-		if (auto npc = a_actor->GetActorBase())
+		if (const auto npc = a_actor->GetActorBase())
 		{
 			result |= UpdateFactions(a_actor, npc);
 			result |= UpdatePerks(a_actor, npc);

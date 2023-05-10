@@ -57,11 +57,13 @@ namespace IED
 		}
 
 	private:
-		[[nodiscard]] static constexpr std::size_t GetSignature(Actor* a_actor) noexcept;
+		void GenerateData(Actor* a_actor, TESNPC* a_npc) noexcept;
+
+		[[nodiscard]] static hasher::value_type GetSignature(Actor* a_actor) noexcept;
 
 		container_type data;
 
-		hasher::value_type currentSignature{ 0 };
+		hasher::value_type currentSignature;
 	};
 
 	class CachedFactionData
@@ -70,7 +72,7 @@ namespace IED
 			stl::cache_aligned::flat_map<
 				TESFaction*,
 				std::int8_t>;
-		
+
 		using hasher = stl::fnv1a_64;
 
 	public:
@@ -89,6 +91,8 @@ namespace IED
 		}
 
 	private:
+		void GenerateData(const ExtraFactionChanges* a_factionChanges, TESNPC* a_npc) noexcept;
+
 		template <class Tf>
 		static constexpr void visit_factions(
 			const ExtraFactionChanges* a_factionChanges,
@@ -97,13 +101,13 @@ namespace IED
 			noexcept(std::is_nothrow_invocable_v<Tf, const RE::FACTION_RANK&>)  //
 			requires(std::invocable<Tf, const RE::FACTION_RANK&>);
 
-		[[nodiscard]] static constexpr std::size_t GetSignature(
+		[[nodiscard]] static hasher::value_type GetSignature(
 			const ExtraFactionChanges* a_factionChanges,
 			TESNPC*                    a_npc) noexcept;
 
 		container_type data;
 
-		hasher::value_type currentSignature{ 0 };
+		hasher::value_type currentSignature;
 	};
 
 	template <class Tf>
@@ -137,7 +141,7 @@ namespace IED
 	class CachedActiveEffectData
 	{
 		using container_type = stl::cache_aligned::flat_set<EffectSetting*>;
-		
+
 		using hasher = stl::fnv1a_64;
 
 	public:
@@ -153,6 +157,8 @@ namespace IED
 		bool HasEffectWithKeyword(const BGSKeyword* a_keyword) const noexcept;
 
 	private:
+		void GenerateData(RE::BSSimpleList<ActiveEffect*>* a_list) noexcept;
+
 		template <class Tf>
 		static constexpr void visit_effects(
 			RE::BSSimpleList<ActiveEffect*>* a_list,
@@ -160,12 +166,12 @@ namespace IED
 			noexcept(std::is_nothrow_invocable_v<Tf, ActiveEffect*, EffectSetting*>)  //
 			requires(std::invocable<Tf, ActiveEffect*, EffectSetting*>);
 
-		static constexpr std::size_t GetSignature(
+		static hasher::value_type GetSignature(
 			RE::BSSimpleList<ActiveEffect*>* a_list) noexcept;
 
 		container_type data;
 
-		hasher::value_type currentSignature{ hasher::traits::initial_value };
+		hasher::value_type currentSignature;
 	};
 
 	template <class Tf>
