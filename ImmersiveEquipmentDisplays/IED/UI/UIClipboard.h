@@ -108,6 +108,14 @@ namespace IED
 					return nullptr;
 				}
 
+				if constexpr (std::is_same_v<T, Data::configCustom_t>)
+				{
+					switch (data->id)
+					{
+						CLIP_TYPE_CASE_CUSTOM()
+					}
+				}
+				
 				if constexpr (std::is_same_v<T, Data::configBaseValues_t>)
 				{
 					switch (data->id)
