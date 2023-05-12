@@ -549,13 +549,19 @@ namespace IED
 		EvaluateImpl(a_actor, a_handle, a_flags);
 	}
 
-	std::size_t Controller::GetNumSimComponents() const noexcept
+	std::pair<std::size_t, std::size_t> Controller::GetNumSimComponents() const noexcept
 	{
-		std::size_t result = 0;
+		std::pair<std::size_t, std::size_t> result{ 0, 0 };
 
 		for (auto& e : m_actorMap.getvec())
 		{
-			result += e->second.GetSimComponentListSize();
+			const auto sz = e->second.GetSimComponentListSize();
+
+			result.first += sz;
+			if (e->second.IsActive())
+			{
+				result.second += sz;
+			}
 		}
 
 		return result;

@@ -467,9 +467,9 @@ namespace IED
 			return m_invChangeConsumerFlags.consume(a_mask);
 		}*/
 
-		std::size_t               GetNumSimComponents() const noexcept;
-		std::size_t               GetNumAnimObjects() const noexcept;
-		[[nodiscard]] std::size_t GetNumQueuedCloningTasks() const noexcept;
+		std::pair<std::size_t, std::size_t> GetNumSimComponents() const noexcept;
+		std::size_t                         GetNumAnimObjects() const noexcept;
+		[[nodiscard]] std::size_t           GetNumQueuedCloningTasks() const noexcept;
 
 		void QueueSetEffectShaders(Actor* a_actor) noexcept;
 

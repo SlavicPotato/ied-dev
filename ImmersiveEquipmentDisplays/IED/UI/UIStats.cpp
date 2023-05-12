@@ -111,7 +111,9 @@ namespace IED
 
 				if (m_controller.PhysicsProcessingEnabled())
 				{
-					ImGui::Text("%zu", m_controller.GetNumSimComponents());
+					const auto r = m_controller.GetNumSimComponents();
+
+					ImGui::Text("%zu/%zu", r.second, r.first);
 				}
 
 				if (ReferenceLightController::GetSingleton().GetEnabled())
