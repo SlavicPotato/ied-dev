@@ -1994,6 +1994,12 @@
     <ClInclude Include="IED\UI\Style\UIStyleEditorWindow.h">
       <Filter>Source\IED\UI\Style</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformSyncNodeParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3180,6 +3186,12 @@
     </ClCompile>
     <ClCompile Include="IED\UI\PopupQueue\UIPopupAction.cpp">
       <Filter>Source\IED\UI\PopupQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformSyncNodeParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

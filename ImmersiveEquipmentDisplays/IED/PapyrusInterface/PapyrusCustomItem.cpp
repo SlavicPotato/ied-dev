@@ -247,7 +247,7 @@ namespace IED
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{
-					(*tmp)[i] = std::clamp(stl::zero_nan((*tmp)[i]), -5000.0f, 5000.0f);
+					(*tmp)[i] = std::clamp(stl::zero_nan((*tmp)[i]), -15000.0f, 15000.0f);
 				}
 
 				return SetItemPositionImpl(

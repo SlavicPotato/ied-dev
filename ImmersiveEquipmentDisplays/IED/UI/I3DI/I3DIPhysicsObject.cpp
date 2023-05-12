@@ -79,7 +79,7 @@ namespace IED
 			SetHasWorldData(true);
 			UpdateBound();
 
-			auto ms = XMMatrixScalingFromVector(XMVectorReplicate(0.6f * m_objectTransform.getScale()));
+			auto ms = XMMatrixScalingFromVector(m_objectTransform.getScale().get128() * 0.6f);
 			auto mt = XMMatrixTranslationFromVector((m_parentTransform * (initialTransform.getOrigin() + a_sc.GetVirtualPos())).get128());
 
 			m_virtSphere->UpdateWorldMatrix(ms * mt);
@@ -96,7 +96,7 @@ namespace IED
 
 			if (m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint))
 			{
-				ms = XMMatrixScalingFromVector(XMVectorReplicate(a_sc.GetConfig().maxOffsetSphereRadius * m_parentTransform.getScale()));
+				ms = XMMatrixScalingFromVector(m_parentTransform.getScale().get128() * a_sc.GetConfig().maxOffsetSphereRadius);
 				mt = XMMatrixTranslationFromVector((m_parentTransform * (initialTransform.getOrigin() + a_sc.GetConfig().maxOffsetSphereOffset)).get128());
 
 				m_constraintSphere->UpdateWorldMatrix(ms * mt);
@@ -311,7 +311,7 @@ namespace IED
 
 			constexpr XMVECTOR lb = { 20, 20, 20, 0 };
 
-			const auto l = lb * m_objectTransform.getScale();
+			const auto l = lb * m_objectTransform.getScale().get128();
 
 			const auto pf = pos + fwd * l;
 			const auto pu = pos + up * l;

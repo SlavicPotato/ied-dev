@@ -949,7 +949,7 @@ namespace IED
 		}
 
 		if (!a_hkaSkeleton.name ||
-		    ::_stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) != 0)
+		    stl::stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) != 0)
 		{
 			return false;
 		}

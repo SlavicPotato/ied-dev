@@ -41,8 +41,6 @@ namespace IED
 		const std::optional<PhysicsUpdateData>& a_physUpdData,
 		const ActorObjectHolder&                a_holder) noexcept
 	{
-		stl::ftz_daz_ctl_scoped<_MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON> fds;
-
 		const auto stepMul =
 			a_holder.IsPlayer() ?
 				a_stepMuls.player :

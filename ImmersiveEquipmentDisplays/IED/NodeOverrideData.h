@@ -125,11 +125,45 @@ namespace IED
 			stl::flag<OverrideNodeEntryFlags> flags{ OverrideNodeEntryFlags::kNone };
 		};
 
+		struct extraNodeEntrySkelTransformSyncNode_t
+		{
+			BSFixedString                                             name;
+			stl::flag<Data::ExtraNodeEntrySkelTransformSyncNodeFlags> flags;
+		};
+
+		struct extraNodeEntrySkelTransform_t
+		{
+#if defined(IED_PERF_BUILD)
+			Bullet::btTransformEx
+#else
+			NiTransform
+#endif                                        
+				xfrm;
+			std::vector<extraNodeEntrySkelTransformSyncNode_t> syncNodes;
+		};
+
 		struct extraNodeEntrySkel_t
 		{
-			Data::configSkeletonMatch_t match;
-			NiTransform                 transform_mov;
-			NiTransform                 transform_node;
+			extraNodeEntrySkel_t(
+				const Data::configSkeletonMatch_t&   a_sm) :
+				match(a_sm)
+			{
+			}
+			
+			extraNodeEntrySkel_t(
+				const Data::configSkeletonMatch_t&   a_sm,
+				const extraNodeEntrySkelTransform_t& a_sxfrm1,
+				const extraNodeEntrySkelTransform_t& a_sxfrm2) :
+				match(a_sm),
+				sxfrms{
+					a_sxfrm1,
+					a_sxfrm2
+				}
+			{
+			}
+
+			Data::configSkeletonMatch_t                  match;
+			std::array<extraNodeEntrySkelTransform_t, 2> sxfrms;
 		};
 
 		struct exn_ctor_init_t

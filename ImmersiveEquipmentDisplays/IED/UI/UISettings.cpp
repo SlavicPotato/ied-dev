@@ -856,6 +856,7 @@ namespace IED
 				{
 					if (DrawFormTypeSelector(
 							m_tmpFormType,
+							false,
 							[](std::uint8_t a_formType) {
 								return IFormCommon::IsValidCustomFormType(a_formType);
 							}))

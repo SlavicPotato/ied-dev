@@ -415,7 +415,7 @@ namespace IED
 		const Game::Unk2f6b948::TimeMultipliers& a_stepMuls,
 		const std::optional<PhysicsUpdateData>&  a_physUpdData,
 		ActorObjectHolder&                       a_holder,
-		bool                                     a_updateEffects) noexcept
+		bool                                     a_unpaused) noexcept
 	{
 		if (!a_holder.m_queuedModels.empty())
 		{
@@ -618,19 +618,23 @@ namespace IED
 			}
 		}
 
-		if (a_updateEffects && actor->IsAIEnabled())
+		if (a_unpaused && actor->IsAIEnabled())
 		{
+			const stl::ftz_daz_ctl_scoped<_MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON> fds;
+
+			a_holder.UpdateSyncNodes();
+
 			RunEffectUpdates(a_interval, a_stepMuls, a_physUpdData, a_holder);
 		}
 	}
 
-	void ActorProcessorTask::RunPreUpdates(bool a_effectUpdates) noexcept
+	void ActorProcessorTask::RunPreUpdates(bool a_unpaused) noexcept
 	{
 		const auto interval = *Game::g_frameTimerSlow;
 
 		std::optional<PhysicsUpdateData> physUpdateData;
 
-		if (PhysicsProcessingEnabled() && a_effectUpdates)
+		if (PhysicsProcessingEnabled() && a_unpaused)
 		{
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
@@ -656,7 +660,7 @@ namespace IED
 				interval,
 				std::addressof(stepMuls),
 				std::addressof(physUpdateData),
-				a_effectUpdates);
+				a_unpaused);
 
 			updateProc->allocate_workers(data.size());
 			updateProc->distribute_tasks(data);
@@ -701,7 +705,7 @@ namespace IED
 					stepMuls,
 					physUpdateData,
 					e->second,
-					a_effectUpdates);
+					a_unpaused);
 			}
 		}
 	}
@@ -844,7 +848,7 @@ namespace IED
 					*data.stepMuls,
 					*data.physUpdData,
 					*e,
-					data.updateEffects);
+					data.unpaused);
 			}
 
 			tasks_complete();

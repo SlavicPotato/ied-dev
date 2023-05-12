@@ -22,13 +22,13 @@ namespace IED
 
 			auto mov = CreateAttachmentNode(a_entry.bsname_mov);
 
-			mov->m_localTransform = a_skelEntry.transform_mov;
+			mov->m_localTransform = a_skelEntry.sxfrms[0].xfrm;
 
 			cme->AttachChild(mov, true);
 
 			auto node = CreateAttachmentNode(a_entry.bsname_node);
 
-			node->m_localTransform = a_skelEntry.transform_node;
+			node->m_localTransform = a_skelEntry.sxfrms[1].xfrm;
 
 			mov->AttachChild(node, true);
 

@@ -101,7 +101,7 @@ namespace IED
 		// find the mod id
 		for (auto it = modIdBegin; it != modIdEnd; ++it, i++)
 		{
-			if (_stricmp(it->data(), "xpe") == 0)
+			if (stl::stricmp(it->data(), "xpe") == 0)
 			{
 				modId = i;
 				break;

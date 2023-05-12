@@ -2,26 +2,44 @@
 
 #include "JSONConfigExtraNodeEntryParser.h"
 
+#include "JSONConfigExtraNodeEntrySkelTransformParser.h"
 #include "JSONConfigSkeletonMatchParser.h"
-#include "JSONConfigTransformParser.h"
 
 namespace IED
 {
 	namespace Serialization
 	{
+		constexpr auto filter_placement_id(Json::UInt a_in) noexcept
+		{
+			switch (a_in)
+			{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+				return static_cast<WeaponPlacementID>(a_in);
+			default:
+				return WeaponPlacementID::None;
+			}
+		}
+
 		template <>
 		bool Parser<Data::configExtraNodeEntry_t>::Parse(
 			const Json::Value&            a_in,
 			Data::configExtraNodeEntry_t& a_out) const
 		{
-			a_out.name   = a_in["name"].asString();
-			a_out.desc   = a_in["desc"].asString();
-			a_out.parent = a_in["parent"].asString();
+			a_out.name        = a_in["name"].asString();
+			a_out.desc        = a_in["desc"].asString();
+			a_out.parent      = a_in["parent"].asString();
+			a_out.placementID = filter_placement_id(a_in["placement_id"].asUInt());
 
 			if (auto& skel = a_in["skeleton"])
 			{
-				Parser<Data::configTransform_t>     xfrmparser(m_state);
-				Parser<Data::configSkeletonMatch_t> smparser(m_state);
+				Parser<Data::configSkeletonMatch_t>               smparser(m_state);
+				Parser<Data::configExtraNodeEntrySkelTransform_t> skelparser(m_state);
 
 				for (auto& e : skel)
 				{
@@ -29,22 +47,22 @@ namespace IED
 
 					if (!smparser.Parse(e["match"], v.match))
 					{
-						return false;
+						throw parser_exception("bad match");
 					}
 
 					if (auto& xh = e["xfrm_mov"])
 					{
-						if (!xfrmparser.Parse(xh, v.transform_mov, 1u))
+						if (!skelparser.Parse(xh, v.sxfrms[0]))
 						{
-							return false;
+							throw parser_exception("bad xfrm_mov");
 						}
 					}
 
 					if (auto& xh = e["xfrm_node"])
 					{
-						if (!xfrmparser.Parse(xh, v.transform_node, 1u))
+						if (!skelparser.Parse(xh, v.sxfrms[1]))
 						{
-							return false;
+							throw parser_exception("bad xfrm_node");
 						}
 					}
 				}

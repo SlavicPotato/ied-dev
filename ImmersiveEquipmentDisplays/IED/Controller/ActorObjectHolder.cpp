@@ -139,9 +139,7 @@ namespace IED
 				CreateExtraMovNodes(a_npcroot, m_skeletonID);
 				if (npcroot1p)
 				{
-					const SkeletonID skelid1p(m_root1p);
-
-					CreateExtraMovNodes(npcroot1p, skelid1p);
+					CreateExtraMovNodes(npcroot1p, m_root1p.get());
 				}
 			}
 
@@ -215,6 +213,12 @@ namespace IED
 						e->second.animSlot,
 						e->second.nodeID);
 				}
+			}
+
+			MakeSyncNodeList(a_npcroot, m_skeletonID);
+			if (npcroot1p && a_syncToFirstPersonSkeleton)
+			{
+				MakeSyncNodeList(npcroot1p, m_root1p.get());
 			}
 		}
 
@@ -815,6 +819,40 @@ namespace IED
 		return result;
 	}
 
+	void ActorObjectHolder::UpdateSyncNodes() const noexcept
+	{
+		for (auto& e : m_syncObjects)
+		{
+#if defined(IED_PERF_BUILD)
+			auto result(e.xfrm);
+
+			for (auto& [obj, inv] : e.sources)
+			{
+				Bullet::btTransformEx t(obj->m_localTransform);
+
+				if (inv)
+				{
+					t.invert();
+				}
+
+				result *= t;
+			}
+
+			result.writeNiTransform(e.dest->m_localTransform);
+#else
+			e.dest->m_localTransform = e.xfrm;
+
+			for (auto& [obj, inv] : e.sources)
+			{
+				e.dest->m_localTransform *=
+					(inv ?
+				         obj->m_localTransform.GetInverse() :
+				         obj->m_localTransform);
+			}
+#endif
+		}
+	}
+
 	void ActorObjectHolder::CreateExtraCopyNode(
 		const SkeletonCache::ActorEntry&              a_sc,
 		NiNode*                                       a_npcroot,
@@ -860,6 +898,76 @@ namespace IED
 	void ActorObjectHolder::ApplyXP32NodeTransformOverrides() const noexcept
 	{
 		SkeletonExtensions::ApplyXP32NodeTransformOverrides(m_npcroot.get(), m_skeletonID);
+	}
+
+	namespace detail
+	{
+		static void TryMakeSyncNodeEntry(
+			NiNode*                                                         a_root,
+			const NodeOverrideData::extraNodeEntrySkelTransform_t&          a_data,
+			const BSFixedString&                                            a_dst,
+			stl::cache_aligned::vector<ActorObjectHolder::ObjectSyncEntry>& a_out) noexcept
+		{
+			if (a_data.syncNodes.empty())
+			{
+				return;
+			}
+
+			const auto destNode = a_root->GetObjectByName(a_dst);
+			if (!destNode)
+			{
+				return;
+			}
+
+			ActorObjectHolder::ObjectSyncEntry result(destNode, a_data.xfrm);
+
+			for (auto& e : a_data.syncNodes)
+			{
+				if (const auto sourceNode = a_root->GetObjectByName(e.name))
+				{
+					result.sources.emplace(
+						result.sources.begin(),
+						sourceNode,
+						e.flags.test(Data::ExtraNodeEntrySkelTransformSyncNodeFlags::kInvert));
+				}
+			}
+
+			if (result.sources.empty())
+			{
+				return;
+			}
+
+			a_out.emplace_back(std::move(result));
+		}
+	}
+
+	void ActorObjectHolder::MakeSyncNodeList(
+		NiNode*           a_root,
+		const SkeletonID& a_id) noexcept
+	{
+		for (auto& e : NodeOverrideData::GetExtraMovNodes())
+		{
+			auto it = std::find_if(
+				e.skel.begin(),
+				e.skel.end(),
+				[&](auto& a_v) noexcept {
+					return a_v.match.test(a_id);
+				});
+
+			if (it == e.skel.end())
+			{
+				continue;
+			}
+
+			for (auto& f : it->sxfrms)
+			{
+				detail::TryMakeSyncNodeEntry(
+					a_root,
+					f,
+					e.bsname_mov,
+					m_syncObjects);
+			}
+		}
 	}
 
 }

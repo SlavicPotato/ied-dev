@@ -43,8 +43,6 @@ namespace IED
 			{ "CME WeaponDaggerLeftBackHip", { "Dagger Back Hip Left", "CME WeaponDaggerLeftBackHip" } },
 			{ "CME WeaponDaggerAnkle", { "Dagger Ankle", "CME WeaponDaggerAnkle" } },
 			{ "CME WeaponDaggerLeftAnkle", { "Dagger Ankle Left", "CME WeaponDaggerLeftAnkle" } },
-			{ "CME WeaponDaggerOnBack", { "Dagger On Back", "CME WeaponDaggerOnBack" } },
-			{ "CME WeaponDaggerLeftOnBack", { "Dagger On Back Left", "CME WeaponDaggerLeftOnBack" } },
 			{ "CME WeaponBackDefault", { "Two-Handed", "CME WeaponBackDefault" } },
 			{ "CME WeaponBackSWP", { "Two-Handed SWP", "CME WeaponBackSWP" } },
 			{ "CME WeaponBackFSM", { "Two-Handed FSM", "CME WeaponBackFSM" } },
@@ -99,8 +97,6 @@ namespace IED
 			{ "MOV WeaponDaggerLeftBackHip", { "Dagger Back Hip Left", "MOV WeaponDaggerLeftBackHip", WeaponPlacementID::OnBackHip } },
 			{ "MOV WeaponDaggerAnkle", { "Dagger Ankle", "MOV WeaponDaggerAnkle", WeaponPlacementID::Ankle } },
 			{ "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left", "MOV WeaponDaggerLeftAnkle", WeaponPlacementID::Ankle } },
-			{ "MOV WeaponDaggerOnBack", { "Dagger On Back", "MOV WeaponDaggerOnBack", WeaponPlacementID::OnBack } },
-			{ "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left", "MOV WeaponDaggerLeftOnBack", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponBackDefault", { "Two-Handed", "MOV WeaponBackDefault" } },
 			{ "MOV WeaponBackSWP", { "Two-Handed SWP", "MOV WeaponBackSWP" } },
 			{ "MOV WeaponBackFSM", { "Two-Handed FSM", "MOV WeaponBackFSM", WeaponPlacementID::AtHip } },
@@ -461,70 +457,6 @@ namespace IED
 
 		}),
 
-		m_extramov(std::initializer_list<exn_ctor_init_t>{
-
-			{
-
-				"WeaponDaggerOnBack",
-				"MOV WeaponDaggerOnBack",
-				"CME WeaponDaggerOnBack",
-				"NPC Spine2 [Spn2]",
-
-				{
-
-					{
-
-						{ {}, { 11827777347581811248, 6419035761879502692 } },
-						{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
-						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
-
-					},
-					{
-
-						{ {}, { 11462500511823126705, 2191670159909408727 } },
-						{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
-						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
-
-					},
-
-				},
-
-				WeaponPlacementID::OnBack,
-				"Dagger On Back"
-
-			},
-
-			{
-
-				"WeaponDaggerLeftOnBack",
-				"MOV WeaponDaggerLeftOnBack",
-				"CME WeaponDaggerLeftOnBack",
-				"NPC Spine2 [Spn2]",
-
-				{
-
-					{
-
-						{ {}, { 11827777347581811248, 6419035761879502692 } },
-						{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
-						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
-
-					},
-					{
-
-						{ {}, { 11462500511823126705, 2191670159909408727 } },
-						{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
-						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
-
-					},
-
-				},
-
-				WeaponPlacementID::OnBack,
-				"Dagger On Back Left"
-
-			} }),
-
 		m_extraCopy(std::initializer_list<exn_copy_ctor_init_t>{
 			{ "WeaponBack", "WeaponBackIED" },
 			{ "WeaponBow", "WeaponBowIED" },
@@ -830,28 +762,47 @@ namespace IED
 					mov,
 					cme,
 					f.parent,
-					WeaponPlacementID::None,
+					f.placementID,
 					f.desc);
 
 				for (auto& g : f.skel)
 				{
-					rv.skel.emplace_back(
-						g.match,
-						g.transform_mov.to_nitransform(),
-						g.transform_node.to_nitransform());
+					auto& v = rv.skel.emplace_back(g.match);
+
+					static_assert(
+						stl::array_size<decltype(g.sxfrms)>::value ==
+						stl::array_size<decltype(v.sxfrms)>::value);
+
+					for (std::size_t i = 0; i < std::size(g.sxfrms); i++)
+					{
+						auto& src = g.sxfrms[i];
+						auto& dst = v.sxfrms[i];
+
+						dst.xfrm = src.xfrm.to_nitransform();
+
+						for (auto& h : src.syncNodes)
+						{
+							if (!h.name.empty())
+							{
+								dst.syncNodes.emplace_back(
+									h.name.c_str(),
+									h.flags);
+							}
+						}
+					}
 				}
 
 				m_mov.try_emplace(
 					rv.name_mov,
 					rv.name_mov,
 					rv.desc,
-					WeaponPlacementID::None);
+					rv.placementID);
 
 				m_cme.try_emplace(
 					rv.name_cme,
 					rv.name_cme,
 					rv.desc,
-					WeaponPlacementID::None);
+					rv.placementID);
 			}
 		}
 	}

@@ -68,7 +68,7 @@ namespace IED
 				float                                                     interval;
 				const Game::Unk2f6b948::TimeMultipliers*                  stepMuls;
 				const std::optional<EffectController::PhysicsUpdateData>* physUpdData;
-				bool                                                      updateEffects;
+				bool                                                      unpaused;
 			};
 
 		public:

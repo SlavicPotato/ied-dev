@@ -30,7 +30,7 @@ namespace Bullet
 
 	class btTransformEx : public btTransform
 	{
-		btScalar m_scale;
+		btVector3 m_scale;
 
 	public:
 		using btTransform::btTransform;
@@ -46,6 +46,24 @@ namespace Bullet
 			NiTransform&& a_tf) noexcept
 		{
 			_copy_from_nitransform(a_tf);
+		}
+
+		SIMD_FORCE_INLINE btTransformEx(
+			const btMatrix3x3& a_rot,
+			const btVector3&   a_pos,
+			btScalar           a_scale) noexcept :
+			btTransform(a_rot, a_pos),
+			m_scale(_mm_set_ps1(a_scale))
+		{
+		}
+
+		SIMD_FORCE_INLINE btTransformEx(
+			const btMatrix3x3& a_rot,
+			const btVector3&   a_pos,
+			const btVector3&   a_scale) noexcept :
+			btTransform(a_rot, a_pos),
+			m_scale(a_scale)
+		{
 		}
 
 		SIMD_FORCE_INLINE btTransformEx& operator=(
@@ -65,13 +83,20 @@ namespace Bullet
 		SIMD_FORCE_INLINE btTransformEx operator*(
 			const btTransformEx& a_rhs) const noexcept
 		{
-			btTransformEx result;
+			return btTransformEx(
+				getBasis() * a_rhs.getBasis(),
+				this->operator()(a_rhs.getOrigin()) * m_scale,
+				m_scale * a_rhs.m_scale);
+		}
 
-			result.m_scale       = m_scale * a_rhs.m_scale;
-			result.getRotation() = getRotation() * a_rhs.getRotation();
-			result.getBasis()    = getBasis() * a_rhs.getBasis();
+		SIMD_FORCE_INLINE btTransformEx& operator*=(
+			const btTransformEx& a_rhs) noexcept
+		{
+			getOrigin() += (getBasis() * a_rhs.getOrigin()) * m_scale;
+			getBasis() *= a_rhs.getBasis();
+			m_scale *= a_rhs.m_scale;
 
-			return result;
+			return *this;
 		}
 
 		SIMD_FORCE_INLINE btVector3 operator*(
@@ -80,12 +105,35 @@ namespace Bullet
 			return ((getBasis() * a_pt) *= m_scale) += getOrigin();
 		}
 
-		SIMD_FORCE_INLINE btScalar getScale() const noexcept
+		SIMD_FORCE_INLINE btTransformEx inverse() const noexcept
+		{
+			btTransformEx result;
+
+			result.setBasis(getBasis().transpose());
+			result.setScale(DirectX::g_XMOne.v / m_scale.get128());
+			result.setOrigin((result.getBasis() * -getOrigin()) * result.getScale());
+
+			return result;
+		}
+
+		SIMD_FORCE_INLINE void invert() noexcept
+		{
+			getBasis() = getBasis().transpose();
+			m_scale = DirectX::g_XMOne.v / m_scale.get128();
+			getOrigin() = (getBasis() * -getOrigin()) * m_scale;
+		}
+
+		SIMD_FORCE_INLINE const btVector3& getScale() const noexcept
 		{
 			return m_scale;
 		}
 
 		SIMD_FORCE_INLINE void setScale(btScalar a_scale) noexcept
+		{
+			m_scale = _mm_set_ps1(a_scale);
+		}
+
+		SIMD_FORCE_INLINE void setScale(const btVector3& a_scale) noexcept
 		{
 			m_scale = a_scale;
 		}
@@ -104,6 +152,18 @@ namespace Bullet
 			_write_to_nitransform(a_tf);
 		}
 
+		SIMD_FORCE_INLINE operator NiTransform() const noexcept
+		{
+			return getNiTransform();
+		}
+
+		SIMD_FORCE_INLINE void setIdentity() noexcept
+		{
+			getBasis().setIdentity();
+			setOrigin(DirectX::g_XMOne.v);
+			setScale(DirectX::g_XMOne.v);
+		}
+
 	private:
 		SIMD_FORCE_INLINE void _copy_from_nitransform(
 			const NiTransform& a_tf) noexcept
@@ -116,7 +176,7 @@ namespace Bullet
 
 			getOrigin().set128(_mm_and_ps(_mm_loadu_ps(a_tf.pos), btvFFF0fMask));
 
-			m_scale = a_tf.scale;
+			m_scale.set128(_mm_and_ps(_mm_set_ps1(a_tf.scale), btvFFF0fMask));
 		}
 
 		SIMD_FORCE_INLINE void _write_to_nitransform(
@@ -135,7 +195,7 @@ namespace Bullet
 
 			_mm_storeu_ps(a_tf.pos, getOrigin().get128());
 
-			a_tf.scale = m_scale;
+			a_tf.scale = _mm_cvtss_f32(m_scale.get128());
 		}
 	};
 }

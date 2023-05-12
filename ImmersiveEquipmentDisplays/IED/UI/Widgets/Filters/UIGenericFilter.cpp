@@ -58,7 +58,7 @@ namespace IED
 				m_filter->begin(),
 				m_filter->end(),
 				[](char a_lhs, char a_rhs) {
-					return stl::toupper(a_lhs) == stl::toupper(a_rhs);
+					return stl::tolower_ascii(a_lhs) == stl::tolower_ascii(a_rhs);
 				});
 
 			return (p != end);
@@ -77,7 +77,7 @@ namespace IED
 				m_filter->begin(),
 				m_filter->end(),
 				[](char a_lhs, char a_rhs) {
-					return stl::toupper(a_lhs) == stl::toupper(a_rhs);
+					return stl::tolower_ascii(a_lhs) == stl::tolower_ascii(a_rhs);
 				});
 
 			return (it != a_haystack.end());

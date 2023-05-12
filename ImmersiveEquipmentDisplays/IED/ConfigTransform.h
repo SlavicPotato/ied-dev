@@ -10,7 +10,8 @@ namespace IED
 		{
 			kNone = 0,
 
-			kExtrinsicRotation = 1u << 0
+			kExtrinsicRotation = 1u << 0,
+			kInvert            = 1u << 1,
 		};
 
 		struct configTransform_t :
@@ -62,9 +63,9 @@ namespace IED
 
 				if (position)
 				{
-					position->x = std::clamp(stl::zero_nan(position->x), -5000.0f, 5000.0f);
-					position->y = std::clamp(stl::zero_nan(position->y), -5000.0f, 5000.0f);
-					position->z = std::clamp(stl::zero_nan(position->z), -5000.0f, 5000.0f);
+					position->x = std::clamp(stl::zero_nan(position->x), -15000.0f, 15000.0f);
+					position->y = std::clamp(stl::zero_nan(position->y), -15000.0f, 15000.0f);
+					position->z = std::clamp(stl::zero_nan(position->z), -15000.0f, 15000.0f);
 				}
 
 				if (rotation)
@@ -136,6 +137,11 @@ namespace IED
 							rotation->y,
 							rotation->z);
 					}
+				}
+
+				if (xfrmFlags.test(ConfigTransformFlags::kInvert))
+				{
+					result.Invert();
 				}
 
 				return result;

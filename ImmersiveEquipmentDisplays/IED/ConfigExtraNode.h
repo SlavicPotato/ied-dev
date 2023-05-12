@@ -3,16 +3,37 @@
 #include "ConfigSkeletonMatch.h"
 #include "ConfigTransform.h"
 
+#include "WeaponPlacementID.h"
+
 namespace IED
 {
 	namespace Data
 	{
+		enum class ExtraNodeEntrySkelTransformSyncNodeFlags : std::uint32_t
+		{
+			kNone = 0,
+
+			kInvert = 1u << 0
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(ExtraNodeEntrySkelTransformSyncNodeFlags);
+
+		struct configExtraNodeEntrySkelTransformSyncNode_t
+		{
+			stl::fixed_string                                   name;
+			stl::flag<ExtraNodeEntrySkelTransformSyncNodeFlags> flags{ ExtraNodeEntrySkelTransformSyncNodeFlags::kNone };
+		};
+
+		struct configExtraNodeEntrySkelTransform_t
+		{
+			configTransform_t                                        xfrm;
+			std::vector<configExtraNodeEntrySkelTransformSyncNode_t> syncNodes;
+		};
 
 		struct configExtraNodeEntrySkel_t
 		{
-			configSkeletonMatch_t     match;
-			configTransform_t         transform_mov;
-			configTransform_t         transform_node;
+			configSkeletonMatch_t                              match;
+			std::array<configExtraNodeEntrySkelTransform_t, 2> sxfrms;
 		};
 
 		struct configExtraNodeEntry_t
@@ -21,6 +42,7 @@ namespace IED
 			stl::fixed_string                     parent;
 			stl::fixed_string                     desc;
 			stl::list<configExtraNodeEntrySkel_t> skel;
+			WeaponPlacementID                     placementID;
 		};
 
 		using configExtraNodeList_t = stl::list<configExtraNodeEntry_t>;

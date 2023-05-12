@@ -27,6 +27,8 @@
 
 #include "ActorTempData.h"
 
+#include "Common/BulletExtensions.h"
+
 //#include <ext/WeaponAnimationGraphManagerHolder.h>
 
 struct BSAnimationUpdateData;
@@ -114,6 +116,30 @@ namespace IED
 		};
 
 	public:
+		struct ObjectSyncEntry
+		{
+			using transform_type =
+
+#if defined(IED_PERF_BUILD)
+				Bullet::btTransformEx
+#else
+				NiTransform
+#endif
+				;
+
+			explicit ObjectSyncEntry(
+				NiAVObject*           a_dest,
+				const transform_type& a_xfrm) noexcept :
+				dest(a_dest),
+				xfrm(a_xfrm)
+			{
+			}
+
+			stl::cache_aligned::vector<std::pair<NiPointer<NiAVObject>, bool>> sources;
+			NiPointer<NiAVObject>                                              dest;
+			transform_type                                                     xfrm;
+		};
+
 		static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
 		static constexpr long long STATE_CHECK_INTERVAL_MH   = 66666;
 		static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
@@ -661,6 +687,8 @@ namespace IED
 		[[nodiscard]] bool        HasQueuedCloningTasks() const noexcept;
 		[[nodiscard]] std::size_t GetNumQueuedCloningTasks() const noexcept;
 
+		void UpdateSyncNodes() const noexcept;
+
 	private:
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,
@@ -668,6 +696,8 @@ namespace IED
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const noexcept;
 
 		void ApplyXP32NodeTransformOverrides() const noexcept;
+
+		void MakeSyncNodeList(NiNode* a_root, const SkeletonID& a_id) noexcept;
 
 		CachedActorData m_state;
 
@@ -683,8 +713,8 @@ namespace IED
 			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
 		};
 
-		ObjectSlotArray   m_entriesSlot;
-		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX];
+		ObjectSlotArray                                       m_entriesSlot;
+		std::array<customPluginMap_t, Data::CONFIG_CLASS_MAX> m_entriesCustom;
 
 		stl::cache_aligned::vector<MonitorGearNodeEntry>            m_monitorNodes;
 		stl::cache_aligned::vector<WeaponNodeEntry>                 m_weapNodes;
@@ -694,9 +724,9 @@ namespace IED
 		stl::unordered_map<stl::fixed_string, MOVNodeEntry> m_movNodes;
 
 		stl::cache_aligned::vectormap<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
-		conditionalVariableMap_t                                       m_variables;
+		stl::cache_aligned::vector<ObjectSyncEntry>                    m_syncObjects;
 
-		std::optional<ProcessParams> m_currentParams;
+		conditionalVariableMap_t m_variables;
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;
@@ -728,6 +758,8 @@ namespace IED
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;
+
+		std::optional<ProcessParams> m_currentParams;
 
 		static std::atomic_ullong m_lfsc_delta_lf;
 		static std::atomic_ullong m_lfsc_delta_mf;
