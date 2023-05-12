@@ -30,6 +30,11 @@ namespace IED
 				}
 			}
 
+			if (auto& d = a_in["read_from"])
+			{
+				a_out.read_from = d.asString();
+			}
+
 			return true;
 		}
 

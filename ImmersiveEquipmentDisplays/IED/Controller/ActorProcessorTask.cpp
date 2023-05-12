@@ -678,7 +678,7 @@ namespace IED
 						stepMuls,
 						physUpdateData,
 						a_e->second,
-						a_effectUpdates);
+						a_unpaused);
 				});
 #endif
 
@@ -892,7 +892,7 @@ namespace IED
 
 	void ActorProcessorTask::ThreadPool::Stop()
 	{
-		for (auto& e : m_workers)
+		for (const auto& e : m_workers)
 		{
 			{
 				std::unique_lock lock(e->m_mutex);
@@ -904,7 +904,7 @@ namespace IED
 			e->m_cond.notify_all();
 		}
 
-		for (auto& e : m_workers)
+		for (const auto& e : m_workers)
 		{
 			e->stop_and_wait_for_thread();
 		}
@@ -965,7 +965,7 @@ namespace IED
 	void ActorProcessorTask::ThreadPool::distribute_tasks(
 		const ActorObjectMap::vector_type& a_data) const noexcept
 	{
-		assert(!m_workersInUse.empty());
+		assert(m_workersInUse.size() > 0);
 
 		const auto                              maxIndex = m_workersInUse.size() - 1;
 		std::remove_const_t<decltype(maxIndex)> curIndex = 0;

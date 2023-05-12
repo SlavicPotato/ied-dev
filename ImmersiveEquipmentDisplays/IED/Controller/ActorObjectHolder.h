@@ -697,7 +697,10 @@ namespace IED
 
 		void ApplyXP32NodeTransformOverrides() const noexcept;
 
-		void MakeSyncNodeList(NiNode* a_root, const SkeletonID& a_id) noexcept;
+		void MakeSyncNodeList(
+			NiNode*                          a_root,
+			const SkeletonID&                a_id,
+			const SkeletonCache::ActorEntry& a_scEntry) noexcept;
 
 		CachedActorData m_state;
 

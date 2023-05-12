@@ -140,6 +140,9 @@ namespace IED
 #endif
 															   xfrm;
 			std::vector<extraNodeEntrySkelTransformSyncNode_t> syncNodes;
+			stl::fixed_string                                  readFromObj;
+			BSFixedString                                      bsReadFromObj;
+			bool                                               invert{ false };
 		};
 
 		struct extraNodeEntrySkel_t
@@ -168,6 +171,8 @@ namespace IED
 
 		struct extraNodeEntry_t
 		{
+			using name_pair = std::pair<stl::fixed_string, BSFixedString>;
+
 			extraNodeEntry_t(
 				const stl::fixed_string& a_name,
 				const stl::fixed_string& a_mov,
@@ -178,13 +183,13 @@ namespace IED
 				name_cme(a_cme),
 				bsname_cme(a_cme.c_str()),
 				names{
-					NodeNames{
+					name_pair{
 						//
 						a_mov,
 						a_mov.c_str()
 						//
 					},
-					NodeNames{
+					name_pair{
 						//
 						a_name,
 						a_name.c_str()
@@ -200,16 +205,9 @@ namespace IED
 			extraNodeEntry_t(const extraNodeEntry_t&)            = delete;
 			extraNodeEntry_t& operator=(const extraNodeEntry_t&) = delete;
 
-			stl::fixed_string name_cme;
-			BSFixedString     bsname_cme;
-
-			struct NodeNames
-			{
-				stl::fixed_string n;
-				BSFixedString     bsn;
-			};
-
-			std::array<NodeNames, 2>                         names;
+			stl::fixed_string                                name_cme;
+			BSFixedString                                    bsname_cme;
+			std::array<name_pair, 2>                         names;
 			BSFixedString                                    name_parent;
 			stl::fixed_string                                desc;
 			stl::cache_aligned::vector<extraNodeEntrySkel_t> skel;

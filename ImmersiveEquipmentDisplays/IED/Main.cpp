@@ -319,7 +319,7 @@ namespace IED
 				for (auto& e : NodeOverrideData::GetExtraMovNodes())
 				{
 					nodeMap.Add(
-						e.names[1].n,
+						e.names[1].first,
 						e.desc,
 						Data::NodeDescriptorFlags::kNone);
 				}

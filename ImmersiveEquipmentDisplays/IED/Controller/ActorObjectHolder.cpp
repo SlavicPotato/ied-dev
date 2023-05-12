@@ -215,10 +215,10 @@ namespace IED
 				}
 			}
 
-			MakeSyncNodeList(a_npcroot, m_skeletonID);
+			MakeSyncNodeList(a_npcroot, m_skeletonID, skeletonCache);
 			if (npcroot1p && a_syncToFirstPersonSkeleton)
 			{
-				MakeSyncNodeList(npcroot1p, m_root1p.get());
+				MakeSyncNodeList(npcroot1p, m_root1p.get(), skeletonCache1p);
 			}
 		}
 
@@ -391,12 +391,12 @@ namespace IED
 	bool ActorObjectHolder::IsActorNPCOrTemplate(Game::FormID a_npc) const noexcept
 	{
 		return a_npc == m_npcTemplateId;
-				}
+	}
 
 	bool ActorObjectHolder::IsActorRace(Game::FormID a_race) const noexcept
 	{
 		return a_race == m_raceid;
-				}
+	}
 
 	float ActorObjectHolder::GetRandomPercent(const luid_tag& a_luid) noexcept
 	{
@@ -874,10 +874,35 @@ namespace IED
 
 	namespace detail
 	{
+		ActorObjectHolder::ObjectSyncEntry::transform_type get_transform(
+			const NodeOverrideData::extraNodeEntrySkelTransform_t& a_data,
+			const SkeletonCache::ActorEntry&                       a_scEntry) noexcept
+		{
+			auto result = a_data.readFromObj.empty() ?
+			                  a_data.xfrm :
+#if defined(IED_PERF_BUILD)
+
+			                  Bullet::btTransformEx
+#endif
+			                  (a_scEntry.GetCachedOrZeroTransform(a_data.readFromObj));
+
+			if (a_data.invert)
+			{
+#if defined(IED_PERF_BUILD)
+				result.inverse();
+#else
+				result.Invert();
+#endif
+			}
+
+			return result;
+		}
+
 		static void TryMakeSyncNodeEntry(
 			NiNode*                                                         a_root,
 			const NodeOverrideData::extraNodeEntrySkelTransform_t&          a_data,
 			const BSFixedString&                                            a_dst,
+			const SkeletonCache::ActorEntry&                                a_scEntry,
 			stl::cache_aligned::vector<ActorObjectHolder::ObjectSyncEntry>& a_out) noexcept
 		{
 			if (a_data.syncNodes.empty())
@@ -891,11 +916,15 @@ namespace IED
 				return;
 			}
 
-			ActorObjectHolder::ObjectSyncEntry result(destNode, a_data.xfrm);
+			ActorObjectHolder::ObjectSyncEntry result(
+				destNode,
+				get_transform(a_data, a_scEntry));
 
 			for (auto& e : a_data.syncNodes)
 			{
-				if (const auto sourceNode = a_root->GetObjectByName(e.name))
+				const auto sourceNode = a_root->GetObjectByName(e.name);
+
+				if (sourceNode && sourceNode != destNode)
 				{
 					result.sources.emplace(
 						result.sources.begin(),
@@ -904,18 +933,17 @@ namespace IED
 				}
 			}
 
-			if (result.sources.empty())
+			if (!result.sources.empty())
 			{
-				return;
+				a_out.emplace_back(std::move(result));
 			}
-
-			a_out.emplace_back(std::move(result));
 		}
 	}
 
 	void ActorObjectHolder::MakeSyncNodeList(
-		NiNode*           a_root,
-		const SkeletonID& a_id) noexcept
+		NiNode*                          a_root,
+		const SkeletonID&                a_id,
+		const SkeletonCache::ActorEntry& a_scEntry) noexcept
 	{
 		for (auto& e : NodeOverrideData::GetExtraMovNodes())
 		{
@@ -932,15 +960,16 @@ namespace IED
 			}
 
 			static_assert(
-				stl::array_size<decltype(it->sxfrms)>::value ==
-				stl::array_size<decltype(e.names)>::value);
+				stl::array_size_v<decltype(it->sxfrms)> ==
+				stl::array_size_v<decltype(e.names)>);
 
 			for (std::size_t i = 0; i < std::size(it->sxfrms); i++)
 			{
 				detail::TryMakeSyncNodeEntry(
 					a_root,
 					it->sxfrms[i],
-					e.names[i].bsn,
+					e.names[i].second,
+					a_scEntry,
 					m_syncObjects);
 			}
 		}

@@ -28,6 +28,7 @@ namespace IED
 		{
 			configTransform_t                                        xfrm;
 			std::vector<configExtraNodeEntrySkelTransformSyncNode_t> syncNodes;
+			stl::fixed_string                                        read_from;
 		};
 
 		struct configExtraNodeEntrySkel_t
