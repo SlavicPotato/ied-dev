@@ -298,8 +298,8 @@ namespace IED
 			m_flags.set(ActorObjectHolderFlags::kRequestEvalImmediate);
 		}
 
-		[[nodiscard]] bool IsActorNPCOrTemplate(Game::FormID a_npc) const;
-		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
+		[[nodiscard]] bool IsActorNPCOrTemplate(Game::FormID a_npc) const noexcept;
+		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const noexcept;
 
 		template <class Tv>
 		constexpr void state_var_update(

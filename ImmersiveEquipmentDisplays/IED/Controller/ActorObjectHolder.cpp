@@ -388,43 +388,15 @@ namespace IED
 		return result;
 	}
 
-	bool ActorObjectHolder::IsActorNPCOrTemplate(Game::FormID a_npc) const
+	bool ActorObjectHolder::IsActorNPCOrTemplate(Game::FormID a_npc) const noexcept
 	{
-		auto handle = GetHandle();
-
-		NiPointer<TESObjectREFR> refr;
-		if (handle.Lookup(refr))
-		{
-			if (auto actor = refr->As<Actor>())
-			{
-				if (auto npc = actor->GetActorBase())
-				{
-					return (npc->GetFirstNonTemporaryOrThis()->formID == a_npc);
+		return a_npc == m_npcTemplateId;
 				}
-			}
-		}
 
-		return false;
-	}
-
-	bool ActorObjectHolder::IsActorRace(Game::FormID a_race) const
+	bool ActorObjectHolder::IsActorRace(Game::FormID a_race) const noexcept
 	{
-		auto handle = GetHandle();
-
-		NiPointer<TESObjectREFR> refr;
-		if (handle.Lookup(refr))
-		{
-			if (auto actor = refr->As<Actor>())
-			{
-				if (auto race = actor->GetRace())
-				{
-					return (race->formID == a_race);
+		return a_race == m_raceid;
 				}
-			}
-		}
-
-		return false;
-	}
 
 	float ActorObjectHolder::GetRandomPercent(const luid_tag& a_luid) noexcept
 	{
