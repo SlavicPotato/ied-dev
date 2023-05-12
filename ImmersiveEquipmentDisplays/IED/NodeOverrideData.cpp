@@ -761,7 +761,7 @@ namespace IED
 					m_extramov.begin(),
 					m_extramov.end(),
 					[&](const auto& a_v) {
-						return a_v.name_node == f.name;
+						return a_v.names[1].n == f.name;
 					});
 
 				if (it != m_extramov.end())
@@ -810,8 +810,8 @@ namespace IED
 				}
 
 				m_mov.try_emplace(
-					rv.name_mov,
-					rv.name_mov,
+					rv.names[0].n,
+					rv.names[0].n,
 					rv.desc,
 					rv.placementID);
 

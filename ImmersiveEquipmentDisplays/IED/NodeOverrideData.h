@@ -137,19 +137,19 @@ namespace IED
 			Bullet::btTransformEx
 #else
 			NiTransform
-#endif                                        
-				xfrm;
+#endif
+															   xfrm;
 			std::vector<extraNodeEntrySkelTransformSyncNode_t> syncNodes;
 		};
 
 		struct extraNodeEntrySkel_t
 		{
 			extraNodeEntrySkel_t(
-				const Data::configSkeletonMatch_t&   a_sm) :
+				const Data::configSkeletonMatch_t& a_sm) :
 				match(a_sm)
 			{
 			}
-			
+
 			extraNodeEntrySkel_t(
 				const Data::configSkeletonMatch_t&   a_sm,
 				const extraNodeEntrySkelTransform_t& a_sxfrm1,
@@ -166,36 +166,8 @@ namespace IED
 			std::array<extraNodeEntrySkelTransform_t, 2> sxfrms;
 		};
 
-		struct exn_ctor_init_t
-		{
-			const char*                                 node;
-			const char*                                 mov;
-			const char*                                 cme;
-			const char*                                 parent;
-			std::initializer_list<extraNodeEntrySkel_t> skel;
-			WeaponPlacementID                           placementID;
-			const char*                                 desc;
-		};
-
-		using init_list_exn = std::pair<const char*, exn_ctor_init_t>;
-
 		struct extraNodeEntry_t
 		{
-			extraNodeEntry_t(
-				const exn_ctor_init_t& a_init) :
-				name_node(a_init.node),
-				bsname_node(a_init.node),
-				name_cme(a_init.cme),
-				name_mov(a_init.mov),
-				bsname_cme(a_init.cme),
-				bsname_mov(a_init.mov),
-				name_parent(a_init.parent),
-				skel(a_init.skel),
-				placementID(a_init.placementID),
-				desc(a_init.desc)
-			{
-			}
-
 			extraNodeEntry_t(
 				const stl::fixed_string& a_name,
 				const stl::fixed_string& a_mov,
@@ -203,12 +175,22 @@ namespace IED
 				const stl::fixed_string& a_parent,
 				WeaponPlacementID        a_pid,
 				const stl::fixed_string& a_desc) :
-				name_node(a_name),
-				bsname_node(a_name.c_str()),
 				name_cme(a_cme),
-				name_mov(a_mov),
 				bsname_cme(a_cme.c_str()),
-				bsname_mov(a_mov.c_str()),
+				names{
+					NodeNames{
+						//
+						a_mov,
+						a_mov.c_str()
+						//
+					},
+					NodeNames{
+						//
+						a_name,
+						a_name.c_str()
+						//
+					}
+				},
 				name_parent(a_parent.c_str()),
 				placementID(a_pid),
 				desc(a_desc)
@@ -218,14 +200,18 @@ namespace IED
 			extraNodeEntry_t(const extraNodeEntry_t&)            = delete;
 			extraNodeEntry_t& operator=(const extraNodeEntry_t&) = delete;
 
-			stl::fixed_string                                name_node;
-			stl::fixed_string                                name_cme;
-			stl::fixed_string                                name_mov;
-			stl::fixed_string                                desc;
-			BSFixedString                                    bsname_node;
-			BSFixedString                                    bsname_cme;
-			BSFixedString                                    bsname_mov;
+			stl::fixed_string name_cme;
+			BSFixedString     bsname_cme;
+
+			struct NodeNames
+			{
+				stl::fixed_string n;
+				BSFixedString     bsn;
+			};
+
+			std::array<NodeNames, 2>                         names;
 			BSFixedString                                    name_parent;
+			stl::fixed_string                                desc;
 			stl::cache_aligned::vector<extraNodeEntrySkel_t> skel;
 			WeaponPlacementID                                placementID;
 		};

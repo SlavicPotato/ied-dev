@@ -959,12 +959,16 @@ namespace IED
 				continue;
 			}
 
-			for (auto& f : it->sxfrms)
+			static_assert(
+				stl::array_size<decltype(it->sxfrms)>::value ==
+				stl::array_size<decltype(e.names)>::value);
+
+			for (std::size_t i = 0; i < std::size(it->sxfrms); i++)
 			{
 				detail::TryMakeSyncNodeEntry(
 					a_root,
-					f,
-					e.bsname_mov,
+					it->sxfrms[i],
+					e.names[i].bsn,
 					m_syncObjects);
 			}
 		}

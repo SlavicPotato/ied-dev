@@ -20,13 +20,13 @@ namespace IED
 
 			a_target->AttachChild(cme, false);
 
-			auto mov = CreateAttachmentNode(a_entry.bsname_mov);
+			auto mov = CreateAttachmentNode(a_entry.names[0].bsn);
 
 			mov->m_localTransform = a_skelEntry.sxfrms[0].xfrm;
 
 			cme->AttachChild(mov, true);
 
-			auto node = CreateAttachmentNode(a_entry.bsname_node);
+			auto node = CreateAttachmentNode(a_entry.names[1].bsn);
 
 			node->m_localTransform = a_skelEntry.sxfrms[1].xfrm;
 
@@ -46,8 +46,8 @@ namespace IED
 			for (auto& v : NodeOverrideData::GetExtraMovNodes())
 			{
 				if (a_root->GetObjectByName(v.bsname_cme) ||
-				    a_root->GetObjectByName(v.bsname_mov) ||
-				    a_root->GetObjectByName(v.bsname_node))
+				    a_root->GetObjectByName(v.names[0].bsn) ||
+				    a_root->GetObjectByName(v.names[1].bsn))
 				{
 					continue;
 				}
