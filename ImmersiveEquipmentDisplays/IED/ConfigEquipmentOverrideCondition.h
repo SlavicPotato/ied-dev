@@ -27,6 +27,7 @@ namespace IED
 			kNot = 1u << 6,
 
 			kMatchEquipped       = 1u << 7,
+			kMatchLeftHand       = kMatchEquipped,
 			kMatchEquipmentSlots = 1u << 8,
 			kMatchCategoryOperOR = 1u << 9,
 			kMatchThisItem       = 1u << 10,
@@ -90,6 +91,7 @@ namespace IED
 			Effect     = 23,
 			Perk       = 24,
 			Cell       = 25,
+			Hand       = 26,
 		};
 
 		enum class PresenceEquippedHandMatch : std::uint32_t
@@ -274,6 +276,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Skeleton:
 				case EquipmentOverrideConditionType::Effect:
 				case EquipmentOverrideConditionType::Cell:
+				case EquipmentOverrideConditionType::Hand:
 
 					switch (a_matchType)
 					{
@@ -360,6 +363,7 @@ namespace IED
 				ConditionalVariableType      condVarType;
 				ActorState::ACTOR_LIFE_STATE lifeState;
 				RE::INTERIOR_DATA::Inherit   lightingTemplateInheritanceFlags;
+				std::uint8_t                 formType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);

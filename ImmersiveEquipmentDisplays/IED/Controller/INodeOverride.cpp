@@ -697,6 +697,14 @@ namespace IED
 				Data::NodeOverrideConditionFlags>(
 				a_params,
 				a_data);
+
+		case Data::NodeOverrideConditionType::Hand:
+
+			return Conditions::match_hand_item<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data);
 		}
 
 		return false;
@@ -876,6 +884,8 @@ namespace IED
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t&                      a_params) noexcept
 	{
+		const stl::ftz_daz_ctl_scoped<_MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON> fds;
+
 		auto xfrm = a_entry.thirdPerson.orig;
 
 		if (a_data.transform.scale)

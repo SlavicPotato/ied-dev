@@ -744,6 +744,14 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
+
+			case EquipmentOverrideConditionType::Hand:
+
+				return Conditions::match_hand_item<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1108,6 +1116,14 @@ namespace IED
 			case EquipmentOverrideConditionType::Cell:
 
 				return Conditions::match_cell<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
+
+			case EquipmentOverrideConditionType::Hand:
+
+				return Conditions::match_hand_item<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(
 					a_params,
@@ -1727,6 +1743,14 @@ namespace IED
 			case EquipmentOverrideConditionType::Cell:
 
 				return Conditions::match_cell<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
+
+			case EquipmentOverrideConditionType::Hand:
+
+				return Conditions::match_hand_item<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(
 					a_params,

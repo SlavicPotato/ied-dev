@@ -26,6 +26,7 @@ namespace IED
 		static bool IsInventoryFormType(std::uint8_t a_type) noexcept;
 		static bool IsValidSlotForm(const TESForm* a_form) noexcept;
 		static bool IsEquippableForm(const TESForm* a_form) noexcept;
+		static bool IsEquippableHandFormType(std::uint8_t a_type) noexcept;
 
 		static stl::flag<FormInfoFlags> GetFormFlags(const TESForm* a_form) noexcept;
 

@@ -150,6 +150,21 @@ namespace IED
 		}
 	}
 
+	bool IFormCommon::IsEquippableHandFormType(std::uint8_t a_type) noexcept
+	{
+		switch (a_type)
+		{
+		case TESObjectLIGH::kTypeID:
+		case TESObjectWEAP::kTypeID:
+		case TESObjectARMO::kTypeID:
+		case SpellItem::kTypeID:
+		case ScrollItem::kTypeID:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	stl::flag<FormInfoFlags> IFormCommon::GetFormFlags(const TESForm* a_form) noexcept
 	{
 		stl::flag<FormInfoFlags> result{ FormInfoFlags::kNone };

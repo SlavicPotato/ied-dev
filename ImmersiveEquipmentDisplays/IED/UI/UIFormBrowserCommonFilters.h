@@ -33,6 +33,7 @@ namespace IED
 			LightingTemplate,
 			Outfit,
 			OutfitItems,
+			HandEquippable,
 			Common,
 			ModelTypes,
 		};
@@ -48,7 +49,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 27> m_filters;
+			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 28> m_filters;
 
 			static const UIFormBrowserCommonFilters m_Instance;
 		};

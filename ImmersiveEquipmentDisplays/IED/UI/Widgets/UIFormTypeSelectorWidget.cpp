@@ -35,7 +35,7 @@ namespace IED
 			std::make_pair(TESObjectREFR::kTypeID, UIFormTypeSelectorWidgetStrings::Reference),
 			std::make_pair(Actor::kTypeID, UIFormTypeSelectorWidgetStrings::Actor),
 			std::make_pair(TESQuest::kTypeID, UIFormTypeSelectorWidgetStrings::Quest),
-			std::make_pair(SpellItem::kTypeID, UIFormTypeSelectorWidgetStrings::Quest),
+			std::make_pair(SpellItem::kTypeID, UIFormTypeSelectorWidgetStrings::Spell),
 			std::make_pair(TESRace::kTypeID, UIFormTypeSelectorWidgetStrings::Race),
 			std::make_pair(BGSArtObject::kTypeID, UIFormTypeSelectorWidgetStrings::ArtObject),
 			std::make_pair(BGSSoundDescriptorForm::kTypeID, UIFormTypeSelectorWidgetStrings::SoundDescriptor),
@@ -64,24 +64,39 @@ namespace IED
 			std::make_pair(TESObjectCELL::kTypeID, UIFormTypeSelectorWidgetStrings::Cell),
 			std::make_pair(TESLevItem::kTypeID, UIFormTypeSelectorWidgetStrings::LevItem),
 			std::make_pair(TESObjectARMA::kTypeID, UIFormTypeSelectorWidgetStrings::ArmorAddon),
-			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form)
-		);
+			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form));
 
 		bool UIFormTypeSelectorWidget::DrawFormTypeSelector(
 			std::optional<std::uint8_t>& a_type,
+			bool                         a_allowClear,
 			filter_func_t                a_filter)
 		{
 			bool result = false;
 
 			auto preview = a_type ?
 			                   form_type_to_desc(*a_type) :
-                               nullptr;
+			                   nullptr;
 
 			if (ImGui::BeginCombo(
-					"##ex_ft_sel",
+					UIL::LS(CommonStrings::Type, "ex_ft_sel"),
 					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
+				if (a_allowClear)
+				{
+					ImGui::PushID("hdr");
+
+					if (ImGui::Selectable("##none"))
+					{
+						a_type.reset();
+						result = true;
+					}
+
+					ImGui::PopID();
+				}
+
+				ImGui::PushID("body");
+
 				for (auto& [i, e] : s_data)
 				{
 					if (a_filter && !a_filter(i))
@@ -108,6 +123,8 @@ namespace IED
 
 					ImGui::PopID();
 				}
+
+				ImGui::PopID();
 
 				ImGui::EndCombo();
 			}

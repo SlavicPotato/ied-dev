@@ -176,6 +176,11 @@ namespace IED
 			{
 				return m_descBuffer;
 			}
+			
+			constexpr auto& GetDescBuffer2() noexcept
+			{
+				return m_descBuffer2;
+			}
 
 		private:
 			bool DrawExtra(

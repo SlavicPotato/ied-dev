@@ -67,6 +67,7 @@ namespace IED
 			kNot = 1u << 6,
 
 			kMatchEquipped       = 1u << 7,
+			kMatchLeftHand       = kMatchEquipped,
 			kMatchSlots          = 1u << 8,
 			kMatchCategoryOperOR = 1u << 9,
 
@@ -121,6 +122,7 @@ namespace IED
 			Effect     = 22,
 			Perk       = 23,
 			Cell       = 24,
+			Hand       = 25,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -241,6 +243,7 @@ namespace IED
 				case NodeOverrideConditionType::Skeleton:
 				case NodeOverrideConditionType::Effect:
 				case NodeOverrideConditionType::Cell:
+				case NodeOverrideConditionType::Hand:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{
@@ -381,6 +384,7 @@ namespace IED
 				ConditionalVariableType      condVarType;
 				ActorState::ACTOR_LIFE_STATE lifeState;
 				RE::INTERIOR_DATA::Inherit   lightingTemplateInheritanceFlags;
+				std::uint8_t                 formType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);

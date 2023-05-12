@@ -1152,9 +1152,59 @@ namespace IED
 			}
 		}
 
+		template <class Tm, class Tf>
+		constexpr bool match_hand_item(
+			CommonParams& a_params,
+			const Tm&     a_match) noexcept
+		{
+			const auto* const pm = a_params.actor->processManager;
+			if (!pm)
+			{
+				return false;
+			}
+
+			const auto* const form = pm->equippedObject[  //
+				a_match.flags.test(Tf::kMatchLeftHand) ?
+					ActorProcessManager::kEquippedHand_Left :
+					ActorProcessManager::kEquippedHand_Right];
+
+			if (!form)
+			{
+				return false;
+			}
+
+			if (a_match.form.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch2) ==
+				    (form->formID == a_match.form.get_id()))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.keyword.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch1) ==
+				    IFormCommon::HasKeyword(form, a_match.keyword))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.formType)
+			{
+				if (a_match.flags.test(Tf::kNegateMatch3) ==
+				    (form->formType == a_match.formType))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		namespace detail
 		{
-
 			template <class Tm>
 			SKMP_FORCEINLINE constexpr bool do_var_match(
 				const conditionalVariableStorage_t& a_data,

@@ -4,6 +4,7 @@
 #include "UIComparisonOperatorSelector.h"
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIEquipmentOverrideConditionsWidget.h"
+#include "UIFormTypeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
 
@@ -145,6 +146,12 @@ namespace IED
 						}
 
 						ImGui::EndMenu();
+					}
+
+					if (UIL::LCG_MI(CommonStrings::Hand, "5a"))
+					{
+						result.action    = UIEquipmentOverrideAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Hand;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Actor, "6"))
@@ -923,6 +930,44 @@ namespace IED
 
 				break;
 
+			case Data::EquipmentOverrideConditionType::Hand:
+
+				{
+					std::optional<std::uint8_t> tmp;
+					if (match->formType)
+					{
+						tmp.emplace(match->formType);
+					}
+
+					UICommon::PushDisabled(!tmp);
+
+					result |= ImGui::CheckboxFlagsT(
+						"!##1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
+
+					UICommon::PopDisabled(!tmp);
+
+					ImGui::SameLine();
+
+					if (UIFormTypeSelectorWidget::DrawFormTypeSelector(
+							tmp,
+							true,
+							[](std::uint8_t a_type) {
+								return IFormCommon::IsEquippableHandFormType(a_type);
+							}))
+					{
+						match->formType = tmp ? *tmp : 0;
+						result          = true;
+					}
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(CommonStrings::Left, "2"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kMatchLeftHand));
+				}
+				break;
+
 			case Data::EquipmentOverrideConditionType::NPC:
 
 				result |= ImGui::CheckboxFlagsT(
@@ -1041,6 +1086,7 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Race:
 			case Data::EquipmentOverrideConditionType::Idle:
 			case Data::EquipmentOverrideConditionType::Cell:
+			case Data::EquipmentOverrideConditionType::Hand:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -1363,6 +1409,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Skeleton:
 					case Data::EquipmentOverrideConditionType::Effect:
 					case Data::EquipmentOverrideConditionType::Cell:
+					case Data::EquipmentOverrideConditionType::Hand:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1663,6 +1710,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Skeleton:
 						case Data::EquipmentOverrideConditionType::Effect:
 						case Data::EquipmentOverrideConditionType::Cell:
+						case Data::EquipmentOverrideConditionType::Hand:
 
 							it = a_entry.emplace(
 								it,
@@ -2278,6 +2326,44 @@ namespace IED
 
 								break;
 
+							case Data::EquipmentOverrideConditionType::Hand:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								{
+									const auto d = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
+
+									auto& b = m_condParamEditor.GetDescBuffer2();
+
+									if (d[0])
+									{
+										stl::snprintf(
+											b,
+											"%s%s, T:%hhu",
+											e.flags.test(Data::EquipmentOverrideConditionFlags::kMatchLeftHand) ? "L, " : "",
+											d,
+											e.formType);
+									}
+									else
+									{
+										stl::snprintf(
+											b,
+											"%sT:%hhu",
+											e.flags.test(Data::EquipmentOverrideConditionFlags::kMatchLeftHand) ? "L, " : "",
+											e.formType);
+									}
+
+									vdesc = b;
+									tdesc = UIL::LS(CommonStrings::Hand);
+								}
+
+								break;
+
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -2420,6 +2506,10 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Cell:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Cell));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
+				break;
+			case Data::EquipmentOverrideConditionType::Hand:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::HandEquippable));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));

@@ -171,8 +171,8 @@ namespace IED
 					UIL::LS(CommonStrings::Position, "1"),
 					*a_data.position,
 					dragSpeed,
-					-5000.0f,
-					5000.0f,
+					-15000.0f,
+					15000.0f,
 					"%.4f",
 					ImGuiSliderFlags_AlwaysClamp |
 						ImGuiSliderFlags_NoRoundToFormat))

@@ -5,6 +5,7 @@
 #include "IED/UI/Widgets/UIBipedObjectSelectorWidget.h"
 #include "IED/UI/Widgets/UICMNodeSelector.h"
 #include "IED/UI/Widgets/UIConditionExtraSelectorWidget.h"
+#include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIObjectTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
@@ -164,6 +165,12 @@ namespace IED
 						}
 
 						ImGui::EndMenu();
+					}
+
+					if (ImGui::MenuItem(UIL::LS(CommonStrings::Hand, "7a")))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Hand;
 					}
 
 					if (ImGui::MenuItem(UIL::LS(CommonStrings::Actor, "8")))
@@ -546,6 +553,16 @@ namespace IED
 						}
 
 						ImGui::EndMenu();
+					}
+
+					if (UIL::LCG_MI(CommonStrings::Hand, "4a"))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Hand);
+
+						a_updateFunc();
+
+						result = NodeOverrideCommonAction::Insert;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Actor, "5"))
@@ -1068,6 +1085,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Skeleton:
 						case Data::NodeOverrideConditionType::Effect:
 						case Data::NodeOverrideConditionType::Cell:
+						case Data::NodeOverrideConditionType::Hand:
 
 							it = a_entry.emplace(
 								it,
@@ -1624,6 +1642,44 @@ namespace IED
 
 								break;
 
+							case Data::NodeOverrideConditionType::Hand:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								{
+									const auto d = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
+
+									auto& b = m_condParamEditor.GetDescBuffer2();
+
+									if (d[0])
+									{
+										stl::snprintf(
+											b,
+											"%s%s, T:%hhu",
+											e.flags.test(Data::NodeOverrideConditionFlags::kMatchLeftHand) ? "L, " : "",
+											d,
+											e.formType);
+									}
+									else
+									{
+										stl::snprintf(
+											b,
+											"%sT:%hhu",
+											e.flags.test(Data::NodeOverrideConditionFlags::kMatchLeftHand) ? "L, " : "",
+											e.formType);
+									}
+
+									vdesc = b;
+									tdesc = UIL::LS(CommonStrings::Hand);
+								}
+
+								break;
+
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -2073,6 +2129,44 @@ namespace IED
 
 				break;
 
+			case Data::NodeOverrideConditionType::Hand:
+
+				{
+					std::optional<std::uint8_t> tmp;
+					if (match->formType)
+					{
+						tmp.emplace(match->formType);
+					}
+
+					UICommon::PushDisabled(!tmp);
+
+					result |= ImGui::CheckboxFlagsT(
+						"!##1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
+
+					UICommon::PopDisabled(!tmp);
+
+					ImGui::SameLine();
+
+					if (UIFormTypeSelectorWidget::DrawFormTypeSelector(
+							tmp,
+							true,
+							[](std::uint8_t a_type) {
+								return IFormCommon::IsEquippableHandFormType(a_type);
+							}))
+					{
+						match->formType = tmp ? *tmp : 0;
+						result          = true;
+					}
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(CommonStrings::Left, "2"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kMatchLeftHand));
+				}
+				break;
+
 			case Data::NodeOverrideConditionType::NPC:
 
 				result |= ImGui::CheckboxFlagsT(
@@ -2191,6 +2285,7 @@ namespace IED
 			case Data::NodeOverrideConditionType::Race:
 			case Data::NodeOverrideConditionType::Idle:
 			case Data::NodeOverrideConditionType::Cell:
+			case Data::NodeOverrideConditionType::Hand:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -2523,6 +2618,10 @@ namespace IED
 			case Data::NodeOverrideConditionType::Cell:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Cell));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
+				break;
+			case Data::NodeOverrideConditionType::Hand:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::HandEquippable));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));

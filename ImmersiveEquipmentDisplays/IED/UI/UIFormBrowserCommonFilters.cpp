@@ -147,6 +147,15 @@ namespace IED
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ TESObjectWEAP::kTypeID,
 			          TESObjectARMO::kTypeID,
+			          TESObjectLIGH::kTypeID,
+			          ScrollItem::kTypeID,
+			          SpellItem::kTypeID }),
+
+				std::make_shared<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESObjectWEAP::kTypeID,
+			          TESObjectARMO::kTypeID,
 			          TESAmmo::kTypeID,
 			          TESObjectLIGH::kTypeID,
 			          TESObjectMISC::kTypeID,
