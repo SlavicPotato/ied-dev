@@ -601,12 +601,11 @@ namespace IED
 		}
 	}
 
-	template <class T>
-	bool NodeOverrideData::LoadEntryList(
-		const char*   a_path,
-		stl::list<T>& a_out)
+	namespace detail
 	{
-		try
+		static void make_sorted_path_list(
+			const char*         a_path,
+			stl::set<fs::path>& a_out)
 		{
 			const fs::path allowedExt{ ".json" };
 
@@ -625,13 +624,31 @@ namespace IED
 					continue;
 				}
 
+				a_out.emplace(entry.path());
+			}
+		}
+	}
+
+	template <class T>
+	bool NodeOverrideData::LoadEntryList(
+		const char*   a_path,
+		stl::list<T>& a_out)
+	{
+		try
+		{
+			stl::set<fs::path> data;
+
+			detail::make_sorted_path_list(a_path, data);
+
+			for (const auto& path : data)
+			{
 				const auto strPath = Serialization::SafeGetPath(path);
 
 				std::unique_ptr<T> result;
 
 				try
 				{
-					result = LoadDataFile<T>(entry.path());
+					result = LoadDataFile<T>(path);
 				}
 				catch (const std::exception& e)
 				{
