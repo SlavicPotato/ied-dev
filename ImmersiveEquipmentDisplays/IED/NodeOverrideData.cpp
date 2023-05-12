@@ -541,7 +541,8 @@ namespace IED
 			271026958073932624,
 			4625650181268377090,
 			10927971447177431054,
-			17428621824148309550
+			17428621824148309550,
+			17148319377188110236
 
 		},
 
@@ -618,8 +619,7 @@ namespace IED
 
 				auto& path = entry.path();
 
-				if (!path.has_extension() ||
-				    path.extension() != allowedExt)
+				if (path.extension() != allowedExt)
 				{
 					continue;
 				}
@@ -761,7 +761,7 @@ namespace IED
 					m_extramov.begin(),
 					m_extramov.end(),
 					[&](const auto& a_v) {
-						return a_v.names[1].n == f.name;
+						return a_v.names[1].first == f.name;
 					});
 
 				if (it != m_extramov.end())
@@ -787,31 +787,48 @@ namespace IED
 					auto& v = rv.skel.emplace_back(g.match);
 
 					static_assert(
-						stl::array_size<decltype(g.sxfrms)>::value ==
-						stl::array_size<decltype(v.sxfrms)>::value);
+						stl::array_size_v<decltype(g.sxfrms)> ==
+						stl::array_size_v<decltype(v.sxfrms)>);
 
 					for (std::size_t i = 0; i < std::size(g.sxfrms); i++)
 					{
 						auto& src = g.sxfrms[i];
 						auto& dst = v.sxfrms[i];
 
-						dst.xfrm = src.xfrm.to_nitransform();
+						dst.xfrm          = src.xfrm.to_nitransform();
+						dst.invert        = src.xfrm.xfrmFlags.test(Data::ConfigTransformFlags::kInvert);
+						dst.readFromObj   = src.read_from;
+						dst.bsReadFromObj = src.read_from.c_str();
 
 						for (auto& h : src.syncNodes)
 						{
-							if (!h.name.empty())
+							if (h.name.empty())
 							{
-								dst.syncNodes.emplace_back(
-									h.name.c_str(),
-									h.flags);
+								continue;
 							}
+
+							if (h.name == mov ||
+							    h.name == cme ||
+							    h.name == f.name)
+							{
+								Warning(
+									"%s: '%s' - invalid sync entry",
+									__FUNCTION__,
+									h.name.c_str());
+
+								continue;
+							}
+
+							dst.syncNodes.emplace_back(
+								h.name.c_str(),
+								h.flags);
 						}
 					}
 				}
 
 				m_mov.try_emplace(
-					rv.names[0].n,
-					rv.names[0].n,
+					rv.names[0].first,
+					rv.names[0].first,
 					rv.desc,
 					rv.placementID);
 
