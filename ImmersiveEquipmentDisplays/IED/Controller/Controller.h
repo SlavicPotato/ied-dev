@@ -476,7 +476,7 @@ namespace IED
 		void        ClearBipedCache();
 		std::size_t RemoveBipedCacheEntries(std::function<bool(Game::FormID)> a_filter);
 
-		void ClearPlayerRPC() noexcept;
+		void QueueClearPlayerRPC() noexcept;
 
 	private:
 		FN_NAMEPROC("Controller");

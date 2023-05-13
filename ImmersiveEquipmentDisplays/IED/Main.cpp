@@ -166,7 +166,6 @@ namespace IED
 
 		auto& sc = SkeletonCache::GetSingleton();
 
-		sc.EnableNativeLoader(config->m_scNativeLoader);
 		sc.EnableMakeOnLoad(config->m_scMakeOnLoad);
 
 		m_done = true;

@@ -49,7 +49,6 @@ namespace IED
 
 				m_data.try_emplace(
 					key.first,
-					m_useNativeLoader.load(std::memory_order_relaxed),
 					key.second.c_str());
 			}
 		}
@@ -110,7 +109,6 @@ namespace IED
 
 		return m_data.try_emplace(
 						 a_key.first,
-						 m_useNativeLoader.load(std::memory_order_relaxed),
 						 a_key.second.c_str())
 		    .first->second;
 	}
@@ -140,45 +138,22 @@ namespace IED
 	}
 
 	SkeletonCache::actor_entry_data::actor_entry_data(
-		bool        a_nativeLoader,
 		const char* a_modelPath)
 	{
 		RE::BSModelDB::ModelLoadParams params(3, false, true);
 
-		NiPointer<NiAVObject>         object;
-		RE::BSModelDB::ModelEntryAuto entry;
+		NiPointer<NiAVObject> object;
 
-		bool result;
-
-		if (a_nativeLoader)
-		{
-			result = ModelLoader::NativeLoad(a_modelPath, params, entry);
-
-			if (result)
-			{
-				if (entry->object->m_parent != nullptr)
-				{
-					params = RE::BSModelDB::ModelLoadParams(3, false, true);
-					result = ModelLoader::Load(a_modelPath, params, object);
-				}
-				else
-				{
-					object = entry->object;
-				}
-			}
-		}
-		else
-		{
-			result = ModelLoader::Load(a_modelPath, params, object);
-		}
+		const bool result = ModelLoader::Load(a_modelPath, params, object);
 
 		if (!result)
 		{
 			gLog.Warning(__FUNCTION__ ": [%s] could not load skeleton mesh", a_modelPath);
-			return;
 		}
-
-		make_node_entries(object);
+		else
+		{
+			make_node_entries(object);
+		}
 	}
 
 	SkeletonCache::actor_entry_data::actor_entry_data(NiAVObject* a_root)
@@ -203,9 +178,8 @@ namespace IED
 	}
 
 	SkeletonCache::ActorEntry::ActorEntry(
-		bool        a_nativeLoader,
 		const char* a_modelPath) :
-		ptr(stl::make_smart<actor_entry_data>(a_nativeLoader, a_modelPath))
+		ptr(stl::make_smart<actor_entry_data>(a_modelPath))
 	{
 	}
 

@@ -20,7 +20,6 @@ namespace IED
 			SKMP_REDEFINE_NEW_PREF();
 
 			actor_entry_data(
-				bool        a_nativeLoader,
 				const char* a_modelPath);
 
 			actor_entry_data(
@@ -42,7 +41,6 @@ namespace IED
 		public:
 			ActorEntry() = default;
 			ActorEntry(
-				bool        a_nativeLoader,
 				const char* a_modelPath);
 
 			ActorEntry(NiAVObject* a_root);
@@ -99,11 +97,6 @@ namespace IED
 		[[nodiscard]] std::size_t GetSize() const;
 		[[nodiscard]] std::size_t GetTotalEntries() const;
 
-		inline void EnableNativeLoader(bool a_switch) noexcept
-		{
-			m_useNativeLoader.store(a_switch, std::memory_order_relaxed);
-		}
-
 		constexpr void EnableMakeOnLoad(bool a_switch) noexcept
 		{
 			m_makeOnLoad = a_switch;
@@ -129,7 +122,6 @@ namespace IED
 		data_type                 m_data;
 		mutable stl::shared_mutex m_lock;
 
-		std::atomic_bool m_useNativeLoader{ false };
 		bool             m_makeOnLoad{ true };
 
 		static SkeletonCache m_Instance;

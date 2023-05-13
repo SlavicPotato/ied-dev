@@ -639,7 +639,7 @@ namespace IED
 		return result;
 	}
 
-	void Controller::ClearPlayerRPC() noexcept
+	void Controller::QueueClearPlayerRPC() noexcept
 	{
 		ITaskPool::AddPriorityTask([this] {
 			const stl::lock_guard lock(m_lock);

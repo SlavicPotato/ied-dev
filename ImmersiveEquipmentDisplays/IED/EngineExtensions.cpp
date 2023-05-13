@@ -1008,8 +1008,10 @@ namespace IED
 
 			return false;
 		}
-
-		return m_Instance.m_hkaLookupSkeletonNode_o(a_root, a_name, a_result);
+		else
+		{
+			return m_Instance.m_hkaLookupSkeletonNode_o(a_root, a_name, a_result);
+		}
 	}
 
 	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdateRefAnim_Hook(
@@ -1096,7 +1098,7 @@ namespace IED
 
 		const auto controller = m_Instance.m_controller;
 
-		controller->ClearPlayerRPC();
+		controller->QueueClearPlayerRPC();
 	}
 
 	/*void EngineExtensions::SetupEventSinks_Hook() noexcept
