@@ -8,6 +8,8 @@
 #include "IED/Parsers/JSONConfigNodeMonitorEntryListParser.h"
 #include "IED/Parsers/JSONConvertNodesListParser.h"
 
+#include "IED/SkeletonID.h"
+
 #include "Serialization/Serialization.h"
 
 namespace IED
@@ -729,7 +731,8 @@ namespace IED
 		{
 			for (auto& f : e)
 			{
-				if (f.skel.empty())
+				if (f.skel.empty() ||
+				    f.name.empty())
 				{
 					continue;
 				}
@@ -740,7 +743,7 @@ namespace IED
 				if (m_mov.contains(mov))
 				{
 					Warning(
-						"%s: '%s' - node already exists",
+						"%s: '%s' - node already defined",
 						__FUNCTION__,
 						mov.c_str());
 
@@ -750,7 +753,7 @@ namespace IED
 				if (m_cme.contains(cme))
 				{
 					Warning(
-						"%s: '%s' - node already exists",
+						"%s: '%s' - node already defined",
 						__FUNCTION__,
 						cme.c_str());
 
@@ -767,7 +770,7 @@ namespace IED
 				if (it != m_extramov.end())
 				{
 					Warning(
-						"%s: '%s' - node already exists",
+						"%s: '%s' - node already defined",
 						__FUNCTION__,
 						f.name.c_str());
 
@@ -794,6 +797,14 @@ namespace IED
 					{
 						auto& src = g.sxfrms[i];
 						auto& dst = v.sxfrms[i];
+
+						if (!src.read_from.empty() &&
+						    (src.read_from == mov ||
+						     src.read_from == cme ||
+						     src.read_from == f.name))
+						{
+							continue;
+						}
 
 						dst.xfrm          = src.xfrm.to_nitransform();
 						dst.invert        = src.xfrm.xfrmFlags.test(Data::ConfigTransformFlags::kInvert);
@@ -935,6 +946,14 @@ namespace IED
 		{
 			return nullptr;
 		}
+	}
+
+	auto NodeOverrideData::skeletonEntryList_t::find(const SkeletonID& a_value) const
+		-> super::const_iterator
+	{
+		return std::find_if(begin(), end(), [&](auto& a_v) noexcept {
+			return a_v.match.test(a_value);
+		});
 	}
 
 }

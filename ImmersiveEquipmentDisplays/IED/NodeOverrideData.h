@@ -13,6 +13,8 @@
 
 namespace IED
 {
+	class SkeletonID;
+
 	enum class NodeOverrideDataEntryFlags : std::uint32_t
 	{
 		kNone = 0
@@ -138,11 +140,11 @@ namespace IED
 #else
 			NiTransform
 #endif
-															   xfrm;
-			std::vector<extraNodeEntrySkelTransformSyncNode_t> syncNodes;
-			stl::fixed_string                                  readFromObj;
-			BSFixedString                                      bsReadFromObj;
-			bool                                               invert{ false };
+																			  xfrm;
+			stl::cache_aligned::vector<extraNodeEntrySkelTransformSyncNode_t> syncNodes;
+			stl::fixed_string                                                 readFromObj;
+			BSFixedString                                                     bsReadFromObj;
+			bool                                                              invert{ false };
 		};
 
 		struct extraNodeEntrySkel_t
@@ -167,6 +169,18 @@ namespace IED
 
 			Data::configSkeletonMatch_t                  match;
 			std::array<extraNodeEntrySkelTransform_t, 2> sxfrms;
+		};
+
+		class skeletonEntryList_t :
+			public stl::cache_aligned::vector<extraNodeEntrySkel_t>
+		{
+			using super = stl::cache_aligned::vector<extraNodeEntrySkel_t>;
+
+		public:
+			using super::vector;
+			using super::operator=;
+
+			super::const_iterator find(const SkeletonID& a_value) const;
 		};
 
 		struct extraNodeEntry_t
@@ -202,16 +216,13 @@ namespace IED
 			{
 			}
 
-			extraNodeEntry_t(const extraNodeEntry_t&)            = delete;
-			extraNodeEntry_t& operator=(const extraNodeEntry_t&) = delete;
-
-			stl::fixed_string                                name_cme;
-			BSFixedString                                    bsname_cme;
-			std::array<name_pair, 2>                         names;
-			BSFixedString                                    name_parent;
-			stl::fixed_string                                desc;
-			stl::cache_aligned::vector<extraNodeEntrySkel_t> skel;
-			WeaponPlacementID                                placementID;
+			stl::fixed_string        name_cme;
+			BSFixedString            bsname_cme;
+			std::array<name_pair, 2> names;
+			BSFixedString            name_parent;
+			stl::fixed_string        desc;
+			skeletonEntryList_t      skel;
+			WeaponPlacementID        placementID;
 		};
 
 		struct exn_copy_ctor_init_t
@@ -327,7 +338,7 @@ namespace IED
 		using cm_data_type             = stl::cache_aligned::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
 		using mon_data_type            = stl::container_init_wrapper<stl::cache_aligned::vector<BSFixedString>>;
 		using weapnode_data_type       = stl::cache_aligned::vectormap<stl::fixed_string, weaponNodeEntry_t>;
-		using exn_data_type            = stl::container_init_wrapper<stl::list<extraNodeEntry_t>>;
+		using exn_data_type            = stl::cache_aligned::vector<extraNodeEntry_t>;
 		using exn_copy_data_type       = stl::container_init_wrapper<stl::cache_aligned::vector<extraNodeCopyEntry_t>>;
 		using xfrm_override_data_type  = stl::container_init_wrapper<stl::cache_aligned::vector<xfrmOverrideNodeEntry_t>>;
 		using rand_placement_data_type = stl::container_init_wrapper<stl::cache_aligned::vector<randWeapEntry_t>>;
@@ -377,11 +388,6 @@ namespace IED
 		{
 			return m_Instance->m_randPlacement;
 		}
-
-		/*static constexpr const auto& GetHumanoidSkeletons() noexcept
-		{
-			return m_Instance->m_humanoidSkeletonPaths;
-		}*/
 
 		static SKMP_143_CONSTEXPR const auto& GetHumanoidSkeletonSignatures() noexcept
 		{

@@ -30,7 +30,7 @@ namespace IED
 					continue;
 				}
 
-				if (_strnicmp(parent->m_name.data(), "MOV ", 4) == 0)
+				if (stl::strnicmp(parent->m_name.data(), "MOV ", 4) == 0)
 				{
 					continue;
 				}

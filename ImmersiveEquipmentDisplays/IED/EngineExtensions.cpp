@@ -976,7 +976,7 @@ namespace IED
 			return false;
 		}
 
-		if (::_strnicmp(parent1->m_name.data(), "MOV ", 4) != 0)
+		if (stl::strnicmp(parent1->m_name.data(), "MOV ", 4) != 0)
 		{
 			return false;
 		}
@@ -987,7 +987,7 @@ namespace IED
 			return false;
 		}
 
-		if (::_strnicmp(parent2->m_name.data(), "CME ", 4) != 0)
+		if (stl::strnicmp(parent2->m_name.data(), "CME ", 4) != 0)
 		{
 			return false;
 		}

@@ -27,7 +27,7 @@ namespace IED
 				return {};
 			}
 
-			if (_strnicmp(a_node.c_str(), "MOV ", 4) != 0)
+			if (stl::strnicmp(a_node.c_str(), "MOV ", 4) != 0)
 			{
 				return {};
 			}

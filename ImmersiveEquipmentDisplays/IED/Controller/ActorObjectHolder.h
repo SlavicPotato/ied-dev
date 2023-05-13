@@ -139,15 +139,9 @@ namespace IED
 #endif
 				;
 
-			explicit ObjectSyncEntry(
-				NiAVObject*           a_dest,
-				const transform_type& a_xfrm) noexcept :
-				dest(a_dest),
-				xfrm(a_xfrm)
-			{
-			}
+			using sources_type = stl::cache_aligned::vector<std::pair<NiPointer<NiAVObject>, bool>>;
 
-			stl::cache_aligned::vector<std::pair<NiPointer<NiAVObject>, bool>> sources;
+			sources_type                                                       sources;
 			NiPointer<NiAVObject>                                              dest;
 			transform_type                                                     xfrm;
 		};

@@ -4003,7 +4003,7 @@ namespace IED
 
 		configStoreNodeOverride_t::holderCache_t hc;
 
-		for (auto& e : a_holder.m_weapNodes)
+		for (const auto& e : a_holder.m_weapNodes)
 		{
 			const auto r = activeConfig.transforms.GetActorPlacement(
 				a_actor->formID,
@@ -4022,72 +4022,72 @@ namespace IED
 			}
 		}
 
-		for (const auto& [i, e] : a_holder.m_cmeNodes)
+		for (const auto e : a_holder.m_cmeNodes.getvec())
 		{
 			const auto r = activeConfig.transforms.GetActorTransform(
 				a_actor->formID,
 				params.npcOrTemplate->formID,
 				a_race->formID,
-				i,
+				e->first,
 				hc);
 
-			e.cachedConfCME = r;
+			e->second.cachedConfCME = r;
 
 			if (r)
 			{
 				INodeOverride::ApplyNodeVisibility(
-					e,
+					e->second,
 					r->get(params.get_sex()),
 					params);
 			}
 		}
 
-		for (const auto& [i, e] : a_holder.m_cmeNodes)
+		for (const auto e : a_holder.m_cmeNodes.getvec())
 		{
-			if (const auto conf = e.cachedConfCME)
+			if (const auto conf = e->second.cachedConfCME)
 			{
 				INodeOverride::ApplyNodeOverride(
-					i,
-					e,
+					e->first,
+					e->second,
 					conf->get(params.get_sex()),
 					params);
 			}
 			else
 			{
-				INodeOverride::ResetNodeOverrideImpl(e.thirdPerson);
-				if (e.firstPerson)
+				INodeOverride::ResetNodeOverrideImpl(e->second.thirdPerson);
+				if (e->second.firstPerson)
 				{
-					INodeOverride::ResetNodeOverrideImpl(e.firstPerson);
+					INodeOverride::ResetNodeOverrideImpl(e->second.firstPerson);
 				}
 			}
 		}
 
 		if (PhysicsProcessingEnabled())
 		{
-			for (const auto& [i, e] : a_holder.m_movNodes)
+			for (const auto e : a_holder.m_movNodes.getvec())
 			{
 				const auto r = activeConfig.transforms.GetActorPhysics(
 					a_actor->formID,
 					params.npcOrTemplate->formID,
 					a_race->formID,
-					i,
+					e->first,
 					hc);
 
 				if (!r)
 				{
-					if (auto& node = e.thirdPerson.simComponent)
+					if (auto& node = e->second.thirdPerson.simComponent)
 					{
 						a_holder.RemoveAndDestroySimComponent(node);
 					}
 
-					if (auto& node = e.firstPerson.simComponent)
+					if (auto& node = e->second.firstPerson.simComponent)
 					{
 						a_holder.RemoveAndDestroySimComponent(node);
 					}
 				}
 				else
 				{
-					ProcessTransformsImplPhys(params, r, e);
+					ProcessTransformsImplPhys(params, r, e->second);
 				}
 			}
 		}

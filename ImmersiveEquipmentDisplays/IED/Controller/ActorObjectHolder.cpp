@@ -889,7 +889,7 @@ namespace IED
 			if (a_data.invert)
 			{
 #if defined(IED_PERF_BUILD)
-				result.inverse();
+				result.invert();
 #else
 				result.Invert();
 #endif
@@ -917,13 +917,13 @@ namespace IED
 				return;
 			}
 
-			ActorObjectHolder::ObjectSyncEntry result(
-				destNode,
-				get_transform(a_data, a_scEntry));
+			ActorObjectHolder::ObjectSyncEntry::sources_type sources;
 
-			for (auto& e : a_data.syncNodes)
+			sources.reserve(a_data.syncNodes.size());
+
+			for (auto it = a_data.syncNodes.rbegin(); it != a_data.syncNodes.rend(); ++it)
 			{
-				const auto sourceNode = a_root->GetObjectByName(e.name);
+				const auto sourceNode = a_root->GetObjectByName(it->name);
 
 				if (!sourceNode || sourceNode == destNode)
 				{
@@ -932,25 +932,26 @@ namespace IED
 
 				ActorObjectHolder::ObjectSyncEntry::sync_pair p(destNode, sourceNode);
 
-				auto itp = std::find(a_pairs.begin(), a_pairs.end(), p);
-				if (itp != a_pairs.end())
+				if (std::find(a_pairs.begin(), a_pairs.end(), p) != a_pairs.end())
 				{
 					// misconfiguration: circular synchronization or duplicate pair, discard
 
 					continue;
 				}
 
-				result.sources.emplace(
-					result.sources.begin(),
+				sources.emplace_back(
 					sourceNode,
-					e.flags.test(Data::ExtraNodeEntrySkelTransformSyncNodeFlags::kInvert));
+					it->flags.test(Data::ExtraNodeEntrySkelTransformSyncNodeFlags::kInvert));
 
 				a_pairs.emplace_back(std::move(p));
 			}
 
-			if (!result.sources.empty())
+			if (!sources.empty())
 			{
-				a_out.emplace_back(std::move(result));
+				a_out.emplace_back(
+					std::move(sources),
+					destNode,
+					get_transform(a_data, a_scEntry));
 			}
 		}
 	}
@@ -960,19 +961,11 @@ namespace IED
 		const SkeletonID&                a_id,
 		const SkeletonCache::ActorEntry& a_scEntry) noexcept
 	{
-		m_syncObjects.clear();
-
 		stl::vector<ObjectSyncEntry::sync_pair> pairs;
 
 		for (auto& e : NodeOverrideData::GetExtraMovNodes())
 		{
-			auto it = std::find_if(
-				e.skel.begin(),
-				e.skel.end(),
-				[&](auto& a_v) noexcept {
-					return a_v.match.test(a_id);
-				});
-
+			const auto it = e.skel.find(a_id);
 			if (it == e.skel.end())
 			{
 				continue;

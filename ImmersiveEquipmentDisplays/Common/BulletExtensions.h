@@ -105,7 +105,7 @@ namespace Bullet
 			return ((getBasis() * a_pt) *= m_scale) += getOrigin();
 		}
 
-		SIMD_FORCE_INLINE btTransformEx inverse() const noexcept
+		[[nodiscard]] SIMD_FORCE_INLINE btTransformEx inverse() const noexcept
 		{
 			btTransformEx result;
 

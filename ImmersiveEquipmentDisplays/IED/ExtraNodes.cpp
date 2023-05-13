@@ -33,7 +33,7 @@ namespace IED
 					return a_skelXfrm.xfrm;
 				}
 			}
-			
+
 			static NiTransform get_transform(
 				NiNode*                                                a_root,
 				const NodeOverrideData::extraNodeEntrySkelTransform_t& a_skelXfrm) noexcept
@@ -58,17 +58,23 @@ namespace IED
 
 				a_target->AttachChild(cme, false);
 
-				const auto mov = CreateAttachmentNode(a_entry.names[0].second);
+				NiNode* p = cme;
 
-				mov->m_localTransform = get_transform(a_root, a_skelEntry.sxfrms[0]);
+				static_assert(
+					stl::array_size_v<decltype(a_entry.names)> ==
+					stl::array_size_v<decltype(a_skelEntry.sxfrms)>);
 
-				cme->AttachChild(mov, true);
+				for (std::size_t i = 0; i < std::size(a_entry.names); i++)
+				{
+					auto& name = a_entry.names[i];
+					auto& xfrm = a_skelEntry.sxfrms[i];
 
-				const auto node = CreateAttachmentNode(a_entry.names[1].second);
+					const auto n        = CreateAttachmentNode(name.second);
+					n->m_localTransform = get_transform(a_root, xfrm);
+					p->AttachChild(n, true);
 
-				node->m_localTransform = get_transform(a_root, a_skelEntry.sxfrms[1]);
-
-				mov->AttachChild(node, true);
+					p = n;
+				}
 
 				UpdateDownwardPass(cme);
 			}
@@ -95,13 +101,7 @@ namespace IED
 					continue;
 				}
 
-				const auto it = std::find_if(
-					v.skel.begin(),
-					v.skel.end(),
-					[&](auto& a_v) noexcept {
-						return a_v.match.test(a_id);
-					});
-
+				const auto it = v.skel.find(a_id);
 				if (it != v.skel.end())
 				{
 					//_DMESSAGE("creating %s on %zX", v.name_node.c_str(), a_id.signature());
