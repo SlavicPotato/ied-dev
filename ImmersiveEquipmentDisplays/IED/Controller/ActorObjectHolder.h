@@ -118,6 +118,18 @@ namespace IED
 	public:
 		struct ObjectSyncEntry
 		{
+			struct sync_pair
+			{
+				NiAVObject* const first;
+				NiAVObject* const second;
+
+				[[nodiscard]] constexpr bool operator==(const sync_pair& a_rhs) const noexcept
+				{
+					return (first == a_rhs.first && second == a_rhs.second) ||
+						(first == a_rhs.second && second == a_rhs.first);
+				}
+			};
+
 			using transform_type =
 
 #if defined(IED_PERF_BUILD)
@@ -723,8 +735,8 @@ namespace IED
 		stl::cache_aligned::vector<WeaponNodeEntry>                 m_weapNodes;
 		stl::cache_aligned::vector<stl::smart_ptr<PHYSimComponent>> m_simNodeList;
 
-		stl::unordered_map<stl::fixed_string, CMENodeEntry> m_cmeNodes;
-		stl::unordered_map<stl::fixed_string, MOVNodeEntry> m_movNodes;
+		stl::cache_aligned::vectormap<stl::fixed_string, CMENodeEntry> m_cmeNodes;
+		stl::cache_aligned::vectormap<stl::fixed_string, MOVNodeEntry> m_movNodes;
 
 		stl::cache_aligned::vectormap<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 		stl::cache_aligned::vector<ObjectSyncEntry>                    m_syncObjects;

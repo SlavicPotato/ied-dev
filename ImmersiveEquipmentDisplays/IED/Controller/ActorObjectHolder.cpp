@@ -874,7 +874,7 @@ namespace IED
 
 	namespace detail
 	{
-		ActorObjectHolder::ObjectSyncEntry::transform_type get_transform(
+		static ActorObjectHolder::ObjectSyncEntry::transform_type get_transform(
 			const NodeOverrideData::extraNodeEntrySkelTransform_t& a_data,
 			const SkeletonCache::ActorEntry&                       a_scEntry) noexcept
 		{
@@ -903,6 +903,7 @@ namespace IED
 			const NodeOverrideData::extraNodeEntrySkelTransform_t&          a_data,
 			const BSFixedString&                                            a_dst,
 			const SkeletonCache::ActorEntry&                                a_scEntry,
+			stl::vector<ActorObjectHolder::ObjectSyncEntry::sync_pair>&     a_pairs,
 			stl::cache_aligned::vector<ActorObjectHolder::ObjectSyncEntry>& a_out) noexcept
 		{
 			if (a_data.syncNodes.empty())
@@ -924,13 +925,27 @@ namespace IED
 			{
 				const auto sourceNode = a_root->GetObjectByName(e.name);
 
-				if (sourceNode && sourceNode != destNode)
+				if (!sourceNode || sourceNode == destNode)
 				{
-					result.sources.emplace(
-						result.sources.begin(),
-						sourceNode,
-						e.flags.test(Data::ExtraNodeEntrySkelTransformSyncNodeFlags::kInvert));
+					continue;
 				}
+
+				ActorObjectHolder::ObjectSyncEntry::sync_pair p(destNode, sourceNode);
+
+				auto itp = std::find(a_pairs.begin(), a_pairs.end(), p);
+				if (itp != a_pairs.end())
+				{
+					// misconfiguration: circular synchronization or duplicate pair, discard
+
+					continue;
+				}
+
+				result.sources.emplace(
+					result.sources.begin(),
+					sourceNode,
+					e.flags.test(Data::ExtraNodeEntrySkelTransformSyncNodeFlags::kInvert));
+
+				a_pairs.emplace_back(std::move(p));
 			}
 
 			if (!result.sources.empty())
@@ -945,6 +960,10 @@ namespace IED
 		const SkeletonID&                a_id,
 		const SkeletonCache::ActorEntry& a_scEntry) noexcept
 	{
+		m_syncObjects.clear();
+
+		stl::vector<ObjectSyncEntry::sync_pair> pairs;
+
 		for (auto& e : NodeOverrideData::GetExtraMovNodes())
 		{
 			auto it = std::find_if(
@@ -970,6 +989,7 @@ namespace IED
 					it->sxfrms[i],
 					e.names[i].second,
 					a_scEntry,
+					pairs,
 					m_syncObjects);
 			}
 		}
