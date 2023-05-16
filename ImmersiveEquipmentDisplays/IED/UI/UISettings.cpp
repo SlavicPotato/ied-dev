@@ -1050,16 +1050,18 @@ namespace IED
 
 				UITipsInterface::DrawTip(UITip::ModelCache);
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::TextUnformatted(UIL::LS(UISettingsStrings::CachedModelsColon));
-				ImGui::SameLine();
-				ImGui::Text("%zu", m_controller.GetODBObjectCount());
-				ImGui::SameLine();
+				ImGui::Text(
+					"%s: %zu",
+					UIL::LS(UISettingsStrings::CachedModelsColon),
+					m_controller.GetODBObjectCount());
 
+#if defined(IED_PERF_BUILD)
+				ImGui::SameLine();
 				if (ImGui::Button(UIL::LS(CommonStrings::Clear, "2")))
 				{
 					m_controller.QueueObjectDatabaseClear();
 				}
+#endif
 
 				ImGui::Unindent();
 				ImGui::Spacing();
