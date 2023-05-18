@@ -2,14 +2,12 @@
 
 #include "ObjectDatabaseEntry.h"
 
-#include <ext/IOTask.h>
-
 namespace IED
 {
 	class IObjectManager;
 
 	class ObjectCloningTask :
-		public RE::IOTask
+		public IOTaskBase<ObjectCloningTask>
 	{
 		class PostRunTask :
 			public TaskDelegate
@@ -44,10 +42,7 @@ namespace IED
 
 		~ObjectCloningTask() override;
 
-		void Unk_01() override;
-		void Unk_02() override;
-
-		bool Run() override;
+		void RunTask();
 
 		[[nodiscard]] constexpr auto& GetActor() const noexcept
 		{
@@ -83,7 +78,7 @@ namespace IED
 		{
 			return _graphHolder.first;
 		}
-		
+
 		[[nodiscard]] constexpr auto& GetGraphHolderManager() noexcept
 		{
 			return _graphHolder.second;
@@ -114,10 +109,10 @@ namespace IED
 
 	private:
 		ObjectDatabaseEntry                                                _entry;
-		const Game::FormID                                                 _actor;
+		Game::FormID                                                       _actor;
 		IObjectManager&                                                    _owner;
-		TESModelTextureSwap* const                                         _texSwap;
-		const float                                                        _colliderScale;
+		TESModelTextureSwap*                                               _texSwap;
+		float                                                              _colliderScale;
 		NiPointer<NiNode>                                                  _clone;
 		std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr> _graphHolder;
 		std::atomic<State>                                                 _taskState{ State::kPending };

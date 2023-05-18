@@ -532,7 +532,7 @@ namespace IED
 			const equipmentOverrideCondition_t& a_match,
 			ProcessParams&                      a_params) noexcept
 		{
-			switch (a_match.fbf.type)
+			switch (a_match.flags.bf().type)
 			{
 			case EquipmentOverrideConditionType::Type:
 
@@ -766,7 +766,7 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				if (f.flags.bf().type == EquipmentOverrideConditionType::Group)
 				{
 					result = do_match(f.group.conditions, a_params, a_default);
 				}
@@ -803,7 +803,7 @@ namespace IED
 			const equipmentOverrideCondition_t& a_match,
 			ProcessParams&                      a_params) noexcept
 		{
-			switch (a_match.fbf.type)
+			switch (a_match.flags.bf().type)
 			{
 			case EquipmentOverrideConditionType::Type:
 				{
@@ -1158,7 +1158,7 @@ namespace IED
 					return false;
 				}
 
-				switch (a_match.fbf.presenceEquipedHandMatch)
+				switch (a_match.flags.bf().presenceEquipedHandMatch)
 				{
 				case PresenceEquippedHandMatch::kLeft:
 					return it->second.is_equipped_left();
@@ -1357,7 +1357,7 @@ namespace IED
 			const FormSlotPair&                 a_checkForm,
 			ProcessParams&                      a_params) noexcept
 		{
-			switch (a_match.fbf.type)
+			switch (a_match.flags.bf().type)
 			{
 			case EquipmentOverrideConditionType::Type:
 				{
@@ -1770,7 +1770,7 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				if (f.flags.bf().type == EquipmentOverrideConditionType::Group)
 				{
 					result = do_match_fp(f.group.conditions, a_checkForm, a_params, a_default);
 				}
@@ -1818,14 +1818,14 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				if (f.flags.bf().type == EquipmentOverrideConditionType::Group)
 				{
 					result = do_match_sfp(f.group.conditions, a_checkForm, a_params, a_default);
 				}
 				else
 				{
 					if (f.flags.test(Data::EquipmentOverrideConditionFlags::kMatchThisItem) ||
-					    f.fbf.type == EquipmentOverrideConditionType::Presence)
+					    f.flags.bf().type == EquipmentOverrideConditionType::Presence)
 					{
 						result = match_equipped_or_form<
 							EquipmentOverrideConditionFlags::kMatchMaskEquippedAndThis,
@@ -1873,7 +1873,7 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				if (f.flags.bf().type == EquipmentOverrideConditionType::Group)
 				{
 					result = do_match_eos(f.group.conditions, a_params, a_default);
 				}

@@ -9,13 +9,17 @@
 
 namespace IED
 {
+	std::atomic<bool> EffectShaderData::_backgroundLoad{ false };
+
 	EffectShaderData::EffectShaderData(
+		const ActorObjectHolder&                a_owner,
 		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
-		Update(a_data);
+		UpdateImpl(a_owner, a_data);
 	}
 
 	EffectShaderData::EffectShaderData(
+		const ActorObjectHolder&                a_owner,
 		BIPED_OBJECT                            a_bipedObject,
 		NiNode*                                 a_sheathNode,
 		NiNode*                                 a_sheathNode1p,
@@ -24,10 +28,16 @@ namespace IED
 		sheathNode(a_sheathNode),
 		sheathNode1p(a_sheathNode1p)
 	{
-		Update(a_data);
+		UpdateImpl(a_owner, a_data);
+	}
+
+	EffectShaderData::~EffectShaderData()
+	{
+		CancelPendingTasks();
 	}
 
 	bool EffectShaderData::UpdateIfChanged(
+		const ActorObjectHolder&                a_owner,
 		NiAVObject*                             a_root,
 		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
@@ -37,7 +47,7 @@ namespace IED
 		}
 		else
 		{
-			Update(a_root, a_data);
+			Update(a_owner, a_root, a_data);
 			return true;
 		}
 	}
@@ -58,12 +68,13 @@ namespace IED
 	}
 
 	void EffectShaderData::Update(
+		const ActorObjectHolder&                a_holder,
 		NiAVObject*                             a_root,
 		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		ClearEffectShaderDataFromTree(a_root);
 
-		Update(a_data);
+		UpdateImpl(a_holder, a_data);
 	}
 
 	void EffectShaderData::Update(
@@ -73,45 +84,77 @@ namespace IED
 		ClearEffectShaderDataFromTree(a_holder.Get3D());
 		ClearEffectShaderDataFromTree(a_holder.Get3D1p());
 
-		Update(a_data);
+		UpdateImpl(a_holder, a_data);
 	}
 
-	void EffectShaderData::Update(
+	void EffectShaderData::UpdateImpl(
+		const ActorObjectHolder&                a_owner,
 		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
+		CancelPendingTasks();
+
 		data.clear();
+		data.reserve(a_data.data.size());
+
+		pending.clear();
+		pending.reserve(a_data.data.size());
 
 		for (auto& [i, e] : a_data.data)
 		{
-			RE::BSTSmartPointer<BSEffectShaderData> shaderData;
+			auto shaderData = e.create_shader_data();
 
-			if (!e.create_shader_data(shaderData))
+			if (_backgroundLoad.load(std::memory_order_relaxed) &&
+			    e.has_custom_texture())
 			{
-				continue;
+				auto thrd = RE::BackgroundProcessThread::GetSingleton();
+				assert(thrd);
+
+				auto task = thrd->QueueTask<ShaderTextureLoadTask>(a_owner, shaderData, e);
+
+				pending.emplace_back(i, std::move(shaderData), std::move(task), e);
 			}
-
-			auto& r = data.emplace_back(i, std::move(shaderData));
-
-			r.create_function_list(e.functions);
-
-			r.flags.set(
-				static_cast<EffectShaderData::EntryFlags>(
-					e.flags & Data::EffectShaderDataFlags::EntryMask));
-
-			for (auto& f : e.targetNodes)
+			else
 			{
-				r.targetNodes.emplace(f.c_str());
+				shaderData->baseTexture = e.baseTexture.load_texture(true);
+
+				if (!shaderData->baseTexture)
+				{
+					continue;
+				}
+
+				shaderData->paletteTexture  = e.paletteTexture.load_texture(false);
+				shaderData->blockOutTexture = e.blockOutTexture.load_texture(false);
+
+				if (shaderData->paletteTexture)
+				{
+					shaderData->grayscaleToColor = e.flags.test(Data::EffectShaderDataFlags::kGrayscaleToColor);
+					shaderData->grayscaleToAlpha = e.flags.test(Data::EffectShaderDataFlags::kGrayscaleToAlpha);
+				}
+
+				data.emplace_back(i, std::move(shaderData), e);
 			}
+		}
+
+		if (pending.empty())
+		{
+			pending.shrink_to_fit();
 		}
 
 		tag = a_data;
 	}
 
+	void EffectShaderData::CancelPendingTasks() noexcept
+	{
+		for (const auto& e : pending)
+		{
+			e.task->try_cancel_task();
+		}
+	}
+
 	bool EffectShaderData::UpdateConfigValues(
 		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
-		for (auto& e : data)
-		{
+		const auto func = [&](Entry& e) noexcept -> bool {
 			auto it = a_data.data.find(e.key);
 			if (it == a_data.data.end())
 			{
@@ -151,6 +194,24 @@ namespace IED
 					return false;
 				}
 			}
+
+			return true;
+		};
+
+		for (auto& e : data)
+		{
+			if (!func(e))
+			{
+				return false;
+			}
+		}
+
+		for (auto& e : pending)
+		{
+			if (!func(e))
+			{
+				return false;
+			}
 		}
 
 		return true;
@@ -186,12 +247,53 @@ namespace IED
 		});
 	}
 
-	void EffectShaderData::Entry::create_function_list(
-		const Data::configEffectShaderFunctionList_t& a_data) noexcept
+	bool EffectShaderData::ProcessPendingLoad(
+		const NiPointer<ShaderTextureLoadTask>& a_task) noexcept
 	{
-		functions.clear();
+		auto it = std::find_if(
+			pending.begin(),
+			pending.end(),
+			[&](const auto& a_entry) {
+				return a_entry.task == a_task;
+			});
 
-		for (auto& e : a_data)
+		if (it != pending.end())
+		{
+			switch (it->task->get_state())
+			{
+			case ShaderTextureLoadTask::State::kLoaded:
+				data.emplace_back(std::move(*it));
+				[[fallthrough]];
+			case ShaderTextureLoadTask::State::kCancelled:
+			case ShaderTextureLoadTask::State::kError:
+				it = pending.erase(it);
+				break;
+			}
+
+			if (pending.empty())
+			{
+				pending.shrink_to_fit();
+			}
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	EffectShaderData::Entry::Entry(
+		const stl::fixed_string&                  a_key,
+		RE::BSTSmartPointer<BSEffectShaderData>&& a_shaderData,
+		const Data::configEffectShaderData_t&     a_config) :
+		key(a_key),
+		shaderData(std::move(a_shaderData)),
+		flags(a_config.flags & Data::EffectShaderDataFlags::EntryMask)
+	{
+		functions.reserve(a_config.functions.size());
+
+		for (auto& e : a_config.functions)
 		{
 			switch (e.type)
 			{
@@ -205,6 +307,12 @@ namespace IED
 				break;
 			}
 		}
-	}
 
+		targetNodes.reserve(a_config.targetNodes.size());
+
+		for (auto& f : a_config.targetNodes)
+		{
+			targetNodes.emplace(f.c_str());
+		}
+	}
 }

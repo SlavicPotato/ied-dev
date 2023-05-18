@@ -11,7 +11,7 @@ namespace IED
 		void Pulse::UpdateConfigImpl(
 			const Data::configEffectShaderFunction_t& a_data)
 		{
-			function    = a_data.fbf.type;
+			function    = a_data.flags.bf().type;
 			flags       = a_data.pulseFlags;
 			ftp         = std::clamp(a_data.speed, 0.01f, 300.0f) * PI2;
 			inverse     = a_data.flags.test(Data::EffectShaderFunctionFlags::kAdditiveInverse);

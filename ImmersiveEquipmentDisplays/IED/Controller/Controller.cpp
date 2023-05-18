@@ -2209,13 +2209,16 @@ namespace IED
 		{
 			if (!a_objectEntry.data.effectShaderData)
 			{
-				a_objectEntry.data.effectShaderData = std::make_unique<EffectShaderData>(*es);
+				a_objectEntry.data.effectShaderData = std::make_unique<EffectShaderData>(
+					a_params.objects,
+					*es);
 
 				a_params.SuspendReferenceEffectShaders();
 			}
 			else
 			{
 				if (a_objectEntry.data.effectShaderData->UpdateIfChanged(
+						a_params.objects,
 						a_objectEntry.data.state->commonNodes.rootNode,
 						*es))
 				{
@@ -2226,6 +2229,7 @@ namespace IED
 					if (!a_objectEntry.data.effectShaderData->UpdateConfigValues(*es))
 					{
 						a_objectEntry.data.effectShaderData->Update(
+							a_params.objects,
 							a_objectEntry.data.state->commonNodes.rootNode,
 							*es);
 
@@ -2557,7 +2561,16 @@ namespace IED
 				if (f.equipped)
 				{
 					if (settings.hideEquipped &&
-					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
+					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload)
+						
+						/*
+							If something got equipped while the cloning task was still pending, 
+							keep the cloned object since it may still be valid on next load
+						*/
+
+						// && !objectEntry.data.cloningTask
+						
+						)
 					{
 						if (objectEntry.DeferredHideObject(2))
 						{
@@ -2686,11 +2699,7 @@ namespace IED
 
 				case AttachObjectResult::kFailed:
 
-					if (auto& ct = objectEntry.data.cloningTask)
-					{
-						ct->try_cancel_task();
-						ct.reset();
-					}
+					objectEntry.data.TryCancelAndReleaseCloningTask();
 
 					break;
 				}
@@ -2776,6 +2785,7 @@ namespace IED
 
 						objectEntry.data.effectShaderData =
 							std::make_unique<EffectShaderData>(
+								a_params.objects,
 								bipedObject,
 								nodes.first,
 								nodes.second,

@@ -51,20 +51,20 @@ namespace IED
 
 		kWantEval      = 1u << 3,
 		kImmediateEval = 1u << 4,
+		kEvalThisFrame = 1u << 5,
+
+		kWantVarUpdate = 1u << 6,
+		kDestroyed     = 1u << 7,
 
 		kEvalCountdownMask =
-			1u << 5 |
-			1u << 6 |
-			1u << 7 |
 			1u << 8 |
 			1u << 9 |
 			1u << 10 |
 			1u << 11 |
-			1u << 12,
-
-		kEvalThisFrame = 1u << 13,
-
-		kWantVarUpdate = 1u << 14,
+			1u << 12 |
+			1u << 13 |
+			1u << 14 |
+			1u << 15,
 
 		kRequestTransformUpdateDefer     = kWantTransformUpdate | kSkipNextTransformUpdate,
 		kRequestTransformUpdateImmediate = kWantTransformUpdate | kImmediateTransformUpdate,
@@ -74,11 +74,10 @@ namespace IED
 		kRequestEvalImmediate = kWantEval | kImmediateEval,
 		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdownMask,
 
-		kDestroyed         = 1u << 15,
-		kIsPlayer          = 1u << 16,
-		kIsFemale          = 1u << 17,
-		kHumanoidSkeleton  = 1u << 18,
-		kForceNodeCondTrue = 1u << 19,
+		kIsPlayer          = 1u << 24,
+		kIsFemale          = 1u << 25,
+		kHumanoidSkeleton  = 1u << 26,
+		kForceNodeCondTrue = 1u << 27,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ActorObjectHolderFlags);
@@ -90,9 +89,11 @@ namespace IED
 		std::uint32_t skipNextTransformUpdate : 1;
 		std::uint32_t wantEval                : 1;
 		std::uint32_t immediateEval           : 1;
-		std::uint32_t evalCountdown           : 8;
+		std::uint32_t evalThisFrame           : 1;
 		std::uint32_t wantVarUpdate           : 1;
-		std::uint32_t unused                  : 18;
+		std::uint32_t destroyed               : 1;
+		std::uint32_t evalCountdown           : 8;
+		std::uint32_t unused                  : 16;
 	};
 
 	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
@@ -126,7 +127,7 @@ namespace IED
 				[[nodiscard]] constexpr bool operator==(const sync_pair& a_rhs) const noexcept
 				{
 					return (first == a_rhs.first && second == a_rhs.second) ||
-						(first == a_rhs.second && second == a_rhs.first);
+					       (first == a_rhs.second && second == a_rhs.first);
 				}
 			};
 
@@ -141,9 +142,9 @@ namespace IED
 
 			using sources_type = stl::cache_aligned::vector<std::pair<NiPointer<NiAVObject>, bool>>;
 
-			sources_type                                                       sources;
-			NiPointer<NiAVObject>                                              dest;
-			transform_type                                                     xfrm;
+			sources_type          sources;
+			NiPointer<NiAVObject> dest;
+			transform_type        xfrm;
 		};
 
 		static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
@@ -293,9 +294,9 @@ namespace IED
 		constexpr void RequestEvalDefer(std::uint8_t a_delay = 2) const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEval);
-			if (m_flagsbf.evalCountdown == 0)
+			if (m_flags.bf().evalCountdown == 0)
 			{
-				m_flagsbf.evalCountdown = a_delay;
+				m_flags.bf().evalCountdown = a_delay;
 			}
 		}
 
@@ -412,6 +413,32 @@ namespace IED
 					for (auto& g : f.second)
 					{
 						a_func(g.second);
+					}
+				}
+			}
+		}
+
+		template <class Tf>
+		constexpr void visit2(Tf a_func) const
+		{
+			for (auto& e : m_entriesSlot)
+			{
+				if (a_func(e) == true)
+				{
+					return;
+				}
+			}
+
+			for (auto& e : m_entriesCustom)
+			{
+				for (auto& f : e)
+				{
+					for (auto& g : f.second)
+					{
+						if (a_func(g.second) == true)
+						{
+							return;
+						}
 					}
 				}
 			}
@@ -695,6 +722,11 @@ namespace IED
 
 		void UpdateSyncNodes() const noexcept;
 
+		[[nodiscard]] constexpr auto& GetOwner() const noexcept
+		{
+			return m_owner;
+		}
+
 	private:
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,
@@ -716,11 +748,10 @@ namespace IED
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
 
-		union
-		{
-			mutable stl::flag<ActorObjectHolderFlags> m_flags{ ActorObjectHolderFlags::kWantVarUpdate };
-			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
-		};
+		mutable stl::flag_bf<
+			ActorObjectHolderFlags,
+			ActorObjectHolderFlagsBitfield>
+			m_flags{ ActorObjectHolderFlags::kWantVarUpdate };
 
 		ObjectSlotArray                                       m_entriesSlot;
 		std::array<customPluginMap_t, Data::CONFIG_CLASS_MAX> m_entriesCustom;

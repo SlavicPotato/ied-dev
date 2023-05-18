@@ -2,14 +2,12 @@
 
 #include "ObjectDatabaseEntry.h"
 
-#include <ext/IOTask.h>
-
 namespace IED
 {
 	class ObjectDatabase;
 
 	class QueuedModel :
-		public RE::IOTask
+		public IOTaskBase<QueuedModel>
 	{
 		class PostRunTask :
 			public TaskDelegate
@@ -34,10 +32,7 @@ namespace IED
 
 		~QueuedModel() override;
 
-		void Unk_01() override;
-		void Unk_02() override;
-
-		bool Run() override;
+		void RunTask();
 
 		[[nodiscard]] constexpr auto& GetEntry() const noexcept
 		{

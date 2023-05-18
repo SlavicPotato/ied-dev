@@ -127,11 +127,11 @@ namespace IED
 
 		struct NodeOverrideConditionFlagsBitfield
 		{
-			NodeOverrideConditionType type  : 5 { NodeOverrideConditionType::Node };
-			std::uint32_t             unused: 27 { 0 };
+			NodeOverrideConditionType type  : 5;
+			std::uint32_t             unused: 27;
 		};
 
-		static_assert(sizeof(NodeOverrideConditionFlagsBitfield) == sizeof(std::uint32_t));
+		static_assert(sizeof(NodeOverrideConditionFlagsBitfield) == sizeof(NodeOverrideConditionFlags));
 
 		struct configNodeOverrideCondition_t;
 
@@ -187,7 +187,7 @@ namespace IED
 
 			inline configNodeOverrideCondition_t() noexcept
 			{
-				fbf.type = NodeOverrideConditionType::Node;
+				flags.bf().type = NodeOverrideConditionType::Node;
 			};
 
 			inline configNodeOverrideCondition_t(
@@ -220,7 +220,7 @@ namespace IED
 					break;
 				}
 
-				fbf.type = a_type;
+				flags.bf().type = a_type;
 			}
 
 			inline configNodeOverrideCondition_t(
@@ -250,7 +250,7 @@ namespace IED
 						flags = NodeOverrideConditionFlags::kExtraFlag0;
 					}
 
-					fbf.type = a_type;
+					flags.bf().type = a_type;
 					break;
 				default:
 					assert(false);
@@ -262,21 +262,21 @@ namespace IED
 				const stl::fixed_string& a_node) noexcept :
 				s0(a_node)
 			{
-				fbf.type = NodeOverrideConditionType::Node;
+				flags.bf().type = NodeOverrideConditionType::Node;
 			}
 
 			inline configNodeOverrideCondition_t(
 				stl::fixed_string&& a_node) noexcept :
 				s0(std::move(a_node))
 			{
-				fbf.type = NodeOverrideConditionType::Node;
+				flags.bf().type = NodeOverrideConditionType::Node;
 			}
 
 			inline configNodeOverrideCondition_t(
 				BIPED_OBJECT a_biped) noexcept :
 				bipedSlot(a_biped)
 			{
-				fbf.type = NodeOverrideConditionType::BipedSlot;
+				flags.bf().type = NodeOverrideConditionType::BipedSlot;
 			}
 
 			inline configNodeOverrideCondition_t(
@@ -297,7 +297,7 @@ namespace IED
 					break;
 				}
 
-				fbf.type = NodeOverrideConditionType::Extra;
+				flags.bf().type = NodeOverrideConditionType::Extra;
 			}
 
 			inline configNodeOverrideCondition_t(
@@ -305,7 +305,7 @@ namespace IED
 				typeSlot(a_slot),
 				flags(DEFAULT_MATCH_CATEGORY_FLAGS)
 			{
-				fbf.type = NodeOverrideConditionType::Type;
+				flags.bf().type = NodeOverrideConditionType::Type;
 			}
 
 			inline configNodeOverrideCondition_t(
@@ -321,14 +321,13 @@ namespace IED
 					assert(false);
 				}
 
-				fbf.type = a_matchType;
+				flags.bf().type = a_matchType;
 			}
 
-			union
-			{
-				stl::flag<NodeOverrideConditionFlags> flags{ NodeOverrideConditionFlags::kNone };
-				NodeOverrideConditionFlagsBitfield    fbf;
-			};
+			stl::flag_bf<
+				NodeOverrideConditionFlags,
+				NodeOverrideConditionFlagsBitfield>
+				flags{ NodeOverrideConditionFlags::kNone };
 
 			configCachedForm_t form;
 			configCachedForm_t form2;

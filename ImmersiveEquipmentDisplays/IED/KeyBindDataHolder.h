@@ -92,7 +92,7 @@ namespace IED
 
 				if (it != entries.end())
 				{
-					it->second.SetState(e.second);
+					it->second.SetState(static_cast<std::uint32_t>(e.second));
 				}
 			}
 		}

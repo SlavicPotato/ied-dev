@@ -482,7 +482,7 @@ namespace IED
 
 			bool result = false;
 
-			switch (match->fbf.type)
+			switch (match->flags.bf().type)
 			{
 			case Data::EquipmentOverrideConditionType::Type:
 
@@ -560,7 +560,7 @@ namespace IED
 
 				UITipsInterface::DrawTip(UITip::EquippedConditionsEquipment);
 
-				if (match->fbf.type == Data::EquipmentOverrideConditionType::Form &&
+				if (match->flags.bf().type == Data::EquipmentOverrideConditionType::Form &&
 				    !match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchMaskAny))
 				{
 					ImGui::Spacing();
@@ -738,30 +738,30 @@ namespace IED
 
 								if (ImGui::RadioButton(
 										UIL::LS(CommonStrings::Any, "C"),
-										match->fbf.presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kEither))
+										match->flags.bf().presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kEither))
 								{
-									match->fbf.presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kEither;
-									result                              = true;
+									match->flags.bf().presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kEither;
+									result                                     = true;
 								}
 
 								ImGui::SameLine();
 
 								if (ImGui::RadioButton(
 										UIL::LS(CommonStrings::Left, "D"),
-										match->fbf.presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kLeft))
+										match->flags.bf().presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kLeft))
 								{
-									match->fbf.presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kLeft;
-									result                              = true;
+									match->flags.bf().presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kLeft;
+									result                                     = true;
 								}
 
 								ImGui::SameLine();
 
 								if (ImGui::RadioButton(
 										UIL::LS(CommonStrings::Right, "E"),
-										match->fbf.presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kRight))
+										match->flags.bf().presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kRight))
 								{
-									match->fbf.presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kRight;
-									result                              = true;
+									match->flags.bf().presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kRight;
+									result                                     = true;
 								}
 							}
 							else
@@ -1016,7 +1016,7 @@ namespace IED
 
 			ImGui::PushID("match_item_extra");
 
-			switch (match->fbf.type)
+			switch (match->flags.bf().type)
 			{
 			case Data::EquipmentOverrideConditionType::Type:
 			case Data::EquipmentOverrideConditionType::Furniture:
@@ -1031,7 +1031,7 @@ namespace IED
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
 
-					if (match->fbf.type == Data::EquipmentOverrideConditionType::BipedSlot &&
+					if (match->flags.bf().type == Data::EquipmentOverrideConditionType::BipedSlot &&
 					    match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag2))
 					{
 						a_args.disable = true;
@@ -1338,7 +1338,7 @@ namespace IED
 		{
 			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_args.p3);
 
-			switch (match->fbf.type)
+			switch (match->flags.bf().type)
 			{
 			case Data::EquipmentOverrideConditionType::Variable:
 
@@ -1552,7 +1552,7 @@ namespace IED
 		{
 			for (auto& e : a_in)
 			{
-				if (e.fbf.type == Data::EquipmentOverrideConditionType::Group)
+				if (e.flags.bf().type == Data::EquipmentOverrideConditionType::Group)
 				{
 					a_offset++;
 					a_result = std::max(a_result, a_offset);
@@ -1800,7 +1800,7 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(1);
 
-						if (e.fbf.type == Data::EquipmentOverrideConditionType::Group)
+						if (e.flags.bf().type == Data::EquipmentOverrideConditionType::Group)
 						{
 							ImGui::TextUnformatted(UIL::LS(CommonStrings::Group));
 
@@ -1823,7 +1823,7 @@ namespace IED
 						{
 							m_condParamEditor.Reset();
 
-							if (e.fbf.type == Data::EquipmentOverrideConditionType::Variable)
+							if (e.flags.bf().type == Data::EquipmentOverrideConditionType::Variable)
 							{
 								switch (e.vcSource)
 								{
@@ -1847,13 +1847,13 @@ namespace IED
 							}
 							else
 							{
-								UpdateMatchParamAllowedTypes(e.fbf.type);
+								UpdateMatchParamAllowedTypes(e.flags.bf().type);
 							}
 
 							const char* tdesc;
 							const char* vdesc;
 
-							switch (e.fbf.type)
+							switch (e.flags.bf().type)
 							{
 							case Data::EquipmentOverrideConditionType::Form:
 
@@ -2128,7 +2128,7 @@ namespace IED
 									e);
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr, true);
-								tdesc = e.fbf.type == Data::EquipmentOverrideConditionType::Mounting ?
+								tdesc = e.flags.bf().type == Data::EquipmentOverrideConditionType::Mounting ?
 								            UIL::LS(UIWidgetCommonStrings::Mounting) :
 								            UIL::LS(UIWidgetCommonStrings::Mounted);
 

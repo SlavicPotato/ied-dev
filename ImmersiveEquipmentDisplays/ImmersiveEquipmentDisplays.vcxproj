@@ -772,6 +772,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ObjectSound.h" />
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h" />
     <ClInclude Include="IED\Controller\QueuedModel.h" />
+    <ClInclude Include="IED\Controller\ShaderTextureLoadTask.h" />
     <ClInclude Include="IED\Controller\SoundDescriptor.h" />
     <ClInclude Include="IED\Controller\WeaponNodeEntry.h" />
     <ClInclude Include="IED\ConvertNodes.h" />
@@ -793,6 +794,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\GlobalParams.h" />
     <ClInclude Include="IED\I3DIModelID.h" />
     <ClInclude Include="IED\ImGuiStyleHolder.h" />
+    <ClInclude Include="IED\IOTaskBase.h" />
     <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\KeyBindDataHolder.h" />
     <ClInclude Include="IED\KeyToggleStateEntry.h" />
@@ -1316,6 +1318,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\ObjectEntryBase.cpp" />
     <ClCompile Include="IED\Controller\ObjectLight.cpp" />
     <ClCompile Include="IED\Controller\QueuedModel.cpp" />
+    <ClCompile Include="IED\Controller\ShaderTextureLoadTask.cpp" />
     <ClCompile Include="IED\Controller\WeaponNodeEntry.cpp" />
     <ClCompile Include="IED\ConvertNodes.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />

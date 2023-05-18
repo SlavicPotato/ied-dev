@@ -26,40 +26,26 @@ namespace IED
 	{
 	}
 
-	SKMP_FORCEINLINE static constexpr void sync_ref_transform(
+	static constexpr void sync_ref_transform(
 		ObjectEntryBase::State* a_state) noexcept
 	{
 		if (a_state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
-		    a_state->commonNodes.rootNode->IsVisible())
+		    !a_state->commonNodes.rootNode->IsHidden())
 		{
-			if (a_state->transform.scale)
+			if (a_state->transform.data)
 			{
-				a_state->commonNodes.rootNode->m_localTransform.scale =
-					a_state->refNode->m_localTransform.scale * *a_state->transform.scale;
+				a_state->commonNodes.rootNode->m_localTransform =
+#if defined(IED_PERF_BUILD)
+					Bullet::btTransformEx(a_state->refNode->m_localTransform)
+#else
+					a_state->refNode->m_localTransform
+#endif
+					* *a_state->transform.data;
 			}
 			else
 			{
-				a_state->commonNodes.rootNode->m_localTransform.scale = a_state->refNode->m_localTransform.scale;
-			}
-
-			if (a_state->transform.rotation)
-			{
-				a_state->commonNodes.rootNode->m_localTransform.rot =
-					a_state->refNode->m_localTransform.rot * *a_state->transform.rotation;
-			}
-			else
-			{
-				a_state->commonNodes.rootNode->m_localTransform.rot = a_state->refNode->m_localTransform.rot;
-			}
-
-			if (a_state->transform.position)
-			{
-				a_state->commonNodes.rootNode->m_localTransform.pos =
-					a_state->refNode->m_localTransform * *a_state->transform.position;
-			}
-			else
-			{
-				a_state->commonNodes.rootNode->m_localTransform.pos = a_state->refNode->m_localTransform.pos;
+				a_state->commonNodes.rootNode->m_localTransform =
+					a_state->refNode->m_localTransform;
 			}
 		}
 	}
@@ -439,7 +425,7 @@ namespace IED
 		if (!Util::Common::IsREFRValid(actor) ||
 		    a_holder.m_actor.get() != actor)  // ??
 		{
-#if !defined(IED_PERF_BUILD)
+#if defined(IED_PERF_BUILD)
 			if constexpr (_ParUnsafe)
 			{
 				ITaskPool::AddPriorityTask([r = std::move(refr)] {});
@@ -523,15 +509,17 @@ namespace IED
 			a_holder.RequestEval();
 		}
 
-		if (a_holder.m_flagsbf.wantEval)
+		auto& fbf = a_holder.m_flags.bf();
+
+		if (fbf.wantEval)
 		{
-			if (a_holder.m_flagsbf.evalCountdown != 0)
+			if (fbf.evalCountdown != 0)
 			{
-				a_holder.m_flagsbf.evalCountdown--;
+				fbf.evalCountdown--;
 			}
 
-			if (a_holder.m_flagsbf.evalCountdown == 0 ||
-			    a_holder.m_flagsbf.immediateEval)
+			if (fbf.evalCountdown == 0 ||
+			    fbf.immediateEval)
 			{
 				a_holder.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
 				a_holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);

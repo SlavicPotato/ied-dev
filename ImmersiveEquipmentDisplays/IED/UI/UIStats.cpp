@@ -146,12 +146,16 @@ namespace IED
 
 				ImGui::Separator();
 
+				const auto active = m_controller.GetNumActiveActors();
+				const auto total  = m_controller.GetActorMap().size();
+
 				if (TreeEx(
 						"actor_tree",
 						true,
-						"%s [%zu]",
+						"%s [%zu/%zu]",
 						UIL::LS(CommonStrings::Actors),
-						m_controller.GetActorMap().size()))
+						active,
+						total))
 				{
 					DrawActorTable();
 

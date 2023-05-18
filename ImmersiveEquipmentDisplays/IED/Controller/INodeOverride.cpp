@@ -354,7 +354,7 @@ namespace IED
 		nodeOverrideParams_t&                      a_params,
 		bool                                       a_ignoreNode = false) noexcept
 	{
-		switch (a_data.fbf.type)
+		switch (a_data.flags.bf().type)
 		{
 		case Data::NodeOverrideConditionType::Form:
 			{
@@ -720,7 +720,7 @@ namespace IED
 
 		for (auto& e : a_data)
 		{
-			if (e.fbf.type == Data::NodeOverrideConditionType::Group)
+			if (e.flags.bf().type == Data::NodeOverrideConditionType::Group)
 			{
 				result = run_conditions(e.group.conditions, a_params, a_default, a_ignoreNode);
 			}

@@ -322,6 +322,8 @@ namespace IED
 				ObjectDatabase&          a_db,
 				bool                     a_removeCloningTask) noexcept;
 
+			void TryCancelAndReleaseCloningTask() noexcept;
+
 			[[nodiscard]] inline SKMP_143_CONSTEXPR explicit operator bool() const noexcept
 			{
 				return state || effectShaderData || cloningTask;

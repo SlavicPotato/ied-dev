@@ -83,14 +83,14 @@ namespace IED
 			const ActorObjectHolder& a_holder) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateShadersOnDisplay(
-			const EffectShaderData&       a_data,
+			EffectShaderData&             a_data,
 			const ObjectEntryBase::State& a_state,
 			float                         a_step) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateShadersOnEquipped(
-			Actor*                  a_actor,
-			const EffectShaderData& a_data,
-			float                   a_step) noexcept;
+			Actor*            a_actor,
+			EffectShaderData& a_data,
+			float             a_step) noexcept;
 
 		static void ProcessNiObjectTree(
 			NiAVObject*                    a_object,

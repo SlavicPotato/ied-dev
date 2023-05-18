@@ -140,6 +140,7 @@ namespace IED
 		void RequestLFEvaluateAll() const noexcept;
 
 		[[nodiscard]] std::size_t GetNumQueuedModels() const noexcept;
+		[[nodiscard]] std::size_t GetNumActiveActors() const noexcept;
 
 	private:
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept = 0;

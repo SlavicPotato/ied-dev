@@ -168,6 +168,8 @@ namespace IED
 
 		sc.EnableMakeOnLoad(config->m_scMakeOnLoad);
 
+		EffectShaderData::EnableBackgroundLoading(config->m_esBackgroundLoad);
+
 		m_done = true;
 
 		return true;

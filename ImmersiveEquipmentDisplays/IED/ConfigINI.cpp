@@ -172,8 +172,8 @@ namespace IED
 		m_lightNPCVanillaUpdates = reader.GetBoolValue(SECT_LIGHTS, "VanillaLightUpdates", false);
 
 		m_effectShaderFlickerFix = reader.GetBoolValue(SECT_EFFECT_SHADERS, "FlickerFix", false);
+		m_esBackgroundLoad       = reader.GetBoolValue(SECT_EFFECT_SHADERS, "BackgroundLoadTextures", false);
 
-		//m_odbNativeLoader      =  reader.GetBoolValue(SECT_OBJECTDB, "UseNativeModelLoader", false);
 		m_odbBackgroundLoading = reader.GetBoolValue(SECT_OBJECTDB, "BackgroundLoading", true);
 
 		m_scMakeOnLoad = reader.GetBoolValue(SECT_SKELETON_CACHE, "ReadTransformsOnLoad", true);
@@ -181,8 +181,8 @@ namespace IED
 		m_clearRPCOnSceneMove           = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
 		m_interiorAmbientLightThreshold = static_cast<float>(reader.GetDoubleValue(SECT_MISCELLANEOUS, "InteriorAmbientLightThreshold", 0.425f));
 
-		m_bgClonePlayer = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundClonePlayer", 1), 0l, 2l));
-		m_bgCloneNPC    = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundCloneNPC", 1), 0l, 2l));
+		m_bgClonePlayer = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundClonePlayer", 2), 0l, 2l));
+		m_bgCloneNPC    = static_cast<BackgroundCloneLevel>(std::clamp(reader.GetLongValue(SECT_OBJECT_MANAGER, "BackgroundCloneNPC", 2), 0l, 2l));
 
 		m_loaded = reader.is_loaded();
 

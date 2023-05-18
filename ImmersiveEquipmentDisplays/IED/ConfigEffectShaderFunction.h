@@ -29,8 +29,8 @@ namespace IED
 
 		struct EffectShaderFunctionFlagsBitfield
 		{
-			EffectShaderWaveform type  : 5 { EffectShaderWaveform::Sine };
-			std::uint32_t        unused: 27 { 0 };
+			EffectShaderWaveform type  : 5;
+			std::uint32_t        unused: 27;
 		};
 
 		static_assert(sizeof(EffectShaderFunctionFlagsBitfield) == sizeof(EffectShaderFunctionFlags));
@@ -99,11 +99,10 @@ namespace IED
 				return uniqueID;
 			}
 
-			union
-			{
-				stl::flag<EffectShaderFunctionFlags> flags{ EffectShaderFunctionFlags::kNone };
-				EffectShaderFunctionFlagsBitfield    fbf;
-			};
+			stl::flag_bf<
+				EffectShaderFunctionFlags,
+				EffectShaderFunctionFlagsBitfield>
+				flags{ EffectShaderFunctionFlags::kNone };
 
 			EffectShaderFunctionType type{ EffectShaderFunctionType::None };
 

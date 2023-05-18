@@ -85,6 +85,21 @@ namespace IED
 		return result;
 	}
 
+	std::size_t ObjectManagerData::GetNumActiveActors() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& e : m_actorMap.getvec())
+		{
+			if (e->second.IsActive())
+			{
+				result++;
+			}
+		}
+
+		return result;
+	}
+
 	void ObjectManagerData::RequestLFEvaluateAll(
 		Game::FormID a_skip) const noexcept
 	{

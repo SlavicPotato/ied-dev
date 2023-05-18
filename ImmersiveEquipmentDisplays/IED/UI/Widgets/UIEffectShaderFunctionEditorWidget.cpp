@@ -111,46 +111,46 @@ namespace IED
 
 			if (ImGui::RadioButton(
 					UIL::LS(CommonStrings::Sine, "0"),
-					a_data.fbf.type == Data::EffectShaderWaveform::Sine))
+					a_data.flags.bf().type == Data::EffectShaderWaveform::Sine))
 			{
-				a_data.fbf.type = Data::EffectShaderWaveform::Sine;
-				result          = true;
+				a_data.flags.bf().type = Data::EffectShaderWaveform::Sine;
+				result                 = true;
 			}
 
 			if (ImGui::RadioButton(
 					UIL::LS(CommonStrings::Cosine, "1"),
-					a_data.fbf.type == Data::EffectShaderWaveform::Cosine))
+					a_data.flags.bf().type == Data::EffectShaderWaveform::Cosine))
 			{
-				a_data.fbf.type = Data::EffectShaderWaveform::Cosine;
-				result          = true;
+				a_data.flags.bf().type = Data::EffectShaderWaveform::Cosine;
+				result                 = true;
 			}
 
 			ImGui::NextColumn();
 
 			if (ImGui::RadioButton(
 					UIL::LS(CommonStrings::Triangle, "2"),
-					a_data.fbf.type == Data::EffectShaderWaveform::Triangle))
+					a_data.flags.bf().type == Data::EffectShaderWaveform::Triangle))
 			{
-				a_data.fbf.type = Data::EffectShaderWaveform::Triangle;
-				result          = true;
+				a_data.flags.bf().type = Data::EffectShaderWaveform::Triangle;
+				result                 = true;
 			}
 
 			if (ImGui::RadioButton(
 					UIL::LS(CommonStrings::Sawtooth, "3"),
-					a_data.fbf.type == Data::EffectShaderWaveform::Sawtooth))
+					a_data.flags.bf().type == Data::EffectShaderWaveform::Sawtooth))
 			{
-				a_data.fbf.type = Data::EffectShaderWaveform::Sawtooth;
-				result          = true;
+				a_data.flags.bf().type = Data::EffectShaderWaveform::Sawtooth;
+				result                 = true;
 			}
 
 			ImGui::NextColumn();
 
 			if (ImGui::RadioButton(
 					UIL::LS(CommonStrings::Square, "4"),
-					a_data.fbf.type == Data::EffectShaderWaveform::Square))
+					a_data.flags.bf().type == Data::EffectShaderWaveform::Square))
 			{
-				a_data.fbf.type = Data::EffectShaderWaveform::Square;
-				result          = true;
+				a_data.flags.bf().type = Data::EffectShaderWaveform::Square;
+				result                 = true;
 			}
 
 			ImGui::Columns();

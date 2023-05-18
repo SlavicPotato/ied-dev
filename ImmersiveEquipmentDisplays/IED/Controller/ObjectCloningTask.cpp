@@ -31,15 +31,7 @@ namespace IED
 		_owner.RequestCleanup();
 	}
 
-	void ObjectCloningTask::Unk_01()
-	{
-	}
-
-	void ObjectCloningTask::Unk_02()
-	{
-	}
-
-	bool ObjectCloningTask::Run()
+	void ObjectCloningTask::RunTask()
 	{
 		if (try_acquire_for_processing())
 		{
@@ -57,8 +49,6 @@ namespace IED
 
 			ITaskPool::AddTask<PostRunTask>(this);
 		}
-
-		return false;
 	}
 
 	void ObjectCloningTask::CloneAndApplyTexSwap(

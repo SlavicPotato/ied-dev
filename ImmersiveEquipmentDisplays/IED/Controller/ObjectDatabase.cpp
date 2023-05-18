@@ -4,8 +4,6 @@
 
 #include "QueuedModel.h"
 
-#include <ext/BackgroundProcessThread.h>
-
 namespace IED
 {
 	using namespace ::Util::Model;

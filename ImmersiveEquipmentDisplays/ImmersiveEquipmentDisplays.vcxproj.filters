@@ -2000,6 +2000,12 @@
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformSyncNodeParser.h">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ShaderTextureLoadTask.h">
+      <Filter>Source\IED\Controller\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\IOTaskBase.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3192,6 +3198,9 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformSyncNodeParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ShaderTextureLoadTask.cpp">
+      <Filter>Source\IED\Controller\EffectShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

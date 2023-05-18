@@ -475,9 +475,9 @@ namespace IED
 
 				if (ImGui::RadioButton(
 						UIL::LS(CommonStrings::None, "0"),
-						a_data.fbf.selected == Data::EffectShaderSelectedTexture::None))
+						a_data.flags.bf().selected == Data::EffectShaderSelectedTexture::None))
 				{
-					a_data.fbf.selected = Data::EffectShaderSelectedTexture::None;
+					a_data.flags.bf().selected = Data::EffectShaderSelectedTexture::None;
 					OnEffectShaderUpdate(a_params);
 				}
 
@@ -487,9 +487,9 @@ namespace IED
 
 				if (ImGui::RadioButton(
 						UIL::LS(CommonStrings::Black, "1"),
-						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Black))
+						a_data.flags.bf().selected == Data::EffectShaderSelectedTexture::Black))
 				{
-					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Black;
+					a_data.flags.bf().selected = Data::EffectShaderSelectedTexture::Black;
 					OnEffectShaderUpdate(a_params);
 				}
 
@@ -497,9 +497,9 @@ namespace IED
 
 				if (ImGui::RadioButton(
 						UIL::LS(CommonStrings::White, "2"),
-						a_data.fbf.selected == Data::EffectShaderSelectedTexture::White))
+						a_data.flags.bf().selected == Data::EffectShaderSelectedTexture::White))
 				{
-					a_data.fbf.selected = Data::EffectShaderSelectedTexture::White;
+					a_data.flags.bf().selected = Data::EffectShaderSelectedTexture::White;
 					OnEffectShaderUpdate(a_params);
 				}
 
@@ -507,9 +507,9 @@ namespace IED
 
 				if (ImGui::RadioButton(
 						UIL::LS(CommonStrings::Grey, "3"),
-						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Grey))
+						a_data.flags.bf().selected == Data::EffectShaderSelectedTexture::Grey))
 				{
-					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Grey;
+					a_data.flags.bf().selected = Data::EffectShaderSelectedTexture::Grey;
 					OnEffectShaderUpdate(a_params);
 				}
 
@@ -517,15 +517,15 @@ namespace IED
 
 				if (ImGui::RadioButton(
 						UIL::LS(CommonStrings::Custom, "4"),
-						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Custom))
+						a_data.flags.bf().selected == Data::EffectShaderSelectedTexture::Custom))
 				{
-					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Custom;
+					a_data.flags.bf().selected = Data::EffectShaderSelectedTexture::Custom;
 					OnEffectShaderUpdate(a_params);
 				}
 
 				ImGui::Spacing();
 
-				if (a_data.fbf.selected == Data::EffectShaderSelectedTexture::Custom)
+				if (a_data.flags.bf().selected == Data::EffectShaderSelectedTexture::Custom)
 				{
 					auto l = a_data.path.get().copy(
 						m_inputBuffer1,

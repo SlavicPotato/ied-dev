@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EffectShaderFunctionBase.h"
+#include "ShaderTextureLoadTask.h"
 
 #include "IED/ConfigData.h"
 #include "IED/ConfigEffectShader.h"
@@ -12,31 +13,24 @@ namespace IED
 	struct EffectShaderData
 	{
 		EffectShaderData(
+			const ActorObjectHolder&                a_owner,
 			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		EffectShaderData(
+			const ActorObjectHolder&                a_owner,
 			BIPED_OBJECT                            a_bipedObject,
 			NiNode*                                 a_sheathNode,
 			NiNode*                                 a_sheathNode1p,
 			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
-		enum class EntryFlags : std::uint32_t
-		{
-			kNone = 0,
-
-			kForce      = 1u << 0,
-			kTargetRoot = 1u << 1,
-		};
+		~EffectShaderData();
 
 		struct Entry
 		{
-			Entry(
+			explicit Entry(
 				const stl::fixed_string&                  a_key,
-				RE::BSTSmartPointer<BSEffectShaderData>&& a_shaderData) :
-				key(a_key),
-				shaderData(std::move(a_shaderData))
-			{
-			}
+				RE::BSTSmartPointer<BSEffectShaderData>&& a_shaderData,
+				const Data::configEffectShaderData_t&     a_config);
 
 			~Entry() = default;
 
@@ -46,12 +40,10 @@ namespace IED
 			Entry& operator=(Entry&&)      = default;
 
 			stl::fixed_string                                      key;
-			stl::flag<EntryFlags>                                  flags{ EntryFlags::kNone };
+			stl::flag<Data::EffectShaderDataFlags>                 flags{ Data::EffectShaderDataFlags::kNone };
 			RE::BSTSmartPointer<BSEffectShaderData>                shaderData;
 			stl::vector<std::unique_ptr<EffectShaderFunctionBase>> functions;
 			stl::flat_set<BSFixedString>                           targetNodes;
-
-			//stl::vector<node_t>                                    nodes;
 
 			SKMP_FORCEINLINE void update_effect_data(float a_step) const noexcept
 			{
@@ -63,11 +55,35 @@ namespace IED
 					e->Run(sdata, a_step);
 				}
 			}
-
-			void create_function_list(const Data::configEffectShaderFunctionList_t& a_data) noexcept;
 		};
 
-		using data_type = stl::vector<Entry>;
+		struct PendingEntry : Entry
+		{
+			explicit PendingEntry(
+				const stl::fixed_string&                  a_key,
+				RE::BSTSmartPointer<BSEffectShaderData>&& a_shaderData,
+				NiPointer<ShaderTextureLoadTask>&&        a_task,
+				const Data::configEffectShaderData_t&     a_config) :
+				Entry(
+					a_key,
+					std::move(a_shaderData),
+					a_config),
+				task(std::move(a_task))
+			{
+			}
+
+			PendingEntry(const PendingEntry&)            = delete;
+			PendingEntry(PendingEntry&&) noexcept        = default;
+			PendingEntry& operator=(const PendingEntry&) = delete;
+			PendingEntry& operator=(PendingEntry&&)      = default;
+
+			~PendingEntry() = default;
+
+			NiPointer<ShaderTextureLoadTask> task;
+		};
+
+		using data_type         = stl::vector<Entry>;
+		using pending_data_type = stl::vector<PendingEntry>;
 
 		[[nodiscard]] constexpr bool operator==(
 			const Data::configEffectShaderHolder_t& a_rhs) const noexcept
@@ -81,6 +97,7 @@ namespace IED
 		}*/
 
 		bool UpdateIfChanged(
+			const ActorObjectHolder&                a_owner,
 			NiAVObject*                             a_root,
 			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
@@ -89,6 +106,7 @@ namespace IED
 			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		void Update(
+			const ActorObjectHolder&                a_owner,
 			NiAVObject*                             a_root,
 			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
@@ -101,23 +119,16 @@ namespace IED
 
 		void ClearEffectShaderDataFromTree(NiAVObject* a_object) noexcept;
 
-		/*template <class Tf>
-		constexpr void visit_nodes(Tf a_func)                       //
-			noexcept(std::is_nothrow_invocable_v<Tf, node_t&>)  //
-			requires(std::invocable<Tf, node_t&>)
-		{
-			for (auto& e : data)
-			{
-				for (auto& f : e.nodes)
-				{
-					a_func(e, f);
-				}
-			}
-		}*/
+		bool ProcessPendingLoad(const NiPointer<ShaderTextureLoadTask>& a_task) noexcept;
 
 		[[nodiscard]] constexpr auto& GetSheathNode(bool a_firstPerson) const noexcept
 		{
 			return a_firstPerson ? sheathNode1p : sheathNode;
+		}
+
+		static inline void EnableBackgroundLoading(bool a_switch) noexcept
+		{
+			_backgroundLoad.store(a_switch, std::memory_order_relaxed);
 		}
 
 		data_type               data;
@@ -126,11 +137,16 @@ namespace IED
 		NiPointer<NiNode>       sheathNode;
 		NiPointer<NiNode>       sheathNode1p;
 		std::optional<luid_tag> tag;
+		pending_data_type       pending;
 
 	private:
-		void Update(const Data::configEffectShaderHolder_t& a_data) noexcept;
-	};
+		void UpdateImpl(
+			const ActorObjectHolder&                a_owner,
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
-	DEFINE_ENUM_CLASS_BITWISE(EffectShaderData::EntryFlags);
+		void CancelPendingTasks() noexcept;
+
+		static std::atomic<bool> _backgroundLoad;
+	};
 
 }

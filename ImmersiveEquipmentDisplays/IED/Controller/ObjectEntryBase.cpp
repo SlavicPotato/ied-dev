@@ -348,6 +348,15 @@ namespace IED
 		}
 	}
 
+	void ObjectEntryBase::ObjectEntryData::TryCancelAndReleaseCloningTask() noexcept
+	{
+		if (auto& ct = cloningTask)
+		{
+			ct->try_cancel_task();
+			ct.reset();
+		}
+	}
+
 	ObjectEntryBase::QuiverArrowState::QuiverArrowState(NiNode* a_arrowQuiver) noexcept
 	{
 		const auto& arrowStrings = BSStringHolder::GetSingleton()->m_arrows;

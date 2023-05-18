@@ -36,10 +36,10 @@ namespace IED
 	}
 
 	void EffectController::RunEffectUpdates(
-		const float                             a_interval,
-		const Game::Unk2f6b948::TimeMultipliers&          a_stepMuls,
-		const std::optional<PhysicsUpdateData>& a_physUpdData,
-		const ActorObjectHolder&                a_holder) noexcept
+		const float                              a_interval,
+		const Game::Unk2f6b948::TimeMultipliers& a_stepMuls,
+		const std::optional<PhysicsUpdateData>&  a_physUpdData,
+		const ActorObjectHolder&                 a_holder) noexcept
 	{
 		const auto stepMul =
 			a_holder.IsPlayer() ?
@@ -89,7 +89,7 @@ namespace IED
 	}
 
 	void EffectController::UpdateShadersOnDisplay(
-		const EffectShaderData&       a_data,
+		EffectShaderData&             a_data,
 		const ObjectEntryBase::State& a_state,
 		float                         a_step) noexcept
 	{
@@ -99,7 +99,7 @@ namespace IED
 
 			if (a_state.flags.test(ObjectEntryFlags::kIsGroup))
 			{
-				if (e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
+				if (e.flags.test(Data::EffectShaderDataFlags::kTargetRoot))
 				{
 					ProcessNiObjectTree(a_state.commonNodes.rootNode, e);
 				}
@@ -113,7 +113,7 @@ namespace IED
 			}
 			else
 			{
-				auto& object = e.flags.test(EffectShaderData::EntryFlags::kTargetRoot) ?
+				auto& object = e.flags.test(Data::EffectShaderDataFlags::kTargetRoot) ?
 				                   a_state.commonNodes.rootNode :
 				                   a_state.commonNodes.object;
 
@@ -123,9 +123,9 @@ namespace IED
 	}
 
 	void EffectController::UpdateShadersOnEquipped(
-		Actor*                  a_actor,
-		const EffectShaderData& a_data,
-		float                   a_step) noexcept
+		Actor*            a_actor,
+		EffectShaderData& a_data,
+		float             a_step) noexcept
 	{
 		if (a_data.bipedObject >= BIPED_OBJECT::kTotal)
 		{
@@ -162,7 +162,7 @@ namespace IED
 			NiAVObject* target = object.get();
 
 			if (sheathNode &&
-			    e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
+			    e.flags.test(Data::EffectShaderDataFlags::kTargetRoot))
 			{
 				if (object->m_parent == sheathNode.get())
 				{
@@ -204,7 +204,7 @@ namespace IED
 					}
 
 					const bool trySet =
-						a_entry.flags.test(EffectShaderData::EntryFlags::kForce) ?
+						a_entry.flags.test(Data::EffectShaderDataFlags::kForce) ?
 							shaderProp->effectData != a_entry.shaderData :
 							!shaderProp->effectData;
 

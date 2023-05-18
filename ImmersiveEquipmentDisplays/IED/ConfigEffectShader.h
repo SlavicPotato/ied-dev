@@ -51,11 +51,11 @@ namespace IED
 
 		struct EffectShaderTextureFlagsBitfield
 		{
-			EffectShaderSelectedTexture selected: 4 { 0 };
-			std::uint32_t               unused  : 28 { 0 };
+			EffectShaderSelectedTexture selected: 4;
+			std::uint32_t               unused  : 28;
 		};
 
-		static_assert(sizeof(EffectShaderTextureFlagsBitfield) == sizeof(EffectShaderDataFlags));
+		static_assert(sizeof(EffectShaderTextureFlagsBitfield) == sizeof(EffectShaderTextureFlags));
 
 		struct configEffectShaderTexture_t
 		{
@@ -71,15 +71,18 @@ namespace IED
 
 			constexpr configEffectShaderTexture_t(
 				EffectShaderTextureFlags a_flags) noexcept :
-				flags{ a_flags }
+				flags(a_flags)
 			{
 			}
 
-			union
+			[[nodiscard]] constexpr bool has_custom() const noexcept
 			{
-				stl::flag<EffectShaderTextureFlags> flags{ EffectShaderTextureFlags::kNone };
-				EffectShaderTextureFlagsBitfield    fbf;
-			};
+				return flags.bf().selected == EffectShaderSelectedTexture::Custom && !path.empty();
+			}
+
+			NiPointer<NiTexture> load_texture(bool a_force_default) const noexcept;
+
+			stl::flag_bf<EffectShaderTextureFlags, EffectShaderTextureFlagsBitfield> flags{ EffectShaderTextureFlags::kNone };
 
 			stl::fixed_string path;
 
@@ -141,13 +144,14 @@ namespace IED
 			float                            boundDiameter{ 0.0f };
 			configEffectShaderFunctionList_t functions;
 
-			[[nodiscard]] bool create_shader_data(RE::BSTSmartPointer<BSEffectShaderData>& a_out) const;
+			[[nodiscard]] constexpr bool has_custom_texture() const noexcept
+			{
+				return baseTexture.has_custom() ||
+				       paletteTexture.has_custom() ||
+				       blockOutTexture.has_custom();
+			}
 
-		private:
-			static void load_texture(
-				const configEffectShaderTexture_t& a_in,
-				bool                               a_force_default,
-				NiPointer<NiTexture>&              a_out);
+			[[nodiscard]] RE::BSTSmartPointer<BSEffectShaderData> create_shader_data() const;
 
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)

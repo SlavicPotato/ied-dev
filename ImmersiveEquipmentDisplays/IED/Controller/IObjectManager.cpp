@@ -12,10 +12,6 @@
 #include "IED/StringHolder.h"
 #include "IED/Util/Common.h"
 
-#include <ext/BackgroundProcessThread.h>
-#include <ext/Model.h>
-#include <ext/Node.h>
-
 namespace IED
 {
 	using namespace ::Util::Node;

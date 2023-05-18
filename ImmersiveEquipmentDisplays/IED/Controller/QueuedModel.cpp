@@ -24,15 +24,7 @@ namespace IED
 		_owner.RequestCleanup();  // must be called after entry decref
 	}
 
-	void QueuedModel::Unk_01()
-	{
-	}
-
-	void QueuedModel::Unk_02()
-	{
-	}
-
-	bool QueuedModel::Run()
+	void QueuedModel::RunTask()
 	{
 		if (_entry->try_acquire_queued_for_load())
 		{
@@ -49,8 +41,6 @@ namespace IED
 		}
 
 		//ITaskPool::AddPriorityTask<PostRunTask>(this);
-
-		return false;
 	}
 
 	QueuedModel::PostRunTask::PostRunTask(QueuedModel* a_task) :

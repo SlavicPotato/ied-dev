@@ -900,7 +900,7 @@ namespace IED
 		{
 			for (auto& e : a_in)
 			{
-				if (e.fbf.type == Data::NodeOverrideConditionType::Group)
+				if (e.flags.bf().type == Data::NodeOverrideConditionType::Group)
 				{
 					a_offset++;
 					a_result = std::max(a_result, a_offset);
@@ -1163,7 +1163,7 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(1);
 
-						if (e.fbf.type == Data::NodeOverrideConditionType::Group)
+						if (e.flags.bf().type == Data::NodeOverrideConditionType::Group)
 						{
 							ImGui::TextUnformatted(UIL::LS(CommonStrings::Group));
 
@@ -1196,7 +1196,7 @@ namespace IED
 						{
 							m_condParamEditor.Reset();
 
-							if (e.fbf.type == Data::NodeOverrideConditionType::Variable)
+							if (e.flags.bf().type == Data::NodeOverrideConditionType::Variable)
 							{
 								switch (e.vcSource)
 								{
@@ -1220,13 +1220,13 @@ namespace IED
 							}
 							else
 							{
-								UpdateMatchParamAllowedTypes(e.fbf.type);
+								UpdateMatchParamAllowedTypes(e.flags.bf().type);
 							}
 
 							const char* tdesc;
 							const char* vdesc;
 
-							switch (e.fbf.type)
+							switch (e.flags.bf().type)
 							{
 							case Data::NodeOverrideConditionType::Node:
 
@@ -1509,7 +1509,7 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr, true);
 
-								tdesc = e.fbf.type == Data::NodeOverrideConditionType::Mounting ?
+								tdesc = e.flags.bf().type == Data::NodeOverrideConditionType::Mounting ?
 								            UIL::LS(UIWidgetCommonStrings::Mounting) :
 								            UIL::LS(UIWidgetCommonStrings::Mounted);
 
@@ -1830,7 +1830,7 @@ namespace IED
 
 			bool result = false;
 
-			switch (match->fbf.type)
+			switch (match->flags.bf().type)
 			{
 			case Data::NodeOverrideConditionType::BipedSlot:
 				{
@@ -2215,7 +2215,7 @@ namespace IED
 
 			ImGui::PushID("match_item_extra");
 
-			switch (match->fbf.type)
+			switch (match->flags.bf().type)
 			{
 			case Data::NodeOverrideConditionType::BipedSlot:
 			case Data::NodeOverrideConditionType::Type:
@@ -2229,7 +2229,7 @@ namespace IED
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
 
-					if (match->fbf.type == Data::NodeOverrideConditionType::BipedSlot &&
+					if (match->flags.bf().type == Data::NodeOverrideConditionType::BipedSlot &&
 					    match->flags.test(Data::NodeOverrideConditionFlags::kExtraFlag2))
 					{
 						a_args.disable = true;
@@ -2539,7 +2539,7 @@ namespace IED
 		{
 			auto match = static_cast<Data::configNodeOverrideCondition_t*>(a_args.p3);
 
-			switch (match->fbf.type)
+			switch (match->flags.bf().type)
 			{
 			case Data::NodeOverrideConditionType::Variable:
 

@@ -9,20 +9,9 @@ namespace IED
 {
 	namespace Data
 	{
-		bool configEffectShaderData_t::create_shader_data(
-			RE::BSTSmartPointer<BSEffectShaderData>& a_out) const
+		RE::BSTSmartPointer<BSEffectShaderData> configEffectShaderData_t::create_shader_data() const
 		{
 			auto result = RE::make_smart<BSEffectShaderData>();
-
-			load_texture(baseTexture, true, result->baseTexture);
-
-			if (!result->baseTexture)
-			{
-				return false;
-			}
-
-			load_texture(paletteTexture, false, result->paletteTexture);
-			load_texture(blockOutTexture, false, result->blockOutTexture);
 
 			result->fillColor = fillColor;
 			result->rimColor  = rimColor;
@@ -41,68 +30,61 @@ namespace IED
 			result->edgeExponent     = edgeExponent;
 			//result->boundDiameter    = boundDiameter;
 
-			if (result->paletteTexture)
-			{
-				result->grayscaleToColor = flags.test(EffectShaderDataFlags::kGrayscaleToColor);
-				result->grayscaleToAlpha = flags.test(EffectShaderDataFlags::kGrayscaleToAlpha);
-			}
-
 			result->ignoreTextureAlpha      = flags.test(EffectShaderDataFlags::kIgnoreTextureAlpha);
 			result->baseTextureProjectedUVs = flags.test(EffectShaderDataFlags::kBaseTextureProjectedUVs);
 			result->ignoreBaseGeomTexAlpha  = flags.test(EffectShaderDataFlags::kIgnoreBaseGeomTexAlpha);
 			result->lighting                = flags.test(EffectShaderDataFlags::kLighting);
 			result->alpha                   = flags.test(EffectShaderDataFlags::kAlpha);
 
-			a_out = std::move(result);
-
-			return true;
+			return result;
 		}
 
-		void configEffectShaderData_t::load_texture(
-			const configEffectShaderTexture_t& a_in,
-			bool                               a_force_default,
-			NiPointer<NiTexture>&              a_out)
+		NiPointer<NiTexture> configEffectShaderTexture_t::load_texture(
+			bool a_force_default) const noexcept
 		{
-			if (a_in.fbf.selected == EffectShaderSelectedTexture::Custom &&
-			    !a_in.path.empty())
+			NiPointer<NiTexture> result;
+
+			if (has_custom())
 			{
 				char path_buffer[MAX_PATH];
 
-				const auto path = Util::Model::MakePath(
+				const auto p = Util::Model::MakePath(
 					"textures",
-					a_in.path.c_str(),
+					path.c_str(),
 					path_buffer);
 
 				LoadTexture(
-					path,
+					p,
 					std::uint8_t(1),
-					a_out,
+					result,
 					false);
 			}
 
-			if (!a_out)
+			if (!result)
 			{
 				if (auto gstate = BSGraphics::State::GetSingleton())
 				{
-					switch (a_in.fbf.selected)
+					switch (flags.bf().selected)
 					{
 					case EffectShaderSelectedTexture::White:
-						a_out = gstate->defaultTextureWhite;
+						result = gstate->defaultTextureWhite;
 						break;
 					case EffectShaderSelectedTexture::Grey:
-						a_out = gstate->defaultTextureGrey;
+						result = gstate->defaultTextureGrey;
 						break;
 					case EffectShaderSelectedTexture::Black:
-						a_out = gstate->unk058;
+						result = gstate->unk058;
 						break;
 					}
 
-					if (!a_out && a_force_default)
+					if (!result && a_force_default)
 					{
-						a_out = gstate->defaultTextureWhite;
+						result = gstate->defaultTextureWhite;
 					}
 				}
 			}
+
+			return result;
 		}
 	}
 }

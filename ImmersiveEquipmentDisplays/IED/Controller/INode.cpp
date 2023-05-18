@@ -12,31 +12,13 @@ namespace IED
 		NiAVObject*                   a_node,
 		const Data::cacheTransform_t& a_trnsf) noexcept
 	{
-		if (a_trnsf.scale)
+		if (a_trnsf.data)
 		{
-			a_node->m_localTransform.scale = *a_trnsf.scale;
+			a_node->m_localTransform = *a_trnsf.data;
 		}
 		else
 		{
-			a_node->m_localTransform.scale = 1.0f;
-		}
-
-		if (a_trnsf.position)
-		{
-			a_node->m_localTransform.pos = *a_trnsf.position;
-		}
-		else
-		{
-			a_node->m_localTransform.pos = {};
-		}
-
-		if (a_trnsf.rotation)
-		{
-			a_node->m_localTransform.rot = *a_trnsf.rotation;
-		}
-		else
-		{
-			a_node->m_localTransform.rot.Identity();
+			a_node->m_localTransform = NiTransform();
 		}
 	}
 
@@ -77,36 +59,19 @@ namespace IED
 		NiNode*                       a_refNode,
 		const Data::cacheTransform_t& a_trnsf) noexcept
 	{
-		if (a_trnsf.scale)
+		if (a_trnsf.data)
 		{
-			a_node->m_localTransform.scale = std::clamp(
-				a_refNode->m_localTransform.scale * *a_trnsf.scale,
-				0.01f,
-				100.0f);
+			a_node->m_localTransform =
+#if defined(IED_PERF_BUILD)
+				Bullet::btTransformEx(a_refNode->m_localTransform)
+#else
+				a_refNode->m_localTransform
+#endif
+				* *a_trnsf.data;
 		}
 		else
 		{
-			a_node->m_localTransform.scale = a_refNode->m_localTransform.scale;
-		}
-
-		if (a_trnsf.rotation)
-		{
-			a_node->m_localTransform.rot =
-				a_refNode->m_localTransform.rot * *a_trnsf.rotation;
-		}
-		else
-		{
-			a_node->m_localTransform.rot = a_refNode->m_localTransform.rot;
-		}
-
-		if (a_trnsf.position)
-		{
-			a_node->m_localTransform.pos =
-				a_refNode->m_localTransform * *a_trnsf.position;
-		}
-		else
-		{
-			a_node->m_localTransform.pos = a_refNode->m_localTransform.pos;
+			a_node->m_localTransform = a_refNode->m_localTransform;
 		}
 	}
 
@@ -143,7 +108,7 @@ namespace IED
 		NiNode*                     a_root) noexcept
 		-> findResult_t
 	{
-		BSFixedString nodeName(a_node.name.c_str());
+		const BSFixedString nodeName(a_node.name.c_str());
 
 		auto obj = a_root->GetObjectByName(nodeName);
 

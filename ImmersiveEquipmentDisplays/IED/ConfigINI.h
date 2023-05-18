@@ -96,6 +96,7 @@ namespace IED
 		bool                 m_lightNPCVanillaUpdates{ false };
 		bool                 m_odbBackgroundLoading{ false };
 		bool                 m_scMakeOnLoad{ true };
+		bool                 m_esBackgroundLoad{ false };
 		BackgroundCloneLevel m_bgClonePlayer{ BackgroundCloneLevel::kNone };
 		BackgroundCloneLevel m_bgCloneNPC{ BackgroundCloneLevel::kNone };
 		std::uint32_t        m_bipedSlotCacheMaxSize{ 2000 };

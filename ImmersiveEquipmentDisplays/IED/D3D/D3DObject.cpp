@@ -51,7 +51,7 @@ namespace IED
 
 		SetMatrices(a_scene.GetViewMatrix(), a_scene.GetProjectionMatrix());
 
-		a_scene.SetRasterizerState(m_flagsbf.rasterizerState);
+		a_scene.SetRasterizerState(m_flags.bf().rasterizerState);
 		a_scene.SetRenderTargets(m_flags.test(D3DObjectFlags::kDepth));
 		a_scene.SetDepthStencilState(
 			m_alpha >= 1.0f ?

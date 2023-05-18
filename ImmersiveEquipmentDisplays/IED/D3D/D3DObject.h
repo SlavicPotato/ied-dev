@@ -56,7 +56,7 @@ namespace IED
 		[[nodiscard]] constexpr void SetRasterizerState(
 			D3DObjectRasterizerState a_value) noexcept
 		{
-			m_flagsbf.rasterizerState = a_value;
+			m_flags.bf().rasterizerState = a_value;
 		}
 
 		[[nodiscard]] constexpr void EnableDepth(bool a_switch) noexcept
@@ -72,10 +72,6 @@ namespace IED
 	private:
 		std::shared_ptr<D3DModelData> m_data;
 
-		union
-		{
-			stl::flag<D3DObjectFlags> m_flags{ D3DObjectFlags::kNone };
-			D3DObjectFlagsBF          m_flagsbf;
-		};
+		stl::flag_bf<D3DObjectFlags, D3DObjectFlagsBF> m_flags{ D3DObjectFlags::kNone };
 	};
 }

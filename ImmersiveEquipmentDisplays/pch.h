@@ -15,6 +15,7 @@
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
 //#include <ext/Hash.h>
+#include <ext/BackgroundProcessThread.h>
 #include <ext/IDebugLog.h>
 #include <ext/ILUID.h>
 #include <ext/IOS.h>
@@ -141,6 +142,8 @@
 
 #include <ImGUI/imgui_impl_dx11.h>
 #include <ImGUI/imgui_impl_win32.h>
+
+#include "IED/IOTaskBase.h"
 
 namespace fs = std::filesystem;
 

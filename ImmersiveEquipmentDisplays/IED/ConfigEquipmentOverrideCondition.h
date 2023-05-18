@@ -103,7 +103,7 @@ namespace IED
 
 		struct EquipmentOverrideConditionFlagsBitfield
 		{
-			EquipmentOverrideConditionType type                    : 5 { EquipmentOverrideConditionType::Form };
+			EquipmentOverrideConditionType type                    : 5;
 			std::uint32_t                  unused1                 : 15;
 			PresenceEquippedHandMatch      presenceEquipedHandMatch: 2;
 			std::uint32_t                  unused2                 : 10;
@@ -200,7 +200,7 @@ namespace IED
 					break;
 				}
 
-				fbf.type = a_type;
+				flags.bf().type = a_type;
 			}
 
 			inline equipmentOverrideCondition_t(
@@ -208,14 +208,14 @@ namespace IED
 				slot(a_slot),
 				flags(DEFAULT_MATCH_CATEGORY_FLAGS)
 			{
-				fbf.type = EquipmentOverrideConditionType::Type;
+				flags.bf().type = EquipmentOverrideConditionType::Type;
 			}
 
 			inline equipmentOverrideCondition_t(
 				BIPED_OBJECT a_slot) :
 				bipedSlot(a_slot)
 			{
-				fbf.type = EquipmentOverrideConditionType::BipedSlot;
+				flags.bf().type = EquipmentOverrideConditionType::BipedSlot;
 			}
 
 			inline equipmentOverrideCondition_t(
@@ -236,7 +236,7 @@ namespace IED
 					break;
 				}
 
-				fbf.type = EquipmentOverrideConditionType::Extra;
+				flags.bf().type = EquipmentOverrideConditionType::Extra;
 			}
 
 			inline equipmentOverrideCondition_t(
@@ -252,7 +252,7 @@ namespace IED
 					assert(false);
 				}
 
-				fbf.type = a_matchType;
+				flags.bf().type = a_matchType;
 			}
 
 			inline equipmentOverrideCondition_t(
@@ -290,7 +290,7 @@ namespace IED
 						break;
 					}
 
-					fbf.type = a_matchType;
+					flags.bf().type = a_matchType;
 
 					break;
 
@@ -300,11 +300,10 @@ namespace IED
 				}
 			}
 
-			union
-			{
-				stl::flag<EquipmentOverrideConditionFlags> flags{ EquipmentOverrideConditionFlags::kNone };
-				EquipmentOverrideConditionFlagsBitfield    fbf;
-			};
+			stl::flag_bf<
+				EquipmentOverrideConditionFlags,
+				EquipmentOverrideConditionFlagsBitfield>
+				flags{ EquipmentOverrideConditionFlags::kNone };
 
 			configCachedForm_t form;
 			configCachedForm_t form2;
