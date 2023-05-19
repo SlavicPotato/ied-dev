@@ -39,22 +39,13 @@ namespace IED
 			Entry& operator=(const Entry&) = delete;
 			Entry& operator=(Entry&&)      = default;
 
+			void UpdateEffectData(float a_step) const noexcept;
+
 			stl::fixed_string                                      key;
 			stl::flag<Data::EffectShaderDataFlags>                 flags{ Data::EffectShaderDataFlags::kNone };
 			RE::BSTSmartPointer<BSEffectShaderData>                shaderData;
 			stl::vector<std::unique_ptr<EffectShaderFunctionBase>> functions;
 			stl::flat_set<BSFixedString>                           targetNodes;
-
-			SKMP_FORCEINLINE void update_effect_data(float a_step) const noexcept
-			{
-				auto sdata = shaderData.get();
-				assert(sdata);
-
-				for (auto& e : functions)
-				{
-					e->Run(sdata, a_step);
-				}
-			}
 		};
 
 		struct PendingEntry : Entry

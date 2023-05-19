@@ -338,6 +338,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <DisableSpecificWarnings>4324;4100</DisableSpecificWarnings>
       <ConformanceMode>true</ConformanceMode>
       <UseFullPaths>false</UseFullPaths>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -411,7 +412,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak;$(SolutionDir)..\oneTBB\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:__cplusplus /Ob3 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -423,6 +424,8 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <FloatingPointModel>Fast</FloatingPointModel>
       <UseFullPaths>false</UseFullPaths>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -465,6 +468,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <ConformanceMode>true</ConformanceMode>
       <FloatingPointModel>Fast</FloatingPointModel>
       <UseFullPaths>false</UseFullPaths>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -545,6 +549,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <DisableSpecificWarnings>4324;4100</DisableSpecificWarnings>
       <ConformanceMode>true</ConformanceMode>
       <UseFullPaths>false</UseFullPaths>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -624,6 +629,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableSpecificWarnings>4324;4100</DisableSpecificWarnings>
       <ConformanceMode>true</ConformanceMode>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

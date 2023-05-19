@@ -23,8 +23,6 @@ namespace IED
 			kIgnoreBaseGeomTexAlpha  = 1u << 14,
 			kLighting                = 1u << 15,
 			kAlpha                   = 1u << 16,
-
-			EntryMask = kForce | kTargetRoot
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderDataFlags);

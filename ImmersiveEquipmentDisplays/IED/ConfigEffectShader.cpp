@@ -62,7 +62,7 @@ namespace IED
 
 			if (!result)
 			{
-				if (auto gstate = BSGraphics::State::GetSingleton())
+				if (const auto* const gstate = BSGraphics::State::GetSingleton())
 				{
 					switch (flags.bf().selected)
 					{

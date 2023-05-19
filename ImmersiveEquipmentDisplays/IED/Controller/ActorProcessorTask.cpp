@@ -425,7 +425,7 @@ namespace IED
 		if (!Util::Common::IsREFRValid(actor) ||
 		    a_holder.m_actor.get() != actor)  // ??
 		{
-#if defined(IED_PERF_BUILD)
+#if !defined(IED_PERF_BUILD)
 			if constexpr (_ParUnsafe)
 			{
 				ITaskPool::AddPriorityTask([r = std::move(refr)] {});

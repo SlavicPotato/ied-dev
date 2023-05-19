@@ -109,7 +109,7 @@ namespace IED
 				auto thrd = RE::BackgroundProcessThread::GetSingleton();
 				assert(thrd);
 
-				auto task = thrd->QueueTask<ShaderTextureLoadTask>(a_owner, shaderData, e);
+				auto task = thrd->QueueTask<ShaderTextureLoadTask>(a_owner, e);
 
 				pending.emplace_back(i, std::move(shaderData), std::move(task), e);
 			}
@@ -163,14 +163,14 @@ namespace IED
 
 			e.shaderData->fillColor     = it->second.fillColor;
 			e.shaderData->rimColor      = it->second.rimColor;
+			e.shaderData->baseFillScale = it->second.baseFillScale;
+			e.shaderData->baseFillAlpha = it->second.baseFillAlpha;
+			e.shaderData->baseRimAlpha  = it->second.baseRimAlpha;
 			e.shaderData->uOffset       = it->second.uvo.uOffset;
 			e.shaderData->vOffset       = it->second.uvo.vOffset;
 			e.shaderData->uScale        = it->second.uvp.uScale;
 			e.shaderData->vScale        = it->second.uvp.vScale;
 			e.shaderData->edgeExponent  = it->second.edgeExponent;
-			e.shaderData->baseFillScale = it->second.baseFillScale;
-			e.shaderData->baseFillAlpha = it->second.baseFillAlpha;
-			e.shaderData->baseRimAlpha  = it->second.baseRimAlpha;
 			//e.shaderData->boundDiameter = it->second.boundDiameter;
 
 			for (const auto& f : e.functions)
@@ -262,7 +262,21 @@ namespace IED
 			switch (it->task->get_state())
 			{
 			case ShaderTextureLoadTask::State::kLoaded:
+
+				assert(it->task->_baseTexture.second);
+
+				it->shaderData->baseTexture     = std::move(it->task->_baseTexture.second);
+				it->shaderData->paletteTexture  = std::move(it->task->_paletteTexture.second);
+				it->shaderData->blockOutTexture = std::move(it->task->_blockOutTexture.second);
+
+				if (it->shaderData->paletteTexture)
+				{
+					it->shaderData->grayscaleToColor = it->flags.test(Data::EffectShaderDataFlags::kGrayscaleToColor);
+					it->shaderData->grayscaleToAlpha = it->flags.test(Data::EffectShaderDataFlags::kGrayscaleToAlpha);
+				}
+
 				data.emplace_back(std::move(*it));
+
 				[[fallthrough]];
 			case ShaderTextureLoadTask::State::kCancelled:
 			case ShaderTextureLoadTask::State::kError:
@@ -283,13 +297,25 @@ namespace IED
 		}
 	}
 
+	void EffectShaderData::Entry::UpdateEffectData(
+		float a_step) const noexcept
+	{
+		auto sdata = shaderData.get();
+		assert(sdata);
+
+		for (auto& e : functions)
+		{
+			e->Run(sdata, a_step);
+		}
+	}
+
 	EffectShaderData::Entry::Entry(
 		const stl::fixed_string&                  a_key,
 		RE::BSTSmartPointer<BSEffectShaderData>&& a_shaderData,
 		const Data::configEffectShaderData_t&     a_config) :
 		key(a_key),
 		shaderData(std::move(a_shaderData)),
-		flags(a_config.flags & Data::EffectShaderDataFlags::EntryMask)
+		flags(a_config.flags)
 	{
 		functions.reserve(a_config.functions.size());
 

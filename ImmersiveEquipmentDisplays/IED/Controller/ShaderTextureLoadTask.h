@@ -8,10 +8,13 @@ namespace IED
 {
 	class IObjectManager;
 	class ActorObjectHolder;
+	struct EffectShaderData;
 
 	class ShaderTextureLoadTask :
 		public IOTaskBase<ShaderTextureLoadTask>
 	{
+		friend struct EffectShaderData;
+
 		class PostRunTask :
 			public TaskDelegate
 		{
@@ -41,10 +44,9 @@ namespace IED
 		};
 
 		ShaderTextureLoadTask(
-			const ActorObjectHolder&                       a_owner,
-			const RE::BSTSmartPointer<BSEffectShaderData>& a_data,
-			const Data::configEffectShaderData_t&          a_config,
-			std::uint8_t                                   a_priority = 4);
+			const ActorObjectHolder&              a_holder,
+			const Data::configEffectShaderData_t& a_config,
+			std::uint8_t                          a_priority = 4);
 
 		void RunTask();
 
@@ -66,14 +68,11 @@ namespace IED
 		}
 
 	private:
-		Data::configEffectShaderTexture_t      _baseTexture;
-		Data::configEffectShaderTexture_t      _paletteTexture;
-		Data::configEffectShaderTexture_t      _blockOutTexture;
-		stl::flag<Data::EffectShaderDataFlags> _flags;
-		Game::FormID                           _actor;
-		IObjectManager&                        _owner;
-
-		RE::BSTSmartPointer<BSEffectShaderData> _data;
-		std::atomic<State>                      _taskState{ State::kPending };
+		std::pair<Data::configEffectShaderTexture_t, NiPointer<NiTexture>> _baseTexture;
+		std::pair<Data::configEffectShaderTexture_t, NiPointer<NiTexture>> _paletteTexture;
+		std::pair<Data::configEffectShaderTexture_t, NiPointer<NiTexture>> _blockOutTexture;
+		Game::FormID                                                       _actor;
+		IObjectManager&                                                    _owner;
+		std::atomic<State>                                                 _taskState{ State::kPending };
 	};
 }

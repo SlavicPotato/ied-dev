@@ -83,7 +83,7 @@ namespace IED
 
 			float a{ 1.0f };
 
-			inline operator NiColorA() const noexcept
+			constexpr operator NiColorA() const noexcept
 			{
 				return {
 					r,

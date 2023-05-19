@@ -21,15 +21,15 @@ namespace IED
 		m_averageInterval    = m_averageInterval * 0.875f + a_interval * 0.125f;
 		const float timeTick = std::min(m_averageInterval, confTimeTick);
 
-		m_timeAccum += a_interval;
+		const float accum = (m_timeAccum += a_interval);
 
-		if (m_timeAccum > timeTick * 0.25f)
+		if (accum > timeTick * 0.25f)
 		{
 			a_data.emplace(
 				timeTick,
-				std::min(m_timeAccum, timeTick * maxSubSteps),
+				std::min(accum, timeTick * maxSubSteps),
 				timeTick * 1.25f,
-				m_timeAccum);
+				accum);
 
 			m_timeAccum = 0.0f;
 		}
@@ -95,7 +95,7 @@ namespace IED
 	{
 		for (const auto& e : a_data.data)
 		{
-			e.update_effect_data(a_step);
+			e.UpdateEffectData(a_step);
 
 			if (a_state.flags.test(ObjectEntryFlags::kIsGroup))
 			{
@@ -139,7 +139,7 @@ namespace IED
 
 		for (auto& e : a_data.data)
 		{
-			e.update_effect_data(a_step);
+			e.UpdateEffectData(a_step);
 		}
 
 		auto& biped = a_actor->GetCurrentBiped();

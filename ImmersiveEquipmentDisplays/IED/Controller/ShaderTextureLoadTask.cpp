@@ -7,17 +7,14 @@
 namespace IED
 {
 	ShaderTextureLoadTask::ShaderTextureLoadTask(
-		const ActorObjectHolder&                       a_owner,
-		const RE::BSTSmartPointer<BSEffectShaderData>& a_data,
+		const ActorObjectHolder&                       a_holder,
 		const Data::configEffectShaderData_t&          a_config,
 		std::uint8_t                                   a_priority) :
-		_baseTexture(a_config.baseTexture),
-		_paletteTexture(a_config.paletteTexture),
-		_blockOutTexture(a_config.blockOutTexture),
-		_flags(a_config.flags),
-		_data(a_data),
-		_owner(a_owner.GetOwner()),
-		_actor(a_owner.GetActorFormID())
+		_baseTexture(a_config.baseTexture, nullptr),
+		_paletteTexture(a_config.paletteTexture, nullptr),
+		_blockOutTexture(a_config.blockOutTexture, nullptr),
+		_owner(a_holder.GetOwner()),
+		_actor(a_holder.GetActorFormID())
 	{
 		SetPriority(a_priority);
 	}
@@ -26,18 +23,12 @@ namespace IED
 	{
 		if (try_acquire_for_load())
 		{
-			_data->baseTexture = _baseTexture.load_texture(true);
+			_baseTexture.second = _baseTexture.first.load_texture(true);
 
-			if (_data->baseTexture)
+			if (_baseTexture.second)
 			{
-				_data->paletteTexture  = _paletteTexture.load_texture(false);
-				_data->blockOutTexture = _blockOutTexture.load_texture(false);
-
-				if (_data->paletteTexture)
-				{
-					_data->grayscaleToColor = _flags.test(Data::EffectShaderDataFlags::kGrayscaleToColor);
-					_data->grayscaleToAlpha = _flags.test(Data::EffectShaderDataFlags::kGrayscaleToAlpha);
-				}
+				_paletteTexture.second  = _paletteTexture.first.load_texture(false);
+				_blockOutTexture.second = _blockOutTexture.first.load_texture(false);
 
 				_taskState.store(State::kLoaded);
 			}
