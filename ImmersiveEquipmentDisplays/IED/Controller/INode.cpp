@@ -168,7 +168,8 @@ namespace IED
 			return false;
 		}
 
-		bool atmReference = a_entry.flags.test(Data::BaseFlags::kReferenceMode);
+		const bool atmReference =
+			a_entry.flags.test(Data::BaseFlags::kReferenceMode);
 
 		auto nodes = FindNodes(
 			a_node,

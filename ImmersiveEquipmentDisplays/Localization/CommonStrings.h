@@ -281,5 +281,6 @@ namespace IED
 		Running         = 352,
 		Addon           = 353,
 		Object          = 354,
+		Auto            = 355,
 	};
 }

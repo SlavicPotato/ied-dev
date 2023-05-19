@@ -1475,6 +1475,11 @@ namespace IED
 			return false;
 		}
 
+		if (a_node.managed())
+		{
+			a_atmReference = true;
+		}
+
 		const bool result = INode::AttachObjectToTargetNode(
 			a_node,
 			a_atmReference,

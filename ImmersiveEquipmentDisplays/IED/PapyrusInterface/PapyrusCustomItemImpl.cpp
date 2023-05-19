@@ -213,10 +213,6 @@ namespace IED
 					e.flags.set(BaseFlags::kReferenceMode);
 					break;
 				case 1:
-					if (e.targetNode.flags.test(NodeDescriptorFlags::kManaged))
-					{
-						return false;
-					}
 					e.flags.clear(BaseFlags::kReferenceMode);
 					break;
 				default:
@@ -281,12 +277,6 @@ namespace IED
 				}
 
 				auto& e = conf->get(a_sex);
-
-				if (!e.flags.test(BaseFlags::kReferenceMode) &&
-				    node.flags.test(NodeDescriptorFlags::kManaged))
-				{
-					return false;
-				}
 
 				e.targetNode = std::move(node);
 

@@ -873,29 +873,8 @@ namespace IED
 				ImGui::TextUnformatted(UIL::LS(UIBaseConfigString::AttachmentModeColon));
 				ImGui::SameLine();
 
-				bool tmpb;
-
 				if (ImGui::RadioButton(
-						UIL::LS(CommonStrings::Reference, "1"),
-						a_data.flags.test(Data::BaseFlags::kReferenceMode)))
-				{
-					a_data.flags.set(Data::BaseFlags::kReferenceMode);
-
-					PropagateFlagToEquipmentOverrides(
-						a_baseConfig,
-						Data::BaseFlags::kReferenceMode);
-
-					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-				}
-
-				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-				tmpb = a_data.targetNode.managed();
-
-				UICommon::PushDisabled(tmpb);
-
-				if (ImGui::RadioButton(
-						UIL::LS(CommonStrings::Parent, "2"),
+						UIL::LS(CommonStrings::Auto, "1"),
 						!a_data.flags.test(Data::BaseFlags::kReferenceMode)))
 				{
 					a_data.flags.clear(Data::BaseFlags::kReferenceMode);
@@ -907,7 +886,20 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
 
-				UICommon::PopDisabled(tmpb);
+				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+				
+				if (ImGui::RadioButton(
+						UIL::LS(CommonStrings::Reference, "2"),
+						a_data.flags.test(Data::BaseFlags::kReferenceMode)))
+				{
+					a_data.flags.set(Data::BaseFlags::kReferenceMode);
+
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kReferenceMode);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
 
 				UITipsInterface::DrawTip(UITip::AttachmentMode);
 
@@ -915,7 +907,7 @@ namespace IED
 
 				if (DrawNodeSelector(
 						UIL::LS(UIWidgetCommonStrings::TargetNode, "ns"),
-						!a_data.flags.test(Data::BaseFlags::kReferenceMode),
+						false,
 						a_data.targetNode))
 				{
 					PropagateMemberToEquipmentOverrides(
@@ -1385,10 +1377,6 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::IgnoreRaceEquipTypesSlot);
 
-				const bool atmReference = a_data.flags.test(Data::BaseFlags::kReferenceMode);
-
-				UICommon::PushDisabled(!atmReference);
-
 				if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIBaseConfigString::SyncReference, "6"),
 						stl::underlying(std::addressof(a_data.flags.value)),
@@ -1400,8 +1388,6 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-
-				UICommon::PopDisabled(!atmReference);
 
 				UITipsInterface::DrawTip(UITip::SyncReferenceNode);
 

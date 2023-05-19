@@ -85,7 +85,6 @@ namespace IED
 			static constexpr auto DEFAULT_FLAGS =
 				BaseFlags::kDropOnDeath |
 				BaseFlags::kSyncReferenceTransform |
-				BaseFlags::kReferenceMode |
 				BaseFlags::kDynamicArrows;
 
 			stl::flag<BaseFlags>                                 flags{ DEFAULT_FLAGS };
