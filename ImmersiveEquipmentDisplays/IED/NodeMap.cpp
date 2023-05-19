@@ -34,7 +34,7 @@ namespace IED
 			{ "WeaponDaggerBackHip", "Dagger Back Hip", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 			{ "WeaponDaggerLeftBackHip", "Dagger Back Hip Left", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 			{ "WeaponStaff", "Staff", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
-			{ "WeaponStaffLeft", "Staff Left", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
+			{ "WeaponStaffLeft", "Staff Left", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBow", "Bow", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBowIED", "Bow IED", NodeDescriptorFlags::kWeapon | NodeDescriptorFlags::kDefaultCopy },
 			{ "WeaponBowFSM", "Bow FSM", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
