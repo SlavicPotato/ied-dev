@@ -101,7 +101,7 @@ namespace IED
 					continue;
 				}
 
-				const auto it = v.skel.find(a_id);
+				const auto it = v.skel.find(a_id, a_root);
 				if (it != v.skel.end())
 				{
 					//_DMESSAGE("creating %s on %zX", v.name_node.c_str(), a_id.signature());

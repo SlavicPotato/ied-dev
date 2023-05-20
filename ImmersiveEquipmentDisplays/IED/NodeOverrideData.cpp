@@ -737,10 +737,10 @@ namespace IED
 					continue;
 				}
 
-				const stl::fixed_string mov = std::string("MOV ") + *f.name;
-				const stl::fixed_string cme = std::string("CME ") + *f.name;
+				const stl::fixed_string mov = std::string("MOV ") + (!f.ovr_mov_name.empty() ? *f.ovr_mov_name : *f.name);
+				const stl::fixed_string cme = std::string("CME ") + (!f.ovr_cme_name.empty() ? *f.ovr_cme_name : *f.name);
 
-				if (m_mov.contains(mov))
+				/*if (m_mov.contains(mov))
 				{
 					Warning(
 						"%s: '%s' - node already defined",
@@ -758,13 +758,15 @@ namespace IED
 						cme.c_str());
 
 					continue;
-				}
+				}*/
 
 				auto it = std::find_if(
 					m_extramov.begin(),
 					m_extramov.end(),
 					[&](const auto& a_v) {
-						return a_v.names[1].first == f.name;
+						return a_v.names[1].first == f.name ||
+					           a_v.names[0].first == mov ||
+					           a_v.name_cme == cme;
 					});
 
 				if (it != m_extramov.end())
@@ -834,6 +836,13 @@ namespace IED
 								h.name.c_str(),
 								h.flags);
 						}
+					}
+
+					v.objMatch.reserve(g.objMatch.size());
+
+					for (auto& h : g.objMatch)
+					{
+						v.objMatch.emplace_back(h.first.c_str(), h.second);
 					}
 				}
 
@@ -948,11 +957,41 @@ namespace IED
 		}
 	}
 
-	auto NodeOverrideData::skeletonEntryList_t::find(const SkeletonID& a_value) const
+	/*auto NodeOverrideData::skeletonEntryList_t::find(const SkeletonID& a_value) const
 		-> super::const_iterator
 	{
 		return std::find_if(begin(), end(), [&](auto& a_v) noexcept {
 			return a_v.match.test(a_value);
+		});
+	}*/
+
+	auto NodeOverrideData::skeletonEntryList_t::find(
+		const SkeletonID& a_value,
+		NiNode*           a_root) const
+		-> super::const_iterator
+	{
+		return std::find_if(begin(), end(), [&](auto& a_v) noexcept {
+			if (!a_v.match.test(a_value))
+			{
+				return false;
+			}
+
+			for (auto& e : a_v.objMatch)
+			{
+				const auto object = a_root->GetObjectByName(e.first);
+
+				if (!object)
+				{
+					return false;
+				}
+
+				if (e.second && !object->AsNode())
+				{
+					return false;
+				}
+			}
+
+			return true;
 		});
 	}
 

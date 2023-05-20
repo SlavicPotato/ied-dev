@@ -965,7 +965,7 @@ namespace IED
 
 		for (auto& e : NodeOverrideData::GetExtraMovNodes())
 		{
-			const auto it = e.skel.find(a_id);
+			const auto it = e.skel.find(a_id, a_root);
 			if (it == e.skel.end())
 			{
 				continue;

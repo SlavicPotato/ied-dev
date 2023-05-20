@@ -34,12 +34,15 @@ namespace IED
 		struct configExtraNodeEntrySkel_t
 		{
 			configSkeletonMatch_t                              match;
+			std::vector<std::pair<stl::fixed_string, bool>>    objMatch;
 			std::array<configExtraNodeEntrySkelTransform_t, 2> sxfrms;
 		};
 
 		struct configExtraNodeEntry_t
 		{
 			stl::fixed_string                     name;
+			stl::fixed_string                     ovr_cme_name;
+			stl::fixed_string                     ovr_mov_name;
 			stl::fixed_string                     parent;
 			stl::fixed_string                     desc;
 			stl::list<configExtraNodeEntrySkel_t> skel;

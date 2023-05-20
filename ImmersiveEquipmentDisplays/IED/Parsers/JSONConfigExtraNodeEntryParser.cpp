@@ -31,10 +31,12 @@ namespace IED
 			const Json::Value&            a_in,
 			Data::configExtraNodeEntry_t& a_out) const
 		{
-			a_out.name        = a_in["name"].asString();
-			a_out.desc        = a_in["desc"].asString();
-			a_out.parent      = a_in["parent"].asString();
-			a_out.placementID = filter_placement_id(a_in["placement_id"].asUInt());
+			a_out.name         = a_in["name"].asString();
+			a_out.ovr_cme_name = a_in["cme_name"].asString();
+			a_out.ovr_mov_name = a_in["mov_name"].asString();
+			a_out.desc         = a_in["desc"].asString();
+			a_out.parent       = a_in["parent"].asString();
+			a_out.placementID  = filter_placement_id(a_in["placement_id"].asUInt());
 
 			if (auto& skel = a_in["skeleton"])
 			{
@@ -48,6 +50,14 @@ namespace IED
 					if (!smparser.Parse(e["match"], v.match))
 					{
 						throw parser_exception("bad match");
+					}
+
+					if (auto& d = e["obj_match"])
+					{
+						for (auto& f : d)
+						{
+							v.objMatch.emplace_back(f["name"].asString(), f["is_node"].asBool());
+						}
 					}
 
 					if (auto& xh = e["xfrm_mov"])

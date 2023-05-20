@@ -84,6 +84,9 @@ namespace IED
 
 			static constexpr auto DEFAULT_FLAGS =
 				BaseFlags::kDropOnDeath |
+#if !defined(IED_PERF_BUILD)
+				BaseFlags::kReferenceMode |
+#endif
 				BaseFlags::kSyncReferenceTransform |
 				BaseFlags::kDynamicArrows;
 

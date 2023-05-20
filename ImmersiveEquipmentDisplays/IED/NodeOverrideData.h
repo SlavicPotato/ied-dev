@@ -167,8 +167,9 @@ namespace IED
 			{
 			}
 
-			Data::configSkeletonMatch_t                  match;
-			std::array<extraNodeEntrySkelTransform_t, 2> sxfrms;
+			Data::configSkeletonMatch_t                                match;
+			stl::cache_aligned::vector<std::pair<BSFixedString, bool>> objMatch;
+			std::array<extraNodeEntrySkelTransform_t, 2>               sxfrms;
 		};
 
 		class skeletonEntryList_t :
@@ -180,7 +181,8 @@ namespace IED
 			using super::vector;
 			using super::operator=;
 
-			super::const_iterator find(const SkeletonID& a_value) const;
+			//super::const_iterator find(const SkeletonID& a_value) const;
+			super::const_iterator find(const SkeletonID& a_value, NiNode* a_root) const;
 		};
 
 		struct extraNodeEntry_t
