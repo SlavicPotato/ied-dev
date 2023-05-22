@@ -163,6 +163,7 @@ namespace IED
 	{
 		const auto edl = ScriptEventSourceHolder::GetSingleton();
 		ASSERT(edl != nullptr);
+		edl->AddEventSink<TESCellAttachDetachEvent>(this);
 
 		m_initialized = true;
 	}
