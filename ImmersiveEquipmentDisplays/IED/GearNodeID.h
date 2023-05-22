@@ -11,6 +11,7 @@ namespace IED
 		k1HAxe,
 		k1HAxeLeft,
 		kTwoHanded,
+		kTwoHandedAxeMace,
 		kDagger,
 		kDaggerLeft,
 		kMace,
@@ -18,6 +19,7 @@ namespace IED
 		kStaff,
 		kStaffLeft,
 		kBow,
+		kCrossBow,
 		kShield,
 		kQuiver,
 	};

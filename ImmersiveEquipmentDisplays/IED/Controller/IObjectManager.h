@@ -307,6 +307,7 @@ namespace IED
 
 	public:
 		virtual void OnAsyncModelClone(const NiPointer<ObjectCloningTask>& a_task);
+		virtual bool IsWeaponNodeSharingDisabled() const = 0;
 
 	private:
 		virtual void OnAsyncModelLoad(const NiPointer<QueuedModel>& a_task) override;

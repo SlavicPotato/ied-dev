@@ -21,6 +21,7 @@ namespace IED
 			bool GetPhysicsProcessingEnabled() const noexcept;
 			bool GetLightsEnabled() const noexcept;
 			bool GetDefaultConfigForced() const noexcept;
+			bool GetWeaponNodeSharingDisabled() const;
 
 			void MarkSettingsDirty();
 

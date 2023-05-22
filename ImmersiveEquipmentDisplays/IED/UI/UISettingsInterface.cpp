@@ -45,6 +45,11 @@ namespace IED
 			return m_controller.IsDefaultConfigForced();
 		}
 
+		bool UISettingsInterface::GetWeaponNodeSharingDisabled() const
+		{
+			return m_controller.IsWeaponNodeSharingDisabled();
+		}
+
 		void UISettingsInterface::MarkSettingsDirty()
 		{
 			m_controller.GetSettings().mark_dirty();

@@ -36,6 +36,7 @@ namespace IED
 			configSkeletonMatch_t                              match;
 			std::vector<std::pair<stl::fixed_string, bool>>    objMatch;
 			std::array<configExtraNodeEntrySkelTransform_t, 2> sxfrms;
+			stl::fixed_string                                  ovr_parent;
 		};
 
 		struct configExtraNodeEntry_t

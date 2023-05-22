@@ -150,8 +150,10 @@ namespace IED
 		struct extraNodeEntrySkel_t
 		{
 			extraNodeEntrySkel_t(
-				const Data::configSkeletonMatch_t& a_sm) :
-				match(a_sm)
+				const Data::configSkeletonMatch_t& a_sm,
+				const stl::fixed_string&           a_ovr_parent) :
+				match(a_sm),
+				ovr_parent(a_ovr_parent.c_str())
 			{
 			}
 
@@ -170,6 +172,7 @@ namespace IED
 			Data::configSkeletonMatch_t                                match;
 			stl::cache_aligned::vector<std::pair<BSFixedString, bool>> objMatch;
 			std::array<extraNodeEntrySkelTransform_t, 2>               sxfrms;
+			BSFixedString                                              ovr_parent;
 		};
 
 		class skeletonEntryList_t :

@@ -187,8 +187,20 @@ namespace IED
 				}
 			}
 
+			const bool wnsOff = a_owner.IsWeaponNodeSharingDisabled();
+
 			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
+				if (!wnsOff)
+				{
+					switch (e->second.nodeID)
+					{
+					case GearNodeID::kCrossBow:
+					case GearNodeID::kTwoHandedAxeMace:
+						continue;
+					}
+				}
+
 				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
 					NiNode* defParentNode1p = nullptr;
@@ -465,8 +477,10 @@ namespace IED
 			id = GearNodeID::k1HAxeLeft;
 			break;
 		case Data::ObjectSlot::k2HSword:
-		case Data::ObjectSlot::k2HAxe:
 			id = GearNodeID::kTwoHanded;
+			break;
+		case Data::ObjectSlot::k2HAxe:
+			id = m_owner.IsWeaponNodeSharingDisabled() ? GearNodeID::kTwoHandedAxeMace : GearNodeID::kTwoHanded;
 			break;
 		case Data::ObjectSlot::kDagger:
 			id = GearNodeID::kDagger;
@@ -487,8 +501,10 @@ namespace IED
 			id = GearNodeID::kStaffLeft;
 			break;
 		case Data::ObjectSlot::kBow:
-		case Data::ObjectSlot::kCrossBow:
 			id = GearNodeID::kBow;
+			break;
+		case Data::ObjectSlot::kCrossBow:
+			id = m_owner.IsWeaponNodeSharingDisabled() ? GearNodeID::kCrossBow : GearNodeID::kBow;
 			break;
 		case Data::ObjectSlot::kShield:
 			id = GearNodeID::kShield;

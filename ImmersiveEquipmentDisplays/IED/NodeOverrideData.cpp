@@ -357,6 +357,28 @@ namespace IED
 								}
 
 							} },
+							
+			{ "WeaponBackAxeMace", {
+
+								"WeaponBackAxeMace",
+								"MOV WeaponBackAxeMaceDefault",
+								"Two-Handed Axe/Mace",
+								AnimationWeaponSlot::TwoHanded,
+								I3DIModelID::kTwoHanded,
+								GearNodeID::kTwoHandedAxeMace,
+								true,
+								{
+
+									{ "MOV WeaponBackDefault", { "Two-Handed" } },
+									{ "MOV WeaponBackSWP", { "Two-Handed SWP" } },
+									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+									{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+									{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+									{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+
+								}
+
+							} },
 
 			{ "WeaponBackExtra", {
 
@@ -399,6 +421,26 @@ namespace IED
 							   }
 
 						   } },
+
+			{ "WeaponCrossBow", {
+
+									"WeaponCrossBow",
+									"MOV WeaponCrossbowDefault",
+									"Crossbow",
+									AnimationWeaponSlot::None,
+									I3DIModelID::kBow,
+									GearNodeID::kCrossBow,
+									true,
+									{
+										{ "MOV WeaponCrossbowDefault", { "Crossbow" } },
+										{ "MOV WeaponBowChesko", { "Bow Chesko" } },
+										{ "MOV WeaponBowBetter", { "Bow Better" } },
+										{ "MOV WeaponBowFSM", { "Bow FSM" } },
+										{ "MOV WeaponCrossbowDefault", { "Crossbow" } },
+										{ "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
+									}
+
+								} },
 
 			{ "WeaponBowExtra", {
 
@@ -789,7 +831,7 @@ namespace IED
 
 				for (auto& g : f.skel)
 				{
-					auto& v = rv.skel.emplace_back(g.match);
+					auto& v = rv.skel.emplace_back(g.match, g.ovr_parent);
 
 					static_assert(
 						stl::array_size_v<decltype(g.sxfrms)> ==

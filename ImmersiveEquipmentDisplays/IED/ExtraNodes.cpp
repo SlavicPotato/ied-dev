@@ -95,17 +95,16 @@ namespace IED
 					continue;
 				}
 
-				const auto target = GetNodeByName(a_root, v.name_parent);
-				if (!target)
+				const auto it = v.skel.find(a_id, a_root);
+				if (it == v.skel.end())
 				{
 					continue;
 				}
 
-				const auto it = v.skel.find(a_id, a_root);
-				if (it != v.skel.end())
-				{
-					//_DMESSAGE("creating %s on %zX", v.name_node.c_str(), a_id.signature());
+				auto& parent = it->ovr_parent.empty() ? v.name_parent : it->ovr_parent;
 
+				if (const auto target = GetNodeByName(a_root, parent))
+				{
 					detail::create_and_attach(a_root, target, v, *it);
 				}
 			}

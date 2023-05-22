@@ -74,6 +74,8 @@ namespace IED
 				const profileSelectorParamsNodeOverride_t<T>& a_params) override;
 
 			virtual constexpr bool IsProfileEditor() const override;
+
+			virtual bool ShouldDisablePlacementEntry(GearNodeID a_id) const override;
 		};
 
 		template <class T>
@@ -281,6 +283,19 @@ namespace IED
 		constexpr bool UINodeOverrideEditorCommon<T>::IsProfileEditor() const
 		{
 			return false;
+		}
+
+		template <class T>
+		bool UINodeOverrideEditorCommon<T>::ShouldDisablePlacementEntry(GearNodeID a_id) const
+		{
+			switch (a_id)
+			{
+			case GearNodeID::kCrossBow:
+			case GearNodeID::kTwoHandedAxeMace:
+				return !this->GetWeaponNodeSharingDisabled();
+			default:
+				return false;
+			}
 		}
 	}
 }

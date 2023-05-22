@@ -31,7 +31,13 @@ namespace IED
 			const Json::Value&            a_in,
 			Data::configExtraNodeEntry_t& a_out) const
 		{
-			a_out.name         = a_in["name"].asString();
+			a_out.name = a_in["name"].asString();
+
+			if (a_out.name.empty())
+			{
+				throw parser_exception("zero-length node name");
+			}
+
 			a_out.ovr_cme_name = a_in["cme_name"].asString();
 			a_out.ovr_mov_name = a_in["mov_name"].asString();
 			a_out.desc         = a_in["desc"].asString();
@@ -58,6 +64,11 @@ namespace IED
 						{
 							v.objMatch.emplace_back(f["name"].asString(), f["is_node"].asBool());
 						}
+					}
+
+					if (auto& d = e["parent"])
+					{
+						v.ovr_parent = d.asString();
 					}
 
 					if (auto& xh = e["xfrm_mov"])

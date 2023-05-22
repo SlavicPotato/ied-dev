@@ -226,6 +226,16 @@ namespace IED
 			result.intfc->GetInterfaceVersion());
 
 		result.intfc->RegisterForPlayerShieldOnBackEvent(this);
+
+		if (result.intfc->GetPluginVersion() >= 2)
+		{
+			m_weaponNodeSharingDisabled = result.intfc->IsWeaponNodeSharingDisabled();
+
+			if (m_weaponNodeSharingDisabled)
+			{
+				Debug("Weapon node share killer patch enabled in SDS");
+			}
+		}
 	}
 
 	static void UpdateSoundPairFromINI(
@@ -2562,15 +2572,15 @@ namespace IED
 				{
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload)
-						
-						/*
+
+					    /*
 							If something got equipped while the cloning task was still pending, 
 							keep the cloned object since it may still be valid on next load
 						*/
 
-						// && !objectEntry.data.cloningTask
-						
-						)
+					    // && !objectEntry.data.cloningTask
+
+					)
 					{
 						if (objectEntry.DeferredHideObject(2))
 						{
@@ -5696,6 +5706,11 @@ namespace IED
 		}
 
 		it->second.RequestEval();
+	}
+
+	bool Controller::IsWeaponNodeSharingDisabled() const
+	{
+		return m_weaponNodeSharingDisabled;
 	}
 
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)

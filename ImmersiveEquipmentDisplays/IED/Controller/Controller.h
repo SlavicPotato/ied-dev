@@ -935,6 +935,10 @@ namespace IED
 
 		virtual void OnAsyncModelClone(const NiPointer<ObjectCloningTask>& a_task) override;
 
+	public:
+		virtual bool IsWeaponNodeSharingDisabled() const override;
+
+	private:
 		// members
 
 		stl::smart_ptr<const ConfigINI> m_iniconf;
@@ -953,6 +957,7 @@ namespace IED
 		const bool m_forceFlushSaveData{ false };
 		bool       m_iniKeysForced{ false };
 		bool       m_cpuHasSSE41{ false };
+		bool       m_weaponNodeSharingDisabled{ false };
 
 		std::uint64_t m_evalCounter{ 0 };
 

@@ -343,6 +343,8 @@ namespace IED
 
 			virtual constexpr bool IsProfileEditor() const = 0;
 
+			virtual bool ShouldDisablePlacementEntry(GearNodeID a_id) const;
+
 			UIGenericFilter m_itemFilter;
 		};
 
@@ -693,6 +695,8 @@ namespace IED
 
 				ImGui::PushID(e->first.c_str());
 
+				const bool disabled = ShouldDisablePlacementEntry(e->second.nodeID);
+
 				auto it = a_data.placementData.find(e->first);
 
 				bool svar = it == a_data.placementData.end();
@@ -714,12 +718,19 @@ namespace IED
 					}
 				}
 
+				UICommon::PushDisabled(disabled);
+
 				it = DrawCommonEntryContextMenu<
 					entryNodeOverrideData_t::placement_data_type>(
 					a_handle,
 					a_data,
 					e->first,
 					it);
+
+				if (disabled)
+				{
+					ImGui::SetNextItemOpen(false);
+				}
 
 				if (TreeEx(
 						"entry_tree",
@@ -751,6 +762,8 @@ namespace IED
 
 					ImGui::TreePop();
 				}
+
+				UICommon::PopDisabled(disabled);
 
 				if (svar)
 				{
@@ -938,10 +951,10 @@ namespace IED
 
 			if (!flags.test(NodeOverrideEditorFlags::kUnrestrictedNodePlacement))
 			{
-				auto& nodedata = NodeOverrideData::GetWeaponNodeData();
+				auto& data = NodeOverrideData::GetWeaponNodeData();
 
-				auto it = nodedata.find(a_params.name);
-				if (it == nodedata.end())
+				auto it = data.find(a_params.name);
+				if (it == data.end())
 				{
 					return;
 				}
@@ -2754,5 +2767,10 @@ namespace IED
 			}
 		}
 
+		template <class T>
+		bool UINodeOverrideEditorWidget<T>::ShouldDisablePlacementEntry(GearNodeID a_id) const
+		{
+			return false;
+		}
 	}
 }
