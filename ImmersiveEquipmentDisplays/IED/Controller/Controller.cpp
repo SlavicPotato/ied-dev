@@ -227,7 +227,7 @@ namespace IED
 
 		result.intfc->RegisterForPlayerShieldOnBackEvent(this);
 
-		if (result.intfc->GetPluginVersion() >= 2)
+		if (result.intfc->GetInterfaceVersion() >= 2)
 		{
 			m_weaponNodeSharingDisabled = result.intfc->IsWeaponNodeSharingDisabled();
 
