@@ -9,6 +9,9 @@
 
 #include "Widgets/UIPopupToggleButtonWidget.h"
 
+#include "UILocalizationInterface.h"
+#include "UITipsData.h"
+
 namespace IED
 {
 	namespace UI
@@ -209,6 +212,13 @@ namespace IED
 				}
 
 				ImGui::PopID();
+			}
+
+			void DrawPhysicsOffWarning()
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+				ImGui::TextWrapped("%s", UIL::LS(UITip::PhysicsOffWarning));
+				ImGui::PopStyleColor();
 			}
 
 			/*bool TextCopyable(const char* a_fmt, ...)

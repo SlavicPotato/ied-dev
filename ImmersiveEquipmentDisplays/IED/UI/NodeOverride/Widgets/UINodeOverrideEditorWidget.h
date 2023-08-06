@@ -398,11 +398,9 @@ namespace IED
 						"ph_editor_panel",
 						{ -1.0f, 0.0f }))
 				{
-					if (!GetPhysicsProcessingEnabled())
+					if (!IsProfileEditor() && !GetPhysicsProcessingEnabled())
 					{
-						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextWrapped("%s", UIL::LS(UITip::PhysicsOffWarning));
-						ImGui::PopStyleColor();
+						UICommon::DrawPhysicsOffWarning();
 
 						ImGui::Spacing();
 						ImGui::Separator();

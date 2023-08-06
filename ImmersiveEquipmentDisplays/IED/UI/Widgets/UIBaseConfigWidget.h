@@ -1215,6 +1215,13 @@ namespace IED
 
 				UICommon::PushDisabled(a_disabled);
 
+				if (!IsProfileEditor() && !GetPhysicsProcessingEnabled())
+				{
+					UICommon::DrawPhysicsOffWarning();
+
+					ImGui::Spacing();
+				}
+
 				if (a_data.physicsValues)
 				{
 					ImGui::PushItemWidth(ImGui::GetFontSize() * -14.5f);

@@ -132,6 +132,8 @@ namespace IED
 				const char*            a_imid,
 				std::function<void()>  a_func);
 
+			void DrawPhysicsOffWarning();
+
 		}
 	}
 }
