@@ -380,11 +380,11 @@ namespace IED
 
 							} },
 
-			{ "WeaponBackExtra", {
+			{ "WeaponBackIED", {
 
-									 "WeaponBackExtra",
+									 "WeaponBackIED",
 									 "MOV WeaponBackDefault",
-									 "Two-Handed Extra",
+									 "Two-Handed IED",
 									 AnimationWeaponSlot::None,
 									 I3DIModelID::kTwoHanded,
 									 GearNodeID::kNone,
@@ -442,11 +442,11 @@ namespace IED
 
 								} },
 
-			{ "WeaponBowExtra", {
+			{ "WeaponBowIED", {
 
-									"WeaponBowExtra",
+									"WeaponBowIED",
 									"MOV WeaponBowDefault",
-									"Bow Extra",
+									"Bow IED",
 									AnimationWeaponSlot::None,
 									I3DIModelID::kBow,
 									GearNodeID::kNone,
