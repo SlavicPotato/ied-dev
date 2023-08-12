@@ -9,25 +9,6 @@ namespace IED
 {
 	namespace Serialization
 	{
-		constexpr auto filter_placement_id(Json::UInt a_in) noexcept
-		{
-			switch (a_in)
-			{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-				return static_cast<WeaponPlacementID>(a_in);
-			default:
-				return WeaponPlacementID::None;
-			}
-		}
-
 		template <>
 		bool Parser<Data::configExtraNodeEntry_t>::Parse(
 			const Json::Value&            a_in,
@@ -44,7 +25,7 @@ namespace IED
 			a_out.ovr_mov_name = a_in["mov_name"].asString();
 			a_out.desc         = a_in["desc"].asString();
 			a_out.parent       = a_in["parent"].asString();
-			a_out.placementID  = filter_placement_id(a_in["placement_id"].asUInt());
+			a_out.placementID  = static_cast<WeaponPlacementID>(a_in["placement_id"].asUInt());
 
 			if (auto& skel = a_in["skeleton"])
 			{
