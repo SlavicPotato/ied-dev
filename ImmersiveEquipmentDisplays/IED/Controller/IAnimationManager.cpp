@@ -197,7 +197,7 @@ namespace IED
 
 		if (!intfc)
 		{
-			return true;
+			return false;
 		}
 
 		return intfc->GetShieldOnBackEnabled(a_actor);
@@ -227,13 +227,13 @@ namespace IED
 			return;
 		}
 
-		auto pm = a_actor->processManager;
+		const auto pm = a_actor->processManager;
 		if (!pm)
 		{
 			return;
 		}
 
-		auto type = GetObjectType(pm->equippedObject[ActorProcessManager::kEquippedHand_Right]);
+		const auto type = GetObjectType(pm->equippedObject[ActorProcessManager::kEquippedHand_Right]);
 
 		std::int32_t animVar;
 

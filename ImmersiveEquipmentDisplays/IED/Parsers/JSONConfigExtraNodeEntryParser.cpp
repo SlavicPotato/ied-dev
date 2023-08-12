@@ -20,6 +20,8 @@ namespace IED
 			case 4:
 			case 5:
 			case 6:
+			case 7:
+			case 8:
 				return static_cast<WeaponPlacementID>(a_in);
 			default:
 				return WeaponPlacementID::None;

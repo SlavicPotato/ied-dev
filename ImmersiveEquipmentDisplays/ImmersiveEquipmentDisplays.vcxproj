@@ -880,6 +880,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONSettingsI3DIParser.h" />
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\Physics\SimComponent.h" />
+    <ClInclude Include="IED\PluginInterface.h" />
     <ClInclude Include="IED\ReferenceLightController.h" />
     <ClInclude Include="IED\SkeletonCache.h" />
     <ClInclude Include="IED\SkeletonExtensions.h" />
@@ -1414,6 +1415,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONSettingsI3DIParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\Physics\SimComponent.cpp" />
+    <ClCompile Include="IED\PluginInterface.cpp" />
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\ReferenceLightController.cpp" />
     <ClCompile Include="IED\SkeletonCache.cpp" />

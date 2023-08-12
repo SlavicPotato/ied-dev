@@ -216,7 +216,7 @@ namespace IED
 						}
 					}
 
-					m_weapNodes.emplace_back(
+					m_weapNodes.raw().emplace_back(
 						e->first,
 						node,
 						GetNodeByName(a_npcroot, e->second.bsdefParent),
@@ -224,6 +224,8 @@ namespace IED
 						defParentNode1p,
 						e->second.animSlot,
 						e->second.nodeID);
+
+					m_weapNodes.sort_data();
 				}
 			}
 

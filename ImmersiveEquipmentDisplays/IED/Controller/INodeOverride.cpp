@@ -1155,6 +1155,8 @@ namespace IED
 					a_entry,
 					std::addressof(a_params),
 					e.placementID);
+
+				a_entry.currentPlacement = e.placementID;
 			}
 		}
 		else
@@ -1220,6 +1222,8 @@ namespace IED
 			a_entry,
 			a_params,
 			WeaponPlacementID::Default);
+
+		a_entry.currentPlacement = WeaponPlacementID::None;
 	}
 
 }
