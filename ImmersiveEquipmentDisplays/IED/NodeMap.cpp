@@ -13,10 +13,12 @@ namespace IED
 		static constexpr NodeMap::initializer_type s_init[] = {
 
 			{ "WeaponBack", "Two-Handed", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
+			{ "WeaponBackLeft", "Two-Handed Left", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBackIED", "Two-Handed IED", NodeDescriptorFlags::kWeapon | NodeDescriptorFlags::kDefaultCopy },
 			{ "WeaponBackSWP", "Two-Handed SWP", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBackFSM", "Two-Handed FSM", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBackAxeMace", "Two-Handed Axe/Mace", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
+			{ "WeaponBackAxeMaceLeft", "Two-Handed Axe/Mace Left", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBackAxeMaceSWP", "Two-Handed Axe/Mace SWP", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 			{ "WeaponBackAxeMaceFSM", "Two-Handed Axe/Mace FSM", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 			{ "WeaponAxe", "One-Handed Axe", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
