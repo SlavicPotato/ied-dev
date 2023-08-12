@@ -30,11 +30,11 @@ namespace IED
 				case ObjectSlot::k2HSword:
 					return { BSStringHolder::NINODE_WEAPON_BACK, NodeDescriptorFlags::kManaged };
 				case ObjectSlot::k2HSwordLeft:
-					return { BSStringHolder::NINODE_SWORD_LEFT, NodeDescriptorFlags::kManaged };
+					return { BSStringHolder::NINODE_WEAPON_BACK_LEFT, NodeDescriptorFlags::kManaged };
 				case ObjectSlot::k2HAxe:
 					return { BSStringHolder::NINODE_WEAPON_BACK, NodeDescriptorFlags::kManaged };
 				case ObjectSlot::k2HAxeLeft:
-					return { BSStringHolder::NINODE_AXE_LEFT, NodeDescriptorFlags::kManaged };
+					return { BSStringHolder::NINODE_WEAPON_BACK_LEFT, NodeDescriptorFlags::kManaged };
 				case ObjectSlot::kMace:
 					return { BSStringHolder::NINODE_MACE, NodeDescriptorFlags::kManaged };
 				case ObjectSlot::kMaceLeft:

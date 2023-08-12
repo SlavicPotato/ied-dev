@@ -10,6 +10,7 @@ namespace IED
 		static constexpr auto NINODE_WEAPON_BACK      = "WeaponBack";
 		static constexpr auto NINODE_SWORD            = "WeaponSword";
 		static constexpr auto NINODE_SWORD_LEFT       = "WeaponSwordLeft";
+		static constexpr auto NINODE_WEAPON_BACK_LEFT        = "WeaponBackLeft";
 		static constexpr auto NINODE_AXE              = "WeaponAxe";
 		static constexpr auto NINODE_AXE_LEFT         = "WeaponAxeLeft";
 		static constexpr auto NINODE_AXE_LEFT_REVERSE = "WeaponAxeLeftReverse";

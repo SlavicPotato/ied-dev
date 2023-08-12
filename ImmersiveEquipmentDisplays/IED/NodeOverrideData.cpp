@@ -358,6 +358,23 @@ namespace IED
 
 							} },
 							
+			{ "WeaponBackLeft", {
+
+								"WeaponBackLeft",
+								"MOV WeaponBackLeft",
+								"Two-Handed Left",
+								AnimationWeaponSlot::TwoHanded,
+								I3DIModelID::kTwoHanded,
+								GearNodeID::kTwoHanded,
+								true,
+								{
+
+									{ "MOV WeaponBackLeft", { "Two-Handed Left" } }
+
+								}
+
+							} },
+							
 			{ "WeaponBackAxeMace", {
 
 								"WeaponBackAxeMace",
@@ -375,6 +392,23 @@ namespace IED
 									{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
 									{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
 									{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+
+								}
+
+							} },
+							
+			{ "WeaponBackAxeMaceLeft", {
+
+								"WeaponBackAxeMace",
+								"MOV WeaponBackAxeMaceLeft",
+								"Two-Handed Axe/Mace Left",
+								AnimationWeaponSlot::TwoHanded,
+								I3DIModelID::kTwoHanded,
+								GearNodeID::kTwoHandedAxeMace,
+								true,
+								{
+
+									{ "MOV WeaponBackAxeMaceLeft", { "Two-Handed Axe/Mace Left" } },
 
 								}
 

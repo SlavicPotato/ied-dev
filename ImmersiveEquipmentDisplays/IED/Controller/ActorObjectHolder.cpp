@@ -483,8 +483,14 @@ namespace IED
 		case Data::ObjectSlot::k2HSword:
 			id = GearNodeID::kTwoHanded;
 			break;
+		case Data::ObjectSlot::k2HSwordLeft:
+			id = GearNodeID::kTwoHandedLeft;
+			break;
 		case Data::ObjectSlot::k2HAxe:
 			id = m_owner.IsWeaponNodeSharingDisabled() ? GearNodeID::kTwoHandedAxeMace : GearNodeID::kTwoHanded;
+			break;
+		case Data::ObjectSlot::k2HAxeLeft:
+			id = GearNodeID::kTwoHandedAxeMaceLeft;
 			break;
 		case Data::ObjectSlot::kDagger:
 			id = GearNodeID::kDagger;
