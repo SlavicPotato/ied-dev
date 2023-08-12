@@ -13,8 +13,8 @@ namespace IED
 	public:
 		struct Node
 		{
-			NiPointer<NiNode> node;
-			NiPointer<NiNode> defaultParentNode;
+			const NiPointer<NiNode> node;
+			const NiPointer<NiNode> defaultParentNode;
 
 			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
@@ -40,26 +40,11 @@ namespace IED
 
 		bool has_visible_geometry() const noexcept;
 
-		stl::fixed_string         nodeName;
-		Node                      node1p;
-		Node                      node3p;
-		AnimationWeaponSlot       animSlot;
-		GearNodeID                gearNodeID;
-		mutable WeaponPlacementID currentPlacement{ WeaponPlacementID::None };
-
-		[[nodiscard]] friend constexpr bool operator<=(
-			const WeaponNodeEntry& a_lhs,
-			const WeaponNodeEntry& a_rhs) noexcept
-		{
-			return a_lhs.gearNodeID <= a_rhs.gearNodeID;
-		}
-
-		[[nodiscard]] friend constexpr bool operator==(
-			const WeaponNodeEntry& a_lhs,
-			const WeaponNodeEntry& a_rhs) noexcept
-		{
-			return a_lhs.gearNodeID == a_rhs.gearNodeID;
-		}
+		const stl::fixed_string         nodeName;
+		const Node                      node1p;
+		const Node                      node3p;
+		const AnimationWeaponSlot animSlot;
+		const GearNodeID                gearNodeID;
 
 		/*private:
 		mutable NiPointer<NiNode> target;

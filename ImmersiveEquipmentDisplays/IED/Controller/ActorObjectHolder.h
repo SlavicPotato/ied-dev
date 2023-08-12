@@ -764,10 +764,8 @@ namespace IED
 		ObjectSlotArray                                       m_entriesSlot;
 		std::array<customPluginMap_t, Data::CONFIG_CLASS_MAX> m_entriesCustom;
 
-		stl::cache_aligned::vector<MonitorGearNodeEntry> m_monitorNodes;
-
-		stl::cache_aligned::flat_set<WeaponNodeEntry> m_weapNodes;
-
+		stl::cache_aligned::vector<MonitorGearNodeEntry>            m_monitorNodes;
+		stl::cache_aligned::vector<WeaponNodeEntry>                 m_weapNodes;
 		stl::cache_aligned::vector<stl::smart_ptr<PHYSimComponent>> m_simNodeList;
 
 		stl::cache_aligned::vectormap<stl::fixed_string, CMENodeEntry> m_cmeNodes;

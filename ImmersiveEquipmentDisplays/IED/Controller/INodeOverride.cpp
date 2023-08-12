@@ -6,6 +6,7 @@
 #include "IED/ConfigNodeOverride.h"
 #include "IED/EngineExtensions.h"
 #include "IED/FormCommon.h"
+#include "IED/GearNodeData.h"
 #include "IED/Inventory.h"
 #include "INodeOverride.h"
 #include "ObjectManagerData.h"
@@ -311,7 +312,7 @@ namespace IED
 				if (a_match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
 				{
 					if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch3) ==
-						Conditions::is_ammo_bolt(form))
+					    Conditions::is_ammo_bolt(form))
 					{
 						return false;
 					}
@@ -1156,7 +1157,10 @@ namespace IED
 					std::addressof(a_params),
 					e.placementID);
 
-				a_entry.currentPlacement = e.placementID;
+				GearNodeData::GetSingleton().SetPlacement(
+					a_params.actor->formID,
+					a_entry.gearNodeID,
+					e.placementID);
 			}
 		}
 		else
@@ -1223,7 +1227,13 @@ namespace IED
 			a_params,
 			WeaponPlacementID::Default);
 
-		a_entry.currentPlacement = WeaponPlacementID::None;
+		if (a_params)
+		{
+			GearNodeData::GetSingleton().SetPlacement(
+				a_params->actor->formID,
+				a_entry.gearNodeID,
+				WeaponPlacementID::None);
+		}
 	}
 
 }

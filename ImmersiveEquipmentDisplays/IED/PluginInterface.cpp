@@ -3,6 +3,7 @@
 #include "PluginInterface.h"
 
 #include "Controller/Controller.h"
+#include "GearNodeData.h"
 
 namespace IED
 {
@@ -40,21 +41,21 @@ namespace IED
 		return UNIQUE_ID;
 	}
 
-	WeaponPlacementID PluginInterface::GetPlacementHintForGearNode(TESObjectREFR* a_refr, GearNodeID a_id) const
+	WeaponPlacementID PluginInterface::GetPlacementHintForGearNode(
+		TESObjectREFR* a_refr,
+		GearNodeID     a_id) const
 	{
-		const stl::lock_guard lock(m_controller.GetLock());
-
-		const auto wn = LookupWeaponNodeEntry(a_refr, a_id);
-		return wn ? wn->currentPlacement : WeaponPlacementID::None;
+		const auto entry = LookupNodeEntry(a_refr, a_id);
+		return entry ? entry->currentPlacement : WeaponPlacementID::None;
 	}
 
-	RE::BSString PluginInterface::GetGearNodeParentName(TESObjectREFR* a_refr, GearNodeID a_id) const
+	RE::BSString PluginInterface::GetGearNodeParentName(
+		TESObjectREFR* a_refr,
+		GearNodeID     a_id) const
 	{
-		const stl::lock_guard lock(m_controller.GetLock());
-
-		if (const auto wn = LookupWeaponNodeEntry(a_refr, a_id))
+		if (const auto entry = LookupNodeEntry(a_refr, a_id))
 		{
-			if (const auto parent = wn->node3p.node->m_parent)
+			if (const auto parent = entry->node->m_parent)
 			{
 				return parent->m_name.data();
 			}
@@ -63,31 +64,18 @@ namespace IED
 		return {};
 	}
 
-	const WeaponNodeEntry* PluginInterface::LookupWeaponNodeEntry(
+	std::optional<GearNodeData::Entry::Node> PluginInterface::LookupNodeEntry(
 		TESObjectREFR* a_refr,
 		GearNodeID     a_id) const
 	{
-		if (a_refr == nullptr || a_id == GearNodeID::kNone)
+		if (a_refr != nullptr && a_id != GearNodeID::kNone)
 		{
-			return nullptr;
+			return GearNodeData::GetSingleton().GetNodeEntry(a_refr->formID, a_id);
 		}
-
-		const auto& actorMap = m_controller.GetActorMap();
-
-		auto ita = actorMap.find(a_refr->formID);
-		if (ita == actorMap.end())
+		else
 		{
-			return nullptr;
+			return {};
 		}
-
-		const auto& weapNodes = ita->second.GetWeapNodes();
-
-		auto itw = std::upper_bound(
-			weapNodes.begin(),
-			weapNodes.end(),
-			a_id,
-			ActorObjectHolder::WeaponNodeSetUBPredicate{});
-
-		return itw != weapNodes.end() && itw->gearNodeID == a_id ? std::addressof(*itw) : nullptr;
 	}
+
 }

@@ -10,6 +10,7 @@
 #include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ExtraNodes.h"
+#include "IED/GearNodeData.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 #include "IED/TransformOverrides.h"
@@ -216,7 +217,7 @@ namespace IED
 						}
 					}
 
-					m_weapNodes.raw().emplace_back(
+					m_weapNodes.emplace_back(
 						e->first,
 						node,
 						GetNodeByName(a_npcroot, e->second.bsdefParent),
@@ -225,7 +226,7 @@ namespace IED
 						e->second.animSlot,
 						e->second.nodeID);
 
-					m_weapNodes.sort_data();
+					GearNodeData::GetSingleton().SetNodeEntry(a_actor->formID, e->second.nodeID, node);
 				}
 			}
 
@@ -320,6 +321,7 @@ namespace IED
 
 		ReferenceLightController::GetSingleton().RemoveActor(m_actorid);
 		AnimationUpdateController::GetSingleton().RemoveActor(m_actorid);
+		GearNodeData::GetSingleton().RemoveActor(m_actorid);
 
 		if (defer)
 		{

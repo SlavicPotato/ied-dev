@@ -796,6 +796,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ExtraLightData.h" />
     <ClInclude Include="IED\ExtraNodes.h" />
     <ClInclude Include="IED\GearNodeID.h" />
+    <ClInclude Include="IED\GearNodeData.h" />
     <ClInclude Include="IED\GeneralInfo.h" />
     <ClInclude Include="IED\GlobalParams.h" />
     <ClInclude Include="IED\I3DIModelID.h" />
@@ -1339,6 +1340,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\D3D\D3DObject.cpp" />
     <ClCompile Include="IED\D3D\D3DVertices.cpp" />
     <ClCompile Include="IED\ExtraNodes.cpp" />
+    <ClCompile Include="IED\GearNodeData.cpp" />
     <ClCompile Include="IED\GeneralInfo.cpp" />
     <ClCompile Include="IED\GlobalParams.cpp" />
     <ClCompile Include="IED\ISkeletonInfo.cpp" />

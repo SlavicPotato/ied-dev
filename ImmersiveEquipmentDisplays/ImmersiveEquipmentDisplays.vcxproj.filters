@@ -2009,6 +2009,9 @@
     <ClInclude Include="IED\PluginInterface.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="IED\GearNodeData.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3207,6 +3210,9 @@
     </ClCompile>
     <ClCompile Include="IED\PluginInterface.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\GearNodeData.cpp">
+      <Filter>Source\IED\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

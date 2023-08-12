@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/GearNodeData.h"
 #include "IED/GearNodeID.h"
 #include "IED/WeaponPlacementID.h"
 
@@ -31,7 +32,7 @@ namespace IED
 		virtual RE::BSString      GetGearNodeParentName(TESObjectREFR* a_refr, GearNodeID a_id) const;
 
 	private:
-		const WeaponNodeEntry* LookupWeaponNodeEntry(TESObjectREFR* a_refr, GearNodeID a_id) const;
+		std::optional<GearNodeData::Entry::Node> LookupNodeEntry(TESObjectREFR* a_refr, GearNodeID a_id) const;
 
 		Controller& m_controller;
 	};
