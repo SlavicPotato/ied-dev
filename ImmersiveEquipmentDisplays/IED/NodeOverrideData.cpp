@@ -363,9 +363,9 @@ namespace IED
 								"WeaponBackLeft",
 								"MOV WeaponBackLeft",
 								"Two-Handed Left",
-								AnimationWeaponSlot::TwoHanded,
+								AnimationWeaponSlot::None,
 								I3DIModelID::kTwoHanded,
-								GearNodeID::kTwoHanded,
+								GearNodeID::kTwoHandedLeft,
 								true,
 								{
 
@@ -380,7 +380,7 @@ namespace IED
 								"WeaponBackAxeMace",
 								"MOV WeaponBackAxeMaceDefault",
 								"Two-Handed Axe/Mace",
-								AnimationWeaponSlot::TwoHanded,
+								AnimationWeaponSlot::None,
 								I3DIModelID::kTwoHanded,
 								GearNodeID::kTwoHandedAxeMace,
 								true,
@@ -402,9 +402,9 @@ namespace IED
 								"WeaponBackAxeMace",
 								"MOV WeaponBackAxeMaceLeft",
 								"Two-Handed Axe/Mace Left",
-								AnimationWeaponSlot::TwoHanded,
+								AnimationWeaponSlot::None,
 								I3DIModelID::kTwoHanded,
-								GearNodeID::kTwoHandedAxeMace,
+								GearNodeID::kTwoHandedAxeMaceLeft,
 								true,
 								{
 
