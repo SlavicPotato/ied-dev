@@ -2,6 +2,7 @@
 
 #include "ObjectDatabaseEntry.h"
 
+#include "IED/IOTaskBase.h"
 #include "IED/ConfigEffectShader.h"
 
 namespace IED

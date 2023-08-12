@@ -3,9 +3,12 @@
 #include "IED/GearNodeID.h"
 #include "IED/WeaponPlacementID.h"
 
+#include <ext/BSString.h>
+
 namespace IED
 {
 	class Controller;
+	struct WeaponNodeEntry;
 
 	class PluginInterface :
 		PluginInterfaceBase
@@ -25,8 +28,11 @@ namespace IED
 		//
 
 		virtual WeaponPlacementID GetPlacementHintForGearNode(TESObjectREFR* a_refr, GearNodeID a_id) const;
+		virtual RE::BSString      GetGearNodeParentName(TESObjectREFR* a_refr, GearNodeID a_id) const;
 
 	private:
+		const WeaponNodeEntry* LookupWeaponNodeEntry(TESObjectREFR* a_refr, GearNodeID a_id) const;
+
 		Controller& m_controller;
 	};
 }

@@ -52,6 +52,8 @@
 #include <ext/stl_str_conv.h>
 #include <ext/stl_str_helpers.h>
 
+#include <ext/PluginInterfaceBase.h>
+
 #if defined(IED_USE_MIMALLOC_COLLECTOR) || defined(IED_USE_MIMALLOC_SIMCOMPONENT)
 #	include <ext/stl_allocator_mi.h>
 #endif
@@ -142,8 +144,6 @@
 
 #include <ImGUI/imgui_impl_dx11.h>
 #include <ImGUI/imgui_impl_win32.h>
-
-#include "IED/IOTaskBase.h"
 
 namespace fs = std::filesystem;
 

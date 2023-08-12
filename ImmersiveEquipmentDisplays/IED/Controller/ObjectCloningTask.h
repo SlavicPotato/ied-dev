@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/IOTaskBase.h"
 #include "ObjectDatabaseEntry.h"
 
 namespace IED

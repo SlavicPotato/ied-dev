@@ -42,19 +42,42 @@ namespace IED
 
 	WeaponPlacementID PluginInterface::GetPlacementHintForGearNode(TESObjectREFR* a_refr, GearNodeID a_id) const
 	{
-		if (a_refr == nullptr || a_id == GearNodeID::kNone)
+		const stl::lock_guard lock(m_controller.GetLock());
+
+		const auto wn = LookupWeaponNodeEntry(a_refr, a_id);
+		return wn ? wn->currentPlacement : WeaponPlacementID::None;
+	}
+
+	RE::BSString PluginInterface::GetGearNodeParentName(TESObjectREFR* a_refr, GearNodeID a_id) const
+	{
+		const stl::lock_guard lock(m_controller.GetLock());
+
+		if (const auto wn = LookupWeaponNodeEntry(a_refr, a_id))
 		{
-			return WeaponPlacementID::None;
+			if (const auto parent = wn->node3p.node->m_parent)
+			{
+				return parent->m_name.data();
+			}
 		}
 
-		const stl::lock_guard lock(m_controller.GetLock());
+		return {};
+	}
+
+	const WeaponNodeEntry* PluginInterface::LookupWeaponNodeEntry(
+		TESObjectREFR* a_refr,
+		GearNodeID     a_id) const
+	{
+		if (a_refr == nullptr || a_id == GearNodeID::kNone)
+		{
+			return nullptr;
+		}
 
 		const auto& actorMap = m_controller.GetActorMap();
 
 		auto ita = actorMap.find(a_refr->formID);
 		if (ita == actorMap.end())
 		{
-			return WeaponPlacementID::None;
+			return nullptr;
 		}
 
 		const auto& weapNodes = ita->second.GetWeapNodes();
@@ -65,6 +88,6 @@ namespace IED
 			a_id,
 			ActorObjectHolder::WeaponNodeSetUBPredicate{});
 
-		return itw != weapNodes.end() && itw->gearNodeID == a_id ? itw->currentPlacement : WeaponPlacementID::None;
+		return itw != weapNodes.end() && itw->gearNodeID == a_id ? std::addressof(*itw) : nullptr;
 	}
 }

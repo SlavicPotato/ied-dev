@@ -2,6 +2,8 @@
 
 #include "ObjectDatabaseEntry.h"
 
+#include "IED/IOTaskBase.h"
+
 namespace IED
 {
 	class ObjectDatabase;
