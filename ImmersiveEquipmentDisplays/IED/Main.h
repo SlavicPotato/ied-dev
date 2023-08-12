@@ -4,6 +4,7 @@ namespace IED
 {
 	class Controller;
 	class ConfigINI;
+	class PluginInterface;
 
 	class Initializer :
 		ILog,
@@ -22,12 +23,16 @@ namespace IED
 			return m_Instance.m_controller;
 		}
 
+		[[nodiscard]] static constexpr auto* GetPluginInterface() noexcept
+		{
+			return m_Instance.m_pluginInterface.get();
+		}
+
 		bool Run(const SKSEInterface* a_skse);
 
 		FN_NAMEPROC("Init");
 
 	private:
-
 		void RunChecks();
 
 		static const char* GetLanguage();
@@ -36,11 +41,10 @@ namespace IED
 
 		virtual void Receive(const SKSEMessagingEvent& a_evn) override;
 
-		Controller* m_controller{ nullptr };
-
-		bool m_done{ false };
-
-		stl::smart_ptr<const ConfigINI> m_config;
+		Controller*                      m_controller{ nullptr };
+		stl::smart_ptr<const ConfigINI>  m_config;
+		std::unique_ptr<PluginInterface> m_pluginInterface;
+		bool                             m_done{ false };
 
 		static Initializer m_Instance;
 	};

@@ -152,6 +152,11 @@ extern "C"
 		return ret;
 	}
 
+	void* SKMP_GetPluginInterface()
+	{
+		return IED::Initializer::GetPluginInterface();
+	}
+
 	SKSEPluginVersionData SKSEPlugin_Version = {
 		SKSEPluginVersionData::kVersion,
 		MAKE_PLUGIN_VERSION(

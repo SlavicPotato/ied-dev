@@ -15,6 +15,7 @@
 #include "NodeMap.h"
 #include "NodeOverrideData.h"
 #include "PapyrusInterface/Papyrus.h"
+#include "PluginInterface.h"
 #include "ReferenceLightController.h"
 #include "SPtrHolder.h"
 #include "SkeletonCache.h"
@@ -365,6 +366,13 @@ namespace IED
 					pluginInfo.plugins,
 					pluginInfo.light,
 					pluginInfo.total);
+			}
+			break;
+
+		case SKSEMessagingInterface::kMessage_PostPostLoad:
+			if (m_controller)
+			{
+				m_pluginInterface = std::make_unique<PluginInterface>(*m_controller);
 			}
 			break;
 		}
