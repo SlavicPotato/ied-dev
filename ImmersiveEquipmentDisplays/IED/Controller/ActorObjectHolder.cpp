@@ -190,7 +190,7 @@ namespace IED
 
 			const bool wnsOff = a_owner.IsWeaponNodeSharingDisabled();
 
-			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
+			for (auto& e : NodeOverrideData::GetGearNodeData().getvec())
 			{
 				if (!wnsOff)
 				{
@@ -217,7 +217,7 @@ namespace IED
 						}
 					}
 
-					m_weapNodes.emplace_back(
+					m_gearNodes.emplace_back(
 						e->first,
 						node,
 						GetNodeByName(a_npcroot, e->second.bsdefParent),
@@ -311,7 +311,7 @@ namespace IED
 				INodeOverride::ResetNodeOverride(e.second, defer);
 			}
 
-			for (const auto& e : m_weapNodes)
+			for (const auto& e : m_gearNodes)
 			{
 				INodeOverride::ResetNodePlacement(e, nullptr, defer);
 			}
@@ -527,13 +527,13 @@ namespace IED
 		}
 
 		auto it = std::find_if(
-			m_weapNodes.begin(),
-			m_weapNodes.end(),
+			m_gearNodes.begin(),
+			m_gearNodes.end(),
 			[&](auto& a_v) [[msvc::forceinline]] {
 				return a_v.gearNodeID == id;
 			});
 
-		if (it != m_weapNodes.end())
+		if (it != m_gearNodes.end())
 		{
 			a_out = {
 				it->node3p.node.get(),

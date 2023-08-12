@@ -17,7 +17,7 @@ namespace IED
 
 	class ActorObjectHolder;
 	class Controller;
-	struct WeaponNodeEntry;
+	struct GearNodeEntry;
 
 	class INodeOverride
 	{
@@ -30,7 +30,7 @@ namespace IED
 			bool                a_defer) noexcept;
 
 		static void ResetNodePlacement(
-			const WeaponNodeEntry& a_entry,
+			const GearNodeEntry& a_entry,
 			nodeOverrideParams_t*  a_params,
 			bool                   a_defer) noexcept;
 
@@ -47,7 +47,7 @@ namespace IED
 
 		static void ApplyNodePlacement(
 			const Data::configNodeOverridePlacement_t& a_data,
-			const WeaponNodeEntry&                     a_entry,
+			const GearNodeEntry&                     a_entry,
 			nodeOverrideParams_t&                      a_params) noexcept;
 
 		static const Data::configNodePhysicsValues_t& GetPhysicsConfig(

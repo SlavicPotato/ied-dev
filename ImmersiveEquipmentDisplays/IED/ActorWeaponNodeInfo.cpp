@@ -19,7 +19,7 @@ namespace IED
 		auto it = objects.find(a_actor->formID);
 		if (it != objects.end())
 		{
-			for (auto& e : it->second.GetWeapNodes())
+			for (auto& e : it->second.GetGearNodes())
 			{
 				const auto* const node = e.node3p.node.get();
 

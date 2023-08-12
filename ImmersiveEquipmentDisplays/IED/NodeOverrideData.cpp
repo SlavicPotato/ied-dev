@@ -144,7 +144,7 @@ namespace IED
 
 		}),
 
-		m_weap(std::initializer_list<init_list_weap>{
+		m_gearNodes(std::initializer_list<init_list_weap>{
 
 			{ "WeaponSword", {
 

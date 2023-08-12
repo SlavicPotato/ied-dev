@@ -342,7 +342,7 @@ namespace IED
 
 		using cm_data_type             = stl::cache_aligned::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
 		using mon_data_type            = stl::container_init_wrapper<stl::cache_aligned::vector<BSFixedString>>;
-		using weapnode_data_type       = stl::cache_aligned::vectormap<stl::fixed_string, weaponNodeEntry_t>;
+		using gear_node_data_type      = stl::cache_aligned::vectormap<stl::fixed_string, weaponNodeEntry_t>;
 		using exn_data_type            = stl::cache_aligned::vector<extraNodeEntry_t>;
 		using exn_copy_data_type       = stl::container_init_wrapper<stl::cache_aligned::vector<extraNodeCopyEntry_t>>;
 		using xfrm_override_data_type  = stl::container_init_wrapper<stl::cache_aligned::vector<xfrmOverrideNodeEntry_t>>;
@@ -369,9 +369,9 @@ namespace IED
 			return m_Instance->m_monitor;
 		}
 
-		static SKMP_143_CONSTEXPR const auto& GetWeaponNodeData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetGearNodeData() noexcept
 		{
-			return m_Instance->m_weap;
+			return m_Instance->m_gearNodes;
 		}
 
 		static SKMP_143_CONSTEXPR const auto& GetExtraMovNodes() noexcept
@@ -446,7 +446,7 @@ namespace IED
 		cm_data_type             m_cme;
 		cm_data_type             m_mov;
 		mon_data_type            m_monitor;
-		weapnode_data_type       m_weap;
+		gear_node_data_type      m_gearNodes;
 		exn_data_type            m_extramov;
 		exn_copy_data_type       m_extraCopy;
 		xfrm_override_data_type  m_transformOverride;

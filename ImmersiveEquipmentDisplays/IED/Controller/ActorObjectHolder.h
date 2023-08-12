@@ -156,7 +156,7 @@ namespace IED
 
 		struct WeaponNodeSetUBPredicate
 		{
-			constexpr bool operator()(const GearNodeID& a_lhs, const WeaponNodeEntry& a_rhs) const
+			constexpr bool operator()(const GearNodeID& a_lhs, const GearNodeEntry& a_rhs) const
 			{
 				return a_lhs <= a_rhs.gearNodeID;
 			}
@@ -269,9 +269,9 @@ namespace IED
 			return m_movNodes;
 		}
 
-		[[nodiscard]] constexpr auto& GetWeapNodes() const noexcept
+		[[nodiscard]] constexpr auto& GetGearNodes() const noexcept
 		{
-			return m_weapNodes;
+			return m_gearNodes;
 		}
 
 		[[nodiscard]] constexpr bool IsActive() const noexcept
@@ -765,7 +765,7 @@ namespace IED
 		std::array<customPluginMap_t, Data::CONFIG_CLASS_MAX> m_entriesCustom;
 
 		stl::cache_aligned::vector<MonitorGearNodeEntry>            m_monitorNodes;
-		stl::cache_aligned::vector<WeaponNodeEntry>                 m_weapNodes;
+		stl::cache_aligned::vector<GearNodeEntry>                   m_gearNodes;
 		stl::cache_aligned::vector<stl::smart_ptr<PHYSimComponent>> m_simNodeList;
 
 		stl::cache_aligned::vectormap<stl::fixed_string, CMENodeEntry> m_cmeNodes;

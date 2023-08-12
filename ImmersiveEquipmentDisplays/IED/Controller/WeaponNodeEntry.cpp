@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	bool WeaponNodeEntry::has_visible_geometry() const noexcept
+	bool GearNodeEntry::has_visible_geometry() const noexcept
 	{
 		return ::Util::Node::HasVisibleGeometry(node3p.node);
 	}

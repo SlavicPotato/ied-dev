@@ -6,7 +6,7 @@
 
 namespace IED
 {
-	struct WeaponNodeEntry
+	struct GearNodeEntry
 	{
 		friend class INodeOverride;
 
@@ -22,7 +22,7 @@ namespace IED
 			}
 		};
 
-		WeaponNodeEntry(
+		GearNodeEntry(
 			const stl::fixed_string& a_nodeName,
 			NiNode*                  a_node,
 			NiNode*                  a_defaultNode,

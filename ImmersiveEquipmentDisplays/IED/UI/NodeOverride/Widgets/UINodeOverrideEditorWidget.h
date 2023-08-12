@@ -682,7 +682,7 @@ namespace IED
 
 			const auto configClass = GetConfigClass();
 
-			auto& data = NodeOverrideData::GetWeaponNodeData();
+			auto& data = NodeOverrideData::GetGearNodeData();
 
 			for (auto& e : data.getvec())
 			{
@@ -949,7 +949,7 @@ namespace IED
 
 			if (!flags.test(NodeOverrideEditorFlags::kUnrestrictedNodePlacement))
 			{
-				auto& data = NodeOverrideData::GetWeaponNodeData();
+				auto& data = NodeOverrideData::GetGearNodeData();
 
 				auto it = data.find(a_params.name);
 				if (it == data.end())

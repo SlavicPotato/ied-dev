@@ -4004,7 +4004,7 @@ namespace IED
 
 		if (a_holder.m_cmeNodes.empty() &&
 		    a_holder.m_movNodes.empty() &&
-		    a_holder.m_weapNodes.empty())
+		    a_holder.m_gearNodes.empty())
 		{
 			return false;
 		}
@@ -4023,7 +4023,7 @@ namespace IED
 
 		configStoreNodeOverride_t::holderCache_t hc;
 
-		for (const auto& e : a_holder.m_weapNodes)
+		for (const auto& e : a_holder.m_gearNodes)
 		{
 			const auto r = activeConfig.transforms.GetActorPlacement(
 				a_actor->formID,

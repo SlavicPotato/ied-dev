@@ -9,7 +9,7 @@
 namespace IED
 {
 	class Controller;
-	struct WeaponNodeEntry;
+	struct GearNodeEntry;
 
 	class PluginInterface :
 		PluginInterfaceBase
