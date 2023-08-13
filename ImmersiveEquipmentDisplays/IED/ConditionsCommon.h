@@ -1182,6 +1182,15 @@ namespace IED
 				}
 			}
 
+			if (a_match.form2.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch4) ==
+				    IFormCommon::HasEquipSlot(form, a_match.form2))
+				{
+					return false;
+				}
+			}
+
 			if (a_match.keyword.get_id())
 			{
 				if (a_match.flags.test(Tf::kNegateMatch1) ==

@@ -955,6 +955,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIToast.h" />
     <ClInclude Include="IED\UI\UIWeaponTypeStrings.h" />
     <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
+    <ClInclude Include="IED\UI\Widgets\Common\UIConditionItemExtra.h" />
+    <ClInclude Include="IED\UI\Widgets\Common\UIConditionParamExtra.h" />
     <ClInclude Include="IED\UI\Widgets\EquipmentOverride\UIEquipmentOverrideWidget.h" />
     <ClInclude Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\Lists\UIObjectSlotList.h" />

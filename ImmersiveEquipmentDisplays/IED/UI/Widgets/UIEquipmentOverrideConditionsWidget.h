@@ -10,6 +10,9 @@
 #include "IED/ConditionalVariableStorage.h"
 #include "IED/ConfigEquipment.h"
 
+#include "IED/UI/Widgets/Common/UIConditionItemExtra.h"
+#include "IED/UI/Widgets/Common/UIConditionParamExtra.h"
+
 namespace IED
 {
 	class Controller;
@@ -18,6 +21,13 @@ namespace IED
 	{
 		class UIEquipmentOverrideConditionsWidget :
 			UIConditionParamExtraInterface,
+			UIConditionParamExtra<
+				Data::equipmentOverrideCondition_t,
+				Data::EquipmentOverrideConditionFlags>,
+			UIConditionItemExtra<
+				Data::equipmentOverrideCondition_t,
+				Data::EquipmentOverrideConditionType,
+				Data::EquipmentOverrideConditionFlags>,
 			public virtual UIDescriptionPopupWidget
 		{
 		public:

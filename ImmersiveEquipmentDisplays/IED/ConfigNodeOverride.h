@@ -123,6 +123,7 @@ namespace IED
 			Perk       = 23,
 			Cell       = 24,
 			Hand       = 25,
+			Quest      = 26,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield

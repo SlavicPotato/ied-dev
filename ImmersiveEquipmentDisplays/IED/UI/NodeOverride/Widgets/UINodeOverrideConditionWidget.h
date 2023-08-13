@@ -10,6 +10,9 @@
 #include "UINodeOverrideEditorWidgetStrings.h"
 #include "UINodeOverrideWidgetCommon.h"
 
+#include "IED/UI/Widgets/Common/UIConditionItemExtra.h"
+#include "IED/UI/Widgets/Common/UIConditionParamExtra.h"
+
 namespace IED
 {
 	class Controller;
@@ -18,6 +21,14 @@ namespace IED
 	{
 		class UINodeOverrideConditionWidget :
 			UIConditionParamExtraInterface,
+
+			UIConditionParamExtra<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>,
+			UIConditionItemExtra<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionType,
+				Data::NodeOverrideConditionFlags>,
 			public UIDescriptionPopupWidget
 		{
 			using update_func_t = std::function<void()>;
@@ -26,8 +37,8 @@ namespace IED
 			UINodeOverrideConditionWidget(Controller& a_controller);
 
 			NodeOverrideCommonResult DrawConditionContextMenu(
-				NodeOverrideDataType                 a_type,
-				const bool                           a_ignoreNode);
+				NodeOverrideDataType a_type,
+				const bool           a_ignoreNode);
 
 			NodeOverrideCommonAction DrawConditionHeaderContextMenu(
 				const stl::fixed_string&                 a_name,

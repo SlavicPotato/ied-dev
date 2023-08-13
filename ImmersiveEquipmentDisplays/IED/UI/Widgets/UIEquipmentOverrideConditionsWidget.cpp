@@ -572,114 +572,31 @@ namespace IED
 
 			case Data::EquipmentOverrideConditionType::Furniture:
 
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(CommonStrings::LayingDown, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+				DrawConditionParamExtra_Furniture(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::BipedSlot:
-				{
-					result |= ImGui::CheckboxFlagsT(
-						UIL::LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
-					UITipsInterface::DrawTip(UITip::MatchSkin);
+				DrawConditionParamExtra_BipedSlot(match, result);
 
-					bool disabled = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
-
-					UICommon::PushDisabled(disabled);
-
-					result |= ImGui::CheckboxFlagsT(
-						"!##2",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
-
-					UICommon::PopDisabled(disabled);
-
-					ImGui::SameLine();
-
-					result |= ImGui::CheckboxFlagsT(
-						UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-					disabled = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag3);
-
-					UICommon::PushDisabled(disabled);
-
-					result |= ImGui::CheckboxFlagsT(
-						"!##4",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));
-
-					UICommon::PopDisabled(disabled);
-
-					ImGui::SameLine();
-
-					result |= ImGui::CheckboxFlagsT(
-						UIL::LS(UIWidgetCommonStrings::GeometryVisible, "5"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
-				}
 				break;
 
 			case Data::EquipmentOverrideConditionType::Location:
 
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::MatchParent, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-				UITipsInterface::DrawTip(UITip::MatchChildLoc);
-
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::MatchEither, "2"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchCategoryOperOR));
-
-				UITipsInterface::DrawTip(UITip::MatchEitherFormKW);
+				DrawConditionParamExtra_Location(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Worldspace:
 
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::MatchParent, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-				UITipsInterface::DrawTip(UITip::MatchWorldspaceParent);
+				DrawConditionParamExtra_Worldspace(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Race:
 
-				result |= ImGui::CheckboxFlagsT(
-					"!##1",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
-
-				ImGui::SameLine();
-
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::IsPlayable, "2"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-				result |= ImGui::CheckboxFlagsT(
-					"!##3",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));
-
-				ImGui::SameLine();
-
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::ChildRace, "4"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
+				DrawConditionParamExtra_Race(match, result);
 
 				break;
 
@@ -824,179 +741,43 @@ namespace IED
 
 			case Data::EquipmentOverrideConditionType::Idle:
 
-				ImGui::Spacing();
-				ImGui::Text("%s:", UIL::LS(CommonStrings::Info));
-				ImGui::SameLine();
-				UITipsInterface::DrawTip(UITip::IdleCondition);
+				DrawConditionParamExtra_Idle(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Skeleton:
 
-				if (ImGui::RadioButton(
-						UIL::LS(CommonStrings::ID, "1"),
-						!match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1)))
-				{
-					result = true;
-					match->flags.clear(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
-				}
-
-				ImGui::SameLine();
-
-				if (ImGui::RadioButton(
-						UIL::LS(CommonStrings::Signature, "2"),
-						match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1)))
-				{
-					result = true;
-					match->flags.set(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
-				}
-
-				ImGui::Separator();
-				ImGui::Spacing();
-
-				if (match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
-				{
-					result |= ImGui::InputScalar(
-						UIL::LS(CommonStrings::Signature, "3"),
-						ImGuiDataType_U64,
-						std::addressof(match->skeletonSignature),
-						nullptr,
-						nullptr,
-						"%llu",
-						ImGuiInputTextFlags_EnterReturnsTrue |
-							ImGuiInputTextFlags_CharsDecimal);
-				}
-				else
-				{
-					result |= ImGui::InputScalar(
-						UIL::LS(CommonStrings::ID, "3"),
-						ImGuiDataType_S32,
-						std::addressof(match->skeletonID),
-						nullptr,
-						nullptr,
-						"%d",
-						ImGuiInputTextFlags_EnterReturnsTrue |
-							ImGuiInputTextFlags_CharsDecimal);
-				}
+				DrawConditionParamExtra_Skeleton(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Mounting:
 
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::IsMountedActorHorse, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+				DrawConditionParamExtra_Mounting(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Cell:
 
-				result |= ImGui::CheckboxFlagsT(
-					"!##1",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
-
-				ImGui::SameLine();
-
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(CommonStrings::Interior, "2"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-				result |= ImGui::CheckboxFlagsT(
-					"!##3",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));
-
-				ImGui::SameLine();
-
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::PublicArea, "4"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
-
-				result |= ImGui::CheckboxFlagsT(
-					"!##5",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch6));
-
-				ImGui::SameLine();
-
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::UsesSkyLighting, "6"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
+				DrawConditionParamExtra_Cell(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Hand:
 
-				{
-					std::optional<std::uint8_t> tmp;
-					if (match->formType)
-					{
-						tmp.emplace(match->formType);
-					}
+				DrawConditionParamExtra_Hand(match, m_condParamEditor, result);
 
-					UICommon::PushDisabled(!tmp);
-
-					result |= ImGui::CheckboxFlagsT(
-						"!##1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
-
-					UICommon::PopDisabled(!tmp);
-
-					ImGui::SameLine();
-
-					if (UIFormTypeSelectorWidget::DrawFormTypeSelector(
-							tmp,
-							true,
-							[](std::uint8_t a_type) {
-								return IFormCommon::IsEquippableHandFormType(a_type);
-							}))
-					{
-						match->formType = tmp ? *tmp : 0;
-						result          = true;
-					}
-
-					result |= ImGui::CheckboxFlagsT(
-						UIL::LS(CommonStrings::Left, "2"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::NodeOverrideConditionFlags::kMatchLeftHand));
-				}
 				break;
 
 			case Data::EquipmentOverrideConditionType::NPC:
 
-				result |= ImGui::CheckboxFlagsT(
-					UIL::LS(UIWidgetCommonStrings::MatchNPCOrTemplate, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-				UITipsInterface::DrawTip(UITip::MatchNPCOrTemplate);
+				DrawConditionParamExtra_NPC(match, result);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Extra:
 
-				switch (match->extraCondType)
-				{
-				case Data::ExtraConditionType::kSunAngle:
-
-					result |= ImGui::CheckboxFlagsT(
-						UIL::LS(CommonStrings::Absolute, "1"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-					ImGui::Spacing();
-					ImGui::Text("%s:", UIL::LS(CommonStrings::Info));
-					ImGui::SameLine();
-					UITipsInterface::DrawTip(UITip::SunAngle);
-
-					break;
-				}
+				DrawConditionParamExtra_Extra(match, result);
 
 				break;
 			}
@@ -1010,322 +791,11 @@ namespace IED
 			ConditionParamItem           a_item,
 			ConditionParamItemExtraArgs& a_args)
 		{
-			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_args.p3);
-
 			bool result = false;
 
 			ImGui::PushID("match_item_extra");
 
-			switch (match->flags.bf().type)
-			{
-			case Data::EquipmentOverrideConditionType::Type:
-			case Data::EquipmentOverrideConditionType::Furniture:
-			case Data::EquipmentOverrideConditionType::BipedSlot:
-			case Data::EquipmentOverrideConditionType::Location:
-			case Data::EquipmentOverrideConditionType::Package:
-
-				if (a_item == ConditionParamItem::Form)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-					if (match->flags.bf().type == Data::EquipmentOverrideConditionType::BipedSlot &&
-					    match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag2))
-					{
-						a_args.disable = true;
-					}
-
-					ImGui::SameLine();
-				}
-				else if (
-					a_item == ConditionParamItem::Keyword ||
-					a_item == ConditionParamItem::PackageType)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_2",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
-
-					ImGui::SameLine();
-				}
-
-				break;
-
-			case Data::EquipmentOverrideConditionType::Form:
-
-				if (a_item == ConditionParamItem::Keyword)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-					ImGui::SameLine();
-				}
-
-				break;
-			case Data::EquipmentOverrideConditionType::Effect:
-
-				if (a_item == ConditionParamItem::FormAny)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_fa_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
-
-					ImGui::SameLine();
-
-					a_args.formFilter = UIFormBrowserFilter::EffectSource;
-				}
-
-				[[fallthrough]];
-			case Data::EquipmentOverrideConditionType::Actor:
-			case Data::EquipmentOverrideConditionType::NPC:
-			case Data::EquipmentOverrideConditionType::Race:
-			case Data::EquipmentOverrideConditionType::Idle:
-			case Data::EquipmentOverrideConditionType::Cell:
-			case Data::EquipmentOverrideConditionType::Hand:
-
-				if (a_item == ConditionParamItem::Form)
-				{
-					result |= ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
-
-					ImGui::SameLine();
-				}
-				else if (a_item == ConditionParamItem::Keyword)
-				{
-					result |= ImGui::CheckboxFlagsT(
-						"!##ctl_neg_2",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-					ImGui::SameLine();
-				}
-
-				else if (a_item == ConditionParamItem::LightingTemplateInheritanceFlags)
-				{
-					result |= ImGui::CheckboxFlagsT(
-						"!##ctl_neg_3",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch5));
-
-					/*ImGui::SameLine();
-
-					result |= ImGui::CheckboxFlagsT(
-						"##ctl_sw_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
-
-					if (!match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag3))
-					{
-						a_args.disable = true;
-					}*/
-
-					ImGui::SameLine();
-				}
-
-				break;
-
-			case Data::EquipmentOverrideConditionType::Extra:
-
-				if (a_item == ConditionParamItem::Form)
-				{
-					switch (match->extraCondType)
-					{
-					case Data::ExtraConditionType::kShoutEquipped:
-					case Data::ExtraConditionType::kCombatStyle:
-					case Data::ExtraConditionType::kClass:
-					case Data::ExtraConditionType::kLightingTemplate:
-
-						result = ImGui::CheckboxFlagsT(
-							"!##ctl_neg_1",
-							stl::underlying(std::addressof(match->flags.value)),
-							stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-						ImGui::SameLine();
-
-						a_args.hide = false;
-						break;
-					default:
-						a_args.hide = true;
-						break;
-					}
-				}
-
-				break;
-
-			case Data::EquipmentOverrideConditionType::Weather:
-
-				if (a_item == ConditionParamItem::Form)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-					ImGui::SameLine();
-				}
-				else if (a_item == ConditionParamItem::WeatherClass)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_2",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
-
-					ImGui::SameLine();
-				}
-
-				break;
-			case Data::EquipmentOverrideConditionType::Mounting:
-			case Data::EquipmentOverrideConditionType::Mounted:
-
-				switch (a_item)
-				{
-				case ConditionParamItem::Form:
-
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-					ImGui::SameLine();
-
-					break;
-
-				case ConditionParamItem::Race:
-
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_2",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
-
-					ImGui::SameLine();
-
-					break;
-
-				case ConditionParamItem::Keyword:
-
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_3",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
-
-					ImGui::SameLine();
-
-					break;
-				}
-
-				break;
-			case Data::EquipmentOverrideConditionType::Faction:
-			case Data::EquipmentOverrideConditionType::Perk:
-
-				switch (a_item)
-				{
-				case ConditionParamItem::CompOper:
-
-					result = ImGui::CheckboxFlagsT(
-						UIL::LS(CommonStrings::Rank, "ctl_tog_1"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
-					{
-						ImGui::SameLine();
-					}
-
-					[[fallthrough]];
-				case ConditionParamItem::Int32:
-
-					a_args.hide = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
-
-					break;
-				}
-
-				break;
-
-			case Data::EquipmentOverrideConditionType::Variable:
-
-				switch (a_item)
-				{
-				case ConditionParamItem::Int32:
-
-					if (match->condVarType != ConditionalVariableType::kInt32)
-					{
-						a_args.hide = true;
-					}
-
-					break;
-				case ConditionParamItem::Float:
-
-					if (match->condVarType != ConditionalVariableType::kFloat)
-					{
-						a_args.hide = true;
-					}
-
-					break;
-				case ConditionParamItem::Form:
-
-					switch (match->vcSource)
-					{
-					case Data::VariableConditionSource::kActor:
-					case Data::VariableConditionSource::kNPC:
-					case Data::VariableConditionSource::kRace:
-
-						result |= ImGui::CheckboxFlagsT(
-							"!##ctl_neg_1",
-							stl::underlying(std::addressof(match->flags.value)),
-							stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
-
-						ImGui::SameLine();
-
-						break;
-					default:
-						a_args.hide = true;
-						break;
-					}
-
-					break;
-
-				case ConditionParamItem::VarCondSource:
-
-					if (match->vcSource == Data::VariableConditionSource::kSelf)
-					{
-						result |= ImGui::CheckboxFlagsT(
-							"!##ctl_neg_2",
-							stl::underlying(std::addressof(match->flags.value)),
-							stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
-
-						ImGui::SameLine();
-					}
-
-					break;
-
-				case ConditionParamItem::FormAny:
-
-					if (match->condVarType != ConditionalVariableType::kForm)
-					{
-						a_args.hide = true;
-					}
-
-					break;
-
-					/*case ConditionParamItem::CompOper:
-
-					if (match->condVarType == ConditionalVariableType::kForm)
-					{
-						a_args.hide = true;
-					}
-
-					break;*/
-				}
-
-				break;
-			}
+			DrawConditionItemExtra_All(a_item, a_args, result);
 
 			ImGui::PopID();
 
@@ -1336,19 +806,7 @@ namespace IED
 			ConditionParamItem                    a_item,
 			const ConditionParamItemOnChangeArgs& a_args)
 		{
-			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_args.p3);
-
-			switch (match->flags.bf().type)
-			{
-			case Data::EquipmentOverrideConditionType::Variable:
-
-				if (a_item == ConditionParamItem::VarCondSource)
-				{
-					match->form = {};
-				}
-
-				break;
-			}
+			OnConditionItemChangeImpl(a_item, a_args);
 		}
 
 		UIEquipmentOverrideAction UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionHeaderContextMenu(
@@ -1823,32 +1281,7 @@ namespace IED
 						{
 							m_condParamEditor.Reset();
 
-							if (e.flags.bf().type == Data::EquipmentOverrideConditionType::Variable)
-							{
-								switch (e.vcSource)
-								{
-								case Data::VariableConditionSource::kActor:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
-									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
-									break;
-								case Data::VariableConditionSource::kNPC:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
-									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-									break;
-								case Data::VariableConditionSource::kRace:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
-									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-									break;
-								default:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));
-									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-									break;
-								}
-							}
-							else
-							{
-								UpdateMatchParamAllowedTypes(e.flags.bf().type);
-							}
+							DoUpdateMatchParamAllowedTypes(e, m_condParamEditor);
 
 							const char* tdesc;
 							const char* vdesc;
@@ -2443,79 +1876,7 @@ namespace IED
 
 		void UIEquipmentOverrideConditionsWidget::UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType a_type)
 		{
-			switch (a_type)
-			{
-			case Data::EquipmentOverrideConditionType::Race:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Furniture:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Furniture));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Quest:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Quest));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Actor:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
-				break;
-			case Data::EquipmentOverrideConditionType::NPC:
-			case Data::EquipmentOverrideConditionType::Mounting:
-			case Data::EquipmentOverrideConditionType::Mounted:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Location:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Location));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Worldspace:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Worldspace));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Package:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Package));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Weather:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Weather));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Global:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Global));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Idle:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Idle));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
-				break;
-			case Data::EquipmentOverrideConditionType::Faction:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Faction));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Effect:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Effect));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Perk:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Perk));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Cell:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Cell));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
-				break;
-			case Data::EquipmentOverrideConditionType::Hand:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::HandEquippable));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			default:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			}
+			UpdateMatchParamAllowedTypesImpl(a_type, m_condParamEditor);
 		}
 	}
 }

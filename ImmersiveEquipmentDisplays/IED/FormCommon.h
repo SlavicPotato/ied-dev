@@ -129,5 +129,21 @@ namespace IED
 
 			return false;
 		}
+
+		template <class T>
+		static constexpr bool HasEquipSlot(
+			const T*                  a_form,
+			const Data::configCachedForm_t& a_slot)  //
+			noexcept                                 //
+			requires(std::is_convertible_v<T*, BGSEquipType*>)
+		{
+			const auto equipSlot = static_cast<BGSEquipType*>(a_form)->equipSlot;
+			return equipSlot->formID == a_slot.get_id();
+		}
+
+		static bool HasEquipSlot(
+			const TESForm*                  a_form,
+			const Data::configCachedForm_t& a_slot)  //
+			noexcept;
 	};
 }

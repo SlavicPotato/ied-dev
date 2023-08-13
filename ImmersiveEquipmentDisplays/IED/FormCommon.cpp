@@ -292,4 +292,12 @@ namespace IED
 		}
 	}
 
+	bool IFormCommon::HasEquipSlot(
+		const TESForm*                  a_form,
+		const Data::configCachedForm_t& a_slot) noexcept
+	{
+		const auto equipType = a_form->As<BGSEquipType>();
+		return equipType && equipType->equipSlot ? equipType->equipSlot->formID == a_slot.get_id() : false;
+	}
+
 }

@@ -303,6 +303,9 @@
     <Filter Include="Source\IED\UI\Style\Widgets">
       <UniqueIdentifier>{2ee6c42b-bfa1-4b8c-9d14-1212c56b5c10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\UI\Widgets\Common">
+      <UniqueIdentifier>{400f43c3-b91f-4d2a-b2cd-454f0ae8f809}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -2011,6 +2014,12 @@
     </ClInclude>
     <ClInclude Include="IED\GearNodeData.h">
       <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Common\UIConditionParamExtra.h">
+      <Filter>Source\IED\UI\Widgets\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Common\UIConditionItemExtra.h">
+      <Filter>Source\IED\UI\Widgets\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
