@@ -2009,9 +2009,6 @@
     <ClInclude Include="IED\IOTaskBase.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
-    <ClInclude Include="IED\PluginInterface.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="IED\GearNodeData.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
@@ -2020,6 +2017,9 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\Common\UIConditionItemExtra.h">
       <Filter>Source\IED\UI\Widgets\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PluginInterface.h">
+      <Filter>Source\IED</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

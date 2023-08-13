@@ -29,10 +29,15 @@ namespace IED
 		//
 
 		virtual WeaponPlacementID GetPlacementHintForGearNode(TESObjectREFR* a_refr, GearNodeID a_id) const;
+		virtual WeaponPlacementID GetPlacementHintForEquippedWeapon(TESObjectREFR* a_refr, bool a_leftHand) const;
 		virtual RE::BSString      GetGearNodeParentName(TESObjectREFR* a_refr, GearNodeID a_id) const;
 
 	private:
 		std::optional<GearNodeData::Entry::Node> LookupNodeEntry(TESObjectREFR* a_refr, GearNodeID a_id) const;
+
+		GearNodeID GetGearNodeIDForItem(
+			const TESForm* a_form,
+			bool           a_leftHand) const;
 
 		Controller& m_controller;
 	};
