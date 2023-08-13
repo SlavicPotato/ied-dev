@@ -2,6 +2,7 @@
 
 #include "IED/GearNodeData.h"
 #include "IED/GearNodeID.h"
+#include "IED/PluginOptionKey.h"
 #include "IED/WeaponPlacementID.h"
 
 #include <ext/BSString.h>
@@ -31,6 +32,7 @@ namespace IED
 		virtual WeaponPlacementID GetPlacementHintForGearNode(TESObjectREFR* a_refr, GearNodeID a_id) const;
 		virtual WeaponPlacementID GetPlacementHintForEquippedWeapon(TESObjectREFR* a_refr, bool a_leftHand) const;
 		virtual RE::BSString      GetGearNodeParentName(TESObjectREFR* a_refr, GearNodeID a_id) const;
+		virtual std::int32_t      GetPluginOption(PluginOptionKey a_key) const;
 
 	private:
 		std::optional<GearNodeData::Entry::Node> LookupNodeEntry(TESObjectREFR* a_refr, GearNodeID a_id) const;

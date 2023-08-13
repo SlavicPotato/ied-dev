@@ -306,49 +306,50 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::XP32AA);
 
-				if (data.enableXP32AA)
+				if (!m_controller.HasAnimationInfo())
 				{
-					ImGui::Indent();
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+					ImGui::TextWrapped(
+						"%s",
+						UIL::LS(UISettingsStrings::NoAnimInfoWarning));
+					ImGui::PopStyleColor();
 
-					if (!m_controller.HasAnimationInfo())
-					{
-						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextWrapped(
-							"%s",
-							UIL::LS(UISettingsStrings::NoAnimInfoWarning));
-						ImGui::PopStyleColor();
-
-						ImGui::Spacing();
-					}
-
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("%s:", UIL::LS(UISettingsStrings::XP32_FF));
-					ImGui::SameLine();
-
-					if (settings.mark_if(ImGui::Checkbox(
-							UIL::LS(UISettingsStrings::XP32_FF_Idle, "2"),
-							std::addressof(data.XP32AABowIdle))))
-					{
-						m_controller.QueueResetAAAll();
-						m_controller.QueueEvaluateAll(
-							ControllerUpdateFlags::kNone);
-					}
-
-					ImGui::SameLine();
-
-					if (settings.mark_if(ImGui::Checkbox(
-							UIL::LS(UISettingsStrings::XP32_FF_Attack, "3"),
-							std::addressof(data.XP32AABowAtk))))
-					{
-						m_controller.QueueResetAAAll();
-						m_controller.QueueEvaluateAll(
-							ControllerUpdateFlags::kNone);
-					}
-
-					UITipsInterface::DrawTip(UITip::XP32AA_FF);
-
-					ImGui::Unindent();
+					ImGui::Spacing();
 				}
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("%s:", UIL::LS(UISettingsStrings::XP32_FF));
+				ImGui::SameLine();
+
+				bool tmpa = data.XP32AABowIdle;
+
+				if (settings.mark_if(ImGui::Checkbox(
+						UIL::LS(UISettingsStrings::XP32_FF_Idle, "2"),
+						std::addressof(tmpa))))
+				{
+					data.XP32AABowIdle = tmpa;
+
+					m_controller.QueueResetAAAll();
+					m_controller.QueueEvaluateAll(
+						ControllerUpdateFlags::kNone);
+				}
+
+				ImGui::SameLine();
+
+				tmpa = data.XP32AABowAtk;				
+
+				if (settings.mark_if(ImGui::Checkbox(
+						UIL::LS(UISettingsStrings::XP32_FF_Attack, "3"),
+						std::addressof(tmpa))))
+				{
+					data.XP32AABowAtk = tmpa;
+
+					m_controller.QueueResetAAAll();
+					m_controller.QueueEvaluateAll(
+						ControllerUpdateFlags::kNone);
+				}
+
+				UITipsInterface::DrawTip(UITip::XP32AA_FF);
 
 				if (settings.mark_if(ImGui::Checkbox(
 						UIL::LS(UISettingsStrings::RandPlacement, "4"),

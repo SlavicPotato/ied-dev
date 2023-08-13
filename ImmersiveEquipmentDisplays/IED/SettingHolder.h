@@ -223,18 +223,18 @@ namespace IED
 				stl::optional<ConfigKeyPair>    playerBlockKeys;
 				Data::ConfigSound<Game::FormID> sound;
 
-				bool hideEquipped{ true };
-				bool disableNPCSlots{ false };
-				bool removeFavRestriction{ false };
-				bool enableXP32AA{ false };
-				bool XP32AABowIdle{ false };
-				bool XP32AABowAtk{ false };
-				bool placementRandomization{ false };
-				bool syncTransformsToFirstPersonSkeleton{ false };
-				bool enableEquipmentPhysics{ false };
-				bool enableEffectShaders{ false };
-				bool lightEnableNPCUpdates{ false };
-				bool apParallelUpdates{ true };
+				bool          hideEquipped{ true };
+				bool          disableNPCSlots{ false };
+				bool          removeFavRestriction{ false };
+				bool          enableXP32AA{ false };
+				volatile bool XP32AABowIdle{ false };
+				volatile bool XP32AABowAtk{ false };
+				bool          placementRandomization{ false };
+				bool          syncTransformsToFirstPersonSkeleton{ false };
+				bool          enableEquipmentPhysics{ false };
+				bool          enableEffectShaders{ false };
+				bool          lightEnableNPCUpdates{ false };
+				bool          apParallelUpdates{ true };
 
 				stl::optional<LogLevel> logLevel;
 

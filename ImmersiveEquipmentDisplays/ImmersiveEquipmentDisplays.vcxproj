@@ -882,6 +882,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\Physics\SimComponent.h" />
     <ClInclude Include="IED\PluginInterface.h" />
+    <ClInclude Include="IED\PluginOptionKey.h" />
     <ClInclude Include="IED\ReferenceLightController.h" />
     <ClInclude Include="IED\SkeletonCache.h" />
     <ClInclude Include="IED\SkeletonExtensions.h" />

@@ -2021,6 +2021,9 @@
     <ClInclude Include="IED\PluginInterface.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\PluginOptionKey.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">

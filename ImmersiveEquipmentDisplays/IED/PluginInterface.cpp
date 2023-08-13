@@ -135,6 +135,19 @@ namespace IED
 		return {};
 	}
 
+	std::int32_t PluginInterface::GetPluginOption(PluginOptionKey a_key) const
+	{
+		switch (a_key)
+		{
+		case PluginOptionKey::kFrostfallAnimIdle:
+			return static_cast<std::int32_t>(m_controller.GetSettings().data.XP32AABowIdle);
+		case PluginOptionKey::kFrostfallAnimAtk:
+			return static_cast<std::int32_t>(m_controller.GetSettings().data.XP32AABowAtk);
+		default:
+			return -1;
+		}
+	}
+
 	std::optional<GearNodeData::Entry::Node> PluginInterface::LookupNodeEntry(
 		TESObjectREFR* a_refr,
 		GearNodeID     a_id) const
