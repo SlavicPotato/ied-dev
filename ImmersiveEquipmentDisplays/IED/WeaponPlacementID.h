@@ -13,7 +13,6 @@ namespace IED
 		AtHip       = 5,
 		Frostfall   = 6,
 		BowShoulder = 7,
-		AxeReverse  = 8,
 	};
 
 }
