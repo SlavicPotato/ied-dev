@@ -399,7 +399,7 @@ namespace IED
 							
 			{ "WeaponBackAxeMaceLeft", {
 
-								"WeaponBackAxeMace",
+								"WeaponBackAxeMaceLeft",
 								"MOV WeaponBackAxeMaceLeft",
 								"Two-Handed Axe/Mace Left",
 								AnimationWeaponSlot::None,
