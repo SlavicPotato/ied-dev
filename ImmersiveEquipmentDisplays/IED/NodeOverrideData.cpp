@@ -75,8 +75,8 @@ namespace IED
 
 			{ "MOV WeaponAxeDefault", { "Axe", "MOV WeaponAxeDefault" } },
 			{ "MOV WeaponAxeLeftDefault", { "Axe Left", "MOV WeaponAxeLeftDefault" } },
-			{ "MOV WeaponAxeReverse", { "Axe Reverse", "MOV WeaponAxeReverse" } },
-			{ "MOV WeaponAxeLeftReverse", { "Axe Reverse Left", "MOV WeaponAxeLeftReverse" } },
+			{ "MOV WeaponAxeReverse", { "Axe Reverse", "MOV WeaponAxeReverse", WeaponPlacementID::Reverse } },
+			{ "MOV WeaponAxeLeftReverse", { "Axe Reverse Left", "MOV WeaponAxeLeftReverse", WeaponPlacementID::Reverse } },
 			{ "MOV WeaponAxeOnBack", { "Axe Back", "MOV WeaponAxeOnBack", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponAxeLeftOnBack", { "Axe Back Left", "MOV WeaponAxeLeftOnBack", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponMaceDefault", { "Mace", "MOV WeaponMaceDefault" } },
