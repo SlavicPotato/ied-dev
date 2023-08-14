@@ -290,6 +290,10 @@ namespace IED
 				auto& settings = m_controller.GetSettings();
 				auto& data     = settings.data;
 
+				const bool noAAInfo = !m_controller.HasAnimationInfo();
+
+				UICommon::PushDisabled(noAAInfo);
+
 				if (settings.mark_if(ImGui::Checkbox(
 						UIL::LS(UISettingsStrings::XP32AA, "1"),
 						std::addressof(data.enableXP32AA))))
@@ -304,9 +308,12 @@ namespace IED
 						m_controller.QueueResetAAAll();
 					}
 				}
+
+				UICommon::PopDisabled(noAAInfo);
+
 				UITipsInterface::DrawTip(UITip::XP32AA);
 
-				if (!m_controller.HasAnimationInfo())
+				if (noAAInfo)
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 					ImGui::TextWrapped(
