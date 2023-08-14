@@ -356,8 +356,7 @@ namespace IED
 				continue;
 			}
 
-			if (!Data::configBase_t::do_match_sfp(
-					a_config.filterConditions,
+			if (!a_config.filterConditions.evaluate_sfp(
 					{ it->second.form },
 					a_params,
 					true))
@@ -391,8 +390,7 @@ namespace IED
 				continue;
 			}
 
-			if (!Data::configBase_t::do_match_sfp(
-					a_config.filterConditions,
+			if (!a_config.filterConditions.evaluate_sfp(
 					{ it->second.form },
 					a_params,
 					true))

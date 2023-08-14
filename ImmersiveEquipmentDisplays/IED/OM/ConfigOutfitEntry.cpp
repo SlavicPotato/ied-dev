@@ -36,7 +36,7 @@ namespace IED
 			{
 				for (auto& e : a_list)
 				{
-					if (IED::Data::configBase_t::do_match(e.conditions, a_params, true))
+					if (e.conditions.evaluate(a_params, true))
 					{
 						if (e.overrideFlags.test(IED::Data::ConfigOverrideFlags::kIsGroup))
 						{

@@ -1098,7 +1098,7 @@ namespace IED
 	}
 
 	static void try_attach_node_to(
-		const GearNodeEntry&   a_entry,
+		const GearNodeEntry&     a_entry,
 		const NiPointer<NiNode>& a_target,
 		const NiPointer<NiNode>& a_target1p,
 		bool                     a_defer) noexcept
@@ -1112,9 +1112,9 @@ namespace IED
 	}
 
 	static constexpr void try_update_anim_placement_id(
-		const GearNodeEntry& a_entry,
-		nodeOverrideParams_t*  a_params,
-		WeaponPlacementID      a_placementID) noexcept
+		const GearNodeEntry&  a_entry,
+		nodeOverrideParams_t* a_params,
+		WeaponPlacementID     a_placementID) noexcept
 	{
 		if (a_params && a_entry.animSlot < AnimationWeaponSlot::Max)
 		{
@@ -1131,7 +1131,7 @@ namespace IED
 
 	void INodeOverride::ApplyNodePlacement(
 		const Data::configNodeOverridePlacement_t& a_data,
-		const GearNodeEntry&                     a_entry,
+		const GearNodeEntry&                       a_entry,
 		nodeOverrideParams_t&                      a_params) noexcept
 	{
 		auto& target = get_target_node(
@@ -1209,9 +1209,9 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodePlacement(
-		const GearNodeEntry& a_entry,
-		nodeOverrideParams_t*  a_params,
-		bool                   a_defer) noexcept
+		const GearNodeEntry&  a_entry,
+		nodeOverrideParams_t* a_params,
+		bool                  a_defer) noexcept
 	{
 		//a_entry.target.reset();
 		//a_entry.target1p.reset();

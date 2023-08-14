@@ -30,10 +30,10 @@ namespace IED
 
 			static constexpr auto DEFAULT_SLOT_FLAGS = SlotFlags::kNone;
 
-			stl::flag<SlotFlags>             slotFlags{ DEFAULT_SLOT_FLAGS };
-			configFormList_t                 preferredItems;
-			configFormFilter_t               itemFilter;
-			equipmentOverrideConditionList_t itemFilterCondition;
+			stl::flag<SlotFlags>            slotFlags{ DEFAULT_SLOT_FLAGS };
+			configFormList_t                preferredItems;
+			configFormFilter_t              itemFilter;
+			equipmentOverrideConditionSet_t itemFilterConditions;
 
 		private:
 			template <class Archive>
@@ -46,7 +46,7 @@ namespace IED
 
 				if (a_version >= DataVersion2)
 				{
-					a_ar& itemFilterCondition;
+					a_ar& itemFilterConditions.list;
 				}
 			}
 		};

@@ -514,5 +514,11 @@ namespace IED
 		{
 			return GetData(a_handle);
 		}
+
+		void UISlotEditorActor::OnConditionListDrawn(
+			const Data::equipmentOverrideConditionSet_t& a_condition)
+		{
+
+		}
 	}
 }

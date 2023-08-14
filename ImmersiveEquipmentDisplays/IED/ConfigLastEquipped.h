@@ -37,10 +37,10 @@ namespace IED
 				DataVersion2 = 2,
 			};
 
-			stl::flag<LastEquippedFlags>     flags{ DEFAULT_FLAGS };
-			configBipedObjectList_t          bipedSlots;
-			equipmentOverrideConditionList_t filterConditions;
-			Data::configObjectSlotList_t     slots;
+			stl::flag<LastEquippedFlags>    flags{ DEFAULT_FLAGS };
+			configBipedObjectList_t         bipedSlots;
+			equipmentOverrideConditionSet_t filterConditions;
+			Data::configObjectSlotList_t    slots;
 
 		private:
 			template <class Archive>
@@ -48,7 +48,7 @@ namespace IED
 			{
 				a_ar& flags.value;
 				a_ar& bipedSlots;
-				a_ar& filterConditions;
+				a_ar& filterConditions.list;
 				a_ar& slots;
 			}
 
@@ -57,7 +57,7 @@ namespace IED
 			{
 				a_ar& flags.value;
 				a_ar& bipedSlots;
-				a_ar& filterConditions;
+				a_ar& filterConditions.list;
 
 				if (a_version >= DataVersion2)
 				{

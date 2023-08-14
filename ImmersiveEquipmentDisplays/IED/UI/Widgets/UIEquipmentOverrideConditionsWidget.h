@@ -44,12 +44,12 @@ namespace IED
 				update_func_t                           a_updFunc);
 
 			void DrawEquipmentOverrideConditionTree(
-				Data::equipmentOverrideConditionList_t& a_entry,
+				Data::equipmentOverrideConditionSet_t& a_entry,
 				update_func_t                           a_updFunc,
 				Localization::StringID                  a_title = static_cast<Localization::StringID>(CommonStrings::Conditions));
 
 			void DrawEquipmentOverrideEntryConditionTable(
-				Data::equipmentOverrideConditionList_t& a_entry,
+				Data::equipmentOverrideConditionSet_t& a_entry,
 				bool                                    a_isnested,
 				update_func_t                           a_updFunc);
 
@@ -69,6 +69,9 @@ namespace IED
 			virtual void OnConditionItemChange(
 				ConditionParamItem                    a_item,
 				const ConditionParamItemOnChangeArgs& a_args) override;
+
+			virtual void OnConditionListDrawn(
+				const Data::equipmentOverrideConditionSet_t& a_condition);
 
 			static void GetConditionListDepth(
 				const Data::equipmentOverrideConditionList_t& a_in,

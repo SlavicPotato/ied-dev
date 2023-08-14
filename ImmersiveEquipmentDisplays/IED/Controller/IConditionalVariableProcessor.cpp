@@ -55,8 +55,7 @@ namespace IED
 	{
 		for (auto& e : a_list)
 		{
-			if (configBase_t::do_match_eos(
-					e.conditions,
+			if (e.conditions.evaluate_eos(
 					a_params,
 					true))
 			{

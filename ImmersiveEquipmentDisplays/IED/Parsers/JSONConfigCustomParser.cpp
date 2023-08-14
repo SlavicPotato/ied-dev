@@ -76,7 +76,7 @@ namespace IED
 				{
 					Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
 
-					if (!parser.Parse(bfc, a_out.lastEquipped.filterConditions))
+					if (!parser.Parse(bfc, a_out.lastEquipped.filterConditions.list))
 					{
 						return false;
 					}

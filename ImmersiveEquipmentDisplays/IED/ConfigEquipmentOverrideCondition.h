@@ -14,6 +14,9 @@
 
 namespace IED
 {
+	struct ProcessParams;
+	struct FormSlotPair;
+
 	namespace Data
 	{
 		enum class EquipmentOverrideConditionFlags : std::uint32_t
@@ -122,6 +125,29 @@ namespace IED
 
 		using equipmentOverrideConditionList_t = stl::boost_vector<equipmentOverrideCondition_t>;
 
+		struct equipmentOverrideConditionSet_t
+		{
+			bool evaluate(
+				ProcessParams& a_params,
+				bool           a_default) const noexcept;
+
+			bool evaluate_fp(
+				const FormSlotPair& a_checkForm,
+				ProcessParams&      a_params,
+				bool                a_default) const noexcept;
+
+			bool evaluate_sfp(
+				const FormSlotPair& a_checkForm,
+				ProcessParams&      a_params,
+				bool                a_default) const noexcept;
+
+			bool evaluate_eos(
+				ProcessParams& a_params,
+				bool           a_default) const noexcept;
+
+			equipmentOverrideConditionList_t list;
+		};
+
 		struct equipmentOverrideConditionGroup_t
 		{
 			friend class boost::serialization::access;
@@ -133,14 +159,14 @@ namespace IED
 			};
 
 			stl::flag<EquipmentOverrideConditionGroupFlags> flags{ EquipmentOverrideConditionGroupFlags::kNone };
-			equipmentOverrideConditionList_t                conditions;
+			equipmentOverrideConditionSet_t                 conditions;
 
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
-				a_ar& conditions;
+				a_ar& conditions.list;
 			}
 		};
 

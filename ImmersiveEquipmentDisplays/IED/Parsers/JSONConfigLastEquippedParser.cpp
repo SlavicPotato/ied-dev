@@ -35,7 +35,7 @@ namespace IED
 			{
 				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
 
-				if (!parser.Parse(d, a_out.filterConditions))
+				if (!parser.Parse(d, a_out.filterConditions.list))
 				{
 					return false;
 				}
@@ -86,11 +86,11 @@ namespace IED
 				parser.Create(a_in.bipedSlots, data["sl"]);
 			}
 
-			if (!a_in.filterConditions.empty())
+			if (!a_in.filterConditions.list.empty())
 			{
 				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
 
-				parser.Create(a_in.filterConditions, data["fc"]);
+				parser.Create(a_in.filterConditions.list, data["fc"]);
 			}
 
 			data["flags"] = a_in.flags.underlying();

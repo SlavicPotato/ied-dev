@@ -2024,6 +2024,12 @@
     <ClInclude Include="IED\PluginOptionKey.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConditionEvalPreviewManager.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\FormSlotPair.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3225,6 +3231,15 @@
     </ClCompile>
     <ClCompile Include="IED\GearNodeData.cpp">
       <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConditionEvalPreviewManager.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\EquipmentOverrideCondtionSet.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\FormSlotPair.cpp">
+      <Filter>Source\IED\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -87,8 +87,7 @@ namespace IED
 			if (it != a_candidates.end())
 			{
 				if ((!checkCannotWear || !it->item->cannot_wear()) &&
-				    configBase_t::do_match_fp(
-						a_config.itemFilterCondition,
+				    a_config.itemFilterConditions.evaluate_fp(
 						{ it->item->form, a_slot.slotidex, a_slot.slotid },
 						a_params,
 						true))
@@ -114,8 +113,7 @@ namespace IED
 					return false;
 				}
 
-				return configBase_t::do_match_fp(
-					a_config.itemFilterCondition,
+				return a_config.itemFilterConditions.evaluate_fp(
 					{ item->form, a_slot.slotidex, a_slot.slotid },
 					a_params,
 					true);
@@ -400,8 +398,7 @@ namespace IED
 					a_objectEntry,
 					a_hasMinCount,
 					[&](const auto& a_item) noexcept {
-						return configBase_t::do_match_sfp(
-							a_config.lastEquipped.filterConditions,
+						return a_config.lastEquipped.filterConditions.evaluate_sfp(
 							{ a_item.form },
 							a_params,
 							true);

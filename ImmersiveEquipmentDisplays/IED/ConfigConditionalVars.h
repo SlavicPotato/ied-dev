@@ -93,7 +93,7 @@ namespace IED
 			stl::flag<ConditionalVariableFlags>  flags{ ConditionalVariableFlags::kNone };
 			stl::fixed_string                    desc;
 			configConditionalVariableValueData_t value;
-			equipmentOverrideConditionList_t     conditions;
+			equipmentOverrideConditionSet_t      conditions;
 			configConditionalVariablesList_t     group;
 
 		private:
@@ -103,7 +103,7 @@ namespace IED
 				a_ar& flags.value;
 				a_ar& desc;
 				a_ar& value;
-				a_ar& conditions;
+				a_ar& conditions.list;
 				a_ar& group;
 			}
 		};

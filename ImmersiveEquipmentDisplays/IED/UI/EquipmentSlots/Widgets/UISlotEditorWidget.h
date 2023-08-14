@@ -1161,7 +1161,7 @@ namespace IED
 			ImGui::PushID("fcond_tree");
 
 			this->DrawEquipmentOverrideConditionTree(
-				data.itemFilterCondition,
+				data.itemFilterConditions,
 				[&] {
 					this->OnBaseConfigChange(
 						a_handle,

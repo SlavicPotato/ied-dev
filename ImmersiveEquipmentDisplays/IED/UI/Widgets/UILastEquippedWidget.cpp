@@ -22,10 +22,10 @@ namespace IED
 			ImGui::PushID("leq_panel");
 
 			const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
-				a_data.filterConditions,
+				a_data.filterConditions.list,
 				a_updateFunc);
 
-			const bool empty = a_data.filterConditions.empty();
+			const bool empty = a_data.filterConditions.list.empty();
 
 			if (!empty)
 			{

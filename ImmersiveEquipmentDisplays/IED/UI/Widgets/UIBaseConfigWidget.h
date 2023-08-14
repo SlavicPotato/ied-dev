@@ -2367,7 +2367,7 @@ namespace IED
 						ImGui::Spacing();
 
 						const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
-							e.conditions,
+							e.conditions.list,
 							[this, a_handle, a_params, &a_data, &e] {
 								TriggerEffectShaderUpdate(
 									a_handle,
@@ -2375,7 +2375,7 @@ namespace IED
 									a_params);
 							});
 
-						const bool empty = e.conditions.empty();
+						const bool empty = e.conditions.list.empty();
 
 						if (!empty)
 						{

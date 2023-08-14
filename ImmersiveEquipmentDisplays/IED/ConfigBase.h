@@ -6,36 +6,12 @@
 #include "ConfigEffectShader.h"
 #include "ConfigEquipment.h"
 #include "ConfigTransform.h"
+#include "FormSlotPair.h"
 #include "NodeDescriptor.h"
 
 namespace IED
 {
 	struct ObjectEntrySlot;
-
-	struct FormSlotPair
-	{
-		FormSlotPair(
-			TESForm* a_form) noexcept;
-
-		FormSlotPair(
-			TESForm*              a_form,
-			Data::ObjectSlotExtra a_slot) noexcept;
-
-		constexpr FormSlotPair(
-			TESForm*              a_form,
-			Data::ObjectSlotExtra a_slotex,
-			Data::ObjectSlot      a_slot) noexcept :
-			form(a_form),
-			slot(a_slotex),
-			slot2(a_slot)
-		{
-		}
-
-		TESForm*              form;
-		Data::ObjectSlotExtra slot;
-		Data::ObjectSlot      slot2;
-	};
-
 	struct CommonParams;
 	struct ProcessParams;
 
@@ -181,84 +157,6 @@ namespace IED
 			const configEffectShaderHolder_t* get_effect_shader_sfp(
 				const FormSlotPair& a_checkForm,
 				ProcessParams&      a_params) const noexcept;
-
-		private:
-			static bool match_equipped_type(
-				ProcessParams&                      a_params,
-				const equipmentOverrideCondition_t& a_match) noexcept;
-
-			static bool match_carried_type(
-				const CollectorData&                a_data,
-				const equipmentOverrideCondition_t& a_match) noexcept;
-
-			static bool match_equipped_form(
-				ProcessParams&                      a_params,
-				const equipmentOverrideCondition_t& a_match) noexcept;
-
-			static bool match_carried_form(
-				const CollectorData&                a_data,
-				const equipmentOverrideCondition_t& a_match) noexcept;
-
-			static bool match_equipped(
-				const equipmentOverrideCondition_t& a_match,
-				ProcessParams&                      a_params) noexcept;
-
-			static bool match_equipped_or_slot(
-				const equipmentOverrideCondition_t& a_match,
-				ProcessParams&                      a_params) noexcept;
-
-			template <
-				EquipmentOverrideConditionFlags a_maskAll,
-				EquipmentOverrideConditionFlags a_maskSlots>
-			static bool match_equipped_or_form(
-				const equipmentOverrideCondition_t& a_match,
-				const FormSlotPair&                 a_checkForm,
-				ProcessParams&                      a_params) noexcept;
-
-		public:
-			static bool do_match(
-				const equipmentOverrideConditionList_t& a_matches,
-				ProcessParams&                          a_params,
-				bool                                    a_default) noexcept;
-
-			static bool do_match_fp(
-				const equipmentOverrideConditionList_t& a_matches,
-				const FormSlotPair&                     a_checkForm,
-				ProcessParams&                          a_params,
-				bool                                    a_default) noexcept;
-
-			static bool do_match_sfp(
-				const equipmentOverrideConditionList_t& a_matches,
-				const FormSlotPair&                     a_checkForm,
-				ProcessParams&                          a_params,
-				bool                                    a_default) noexcept;
-
-			static bool do_match_eos(
-				const equipmentOverrideConditionList_t& a_matches,
-				ProcessParams&                          a_params,
-				bool                                    a_default) noexcept;
-
-		private:
-			static bool has_keyword_equipped(
-				const configCachedForm_t& a_keyword,
-				ProcessParams&            a_params) noexcept;
-
-			static bool has_keyword_carried(
-				const configCachedForm_t& a_keyword,
-				const CollectorData&      a_data) noexcept;
-
-			static bool has_keyword_slot(
-				const configCachedForm_t& a_keyword,
-				CommonParams&             a_params) noexcept;
-
-			static bool type_has_keyword_equipped(
-				const equipmentOverrideCondition_t& a_match,
-				const CollectorData&                a_data) noexcept;
-
-			static bool has_keyword_carried(
-				const configCachedForm_t& a_keyword,
-				ObjectTypeExtra           a_type,
-				const CollectorData&      a_data) noexcept;
 
 		protected:
 			template <class Archive>

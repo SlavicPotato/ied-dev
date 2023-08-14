@@ -23,6 +23,8 @@ namespace IED
 		template <class T>
 		using configOverrideList_t = stl::boost_vector<configOverride_t<T>>;
 
+		struct equipmentOverrideConditionSet_t;
+
 		template <class T>
 		struct configOverride_t :
 			public T
@@ -64,10 +66,10 @@ namespace IED
 				}
 			}
 
-			stl::flag<ConfigOverrideFlags>   overrideFlags{ ConfigOverrideFlags::kNone };
-			equipmentOverrideConditionList_t conditions;
-			std::string                      description;
-			configOverrideList_t<T>          group;
+			stl::flag<ConfigOverrideFlags>  overrideFlags{ ConfigOverrideFlags::kNone };
+			equipmentOverrideConditionSet_t conditions;
+			std::string                     description;
+			configOverrideList_t<T>         group;
 
 		protected:
 			template <class Archive>
@@ -75,7 +77,7 @@ namespace IED
 			{
 				a_ar& static_cast<T&>(*this);
 				a_ar& overrideFlags.value;
-				a_ar& conditions;
+				a_ar& conditions.list;
 				a_ar& description;
 
 				if (a_version >= DataVersion2)

@@ -22,7 +22,7 @@ namespace IED
 			{
 				Parser<Data::equipmentOverrideConditionList_t> lparser(m_state);
 
-				if (!lparser.Parse(cond, a_out.conditions))
+				if (!lparser.Parse(cond, a_out.conditions.list))
 				{
 					return false;
 				}
@@ -41,11 +41,11 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			if (!a_data.conditions.empty())
+			if (!a_data.conditions.list.empty())
 			{
 				Parser<Data::equipmentOverrideConditionList_t> lparser(m_state);
 
-				lparser.Create(a_data.conditions, data["cond"]);
+				lparser.Create(a_data.conditions.list, data["cond"]);
 			}
 
 			data["flags"] = stl::underlying(a_data.flags.value);

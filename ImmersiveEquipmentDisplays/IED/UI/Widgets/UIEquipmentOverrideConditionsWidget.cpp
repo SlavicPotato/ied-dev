@@ -809,6 +809,11 @@ namespace IED
 			OnConditionItemChangeImpl(a_item, a_args);
 		}
 
+		void UIEquipmentOverrideConditionsWidget::OnConditionListDrawn(
+			const Data::equipmentOverrideConditionSet_t& a_condition)
+		{
+		}
+
 		UIEquipmentOverrideAction UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionHeaderContextMenu(
 			Data::equipmentOverrideConditionList_t& a_entry,
 			update_func_t                           a_updFunc)
@@ -952,17 +957,17 @@ namespace IED
 		}
 
 		void UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionTree(
-			Data::equipmentOverrideConditionList_t& a_entry,
+			Data::equipmentOverrideConditionSet_t& a_entry,
 			update_func_t                           a_updFunc,
 			Localization::StringID                  a_title)
 		{
 			ImGui::PushID("cond_tree_area");
 
 			const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
-				a_entry,
+				a_entry.list,
 				a_updFunc);
 
-			bool empty = a_entry.empty();
+			bool empty = a_entry.list.empty();
 
 			if (!empty)
 			{
@@ -1015,7 +1020,7 @@ namespace IED
 					a_offset++;
 					a_result = std::max(a_result, a_offset);
 
-					GetConditionListDepth(e.group.conditions, a_result, a_offset);
+					GetConditionListDepth(e.group.conditions.list, a_result, a_offset);
 
 					a_offset--;
 				}
@@ -1023,7 +1028,7 @@ namespace IED
 		}
 
 		void UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideEntryConditionTable(
-			Data::equipmentOverrideConditionList_t& a_entry,
+			Data::equipmentOverrideConditionSet_t& a_entry,
 			bool                                    a_isnested,
 			update_func_t                           a_updFunc)
 		{
@@ -1052,7 +1057,7 @@ namespace IED
 				std::uint32_t res = 0;
 				std::uint32_t off = 0;
 
-				GetConditionListDepth(a_entry, res, off);
+				GetConditionListDepth(a_entry.list, res, off);
 
 				if (res > 2)
 				{
@@ -1102,9 +1107,9 @@ namespace IED
 
 				int i = 0;
 
-				auto it = a_entry.begin();
+				auto it = a_entry.list.begin();
 
-				while (it != a_entry.end())
+				while (it != a_entry.list.end())
 				{
 					ImGui::PushID(i);
 
@@ -1119,7 +1124,7 @@ namespace IED
 					switch (result.action)
 					{
 					case UIEquipmentOverrideAction::Delete:
-						it = a_entry.erase(it);
+						it = a_entry.list.erase(it);
 						a_updFunc();
 						break;
 					case UIEquipmentOverrideAction::Insert:
@@ -1129,7 +1134,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Type:
 							if (result.slot != Data::ObjectSlotExtra::kNone)
 							{
-								it = a_entry.emplace(
+								it = a_entry.list.emplace(
 									it,
 									result.slot);
 
@@ -1144,7 +1149,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Perk:
 							if (result.form)
 							{
-								it = a_entry.emplace(
+								it = a_entry.list.emplace(
 									it,
 									result.entryType,
 									result.form);
@@ -1170,7 +1175,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Cell:
 						case Data::EquipmentOverrideConditionType::Hand:
 
-							it = a_entry.emplace(
+							it = a_entry.list.emplace(
 								it,
 								result.entryType);
 
@@ -1181,7 +1186,7 @@ namespace IED
 
 							if (result.biped != BIPED_OBJECT::kNone)
 							{
-								it = a_entry.emplace(
+								it = a_entry.list.emplace(
 									it,
 									result.biped);
 
@@ -1191,7 +1196,7 @@ namespace IED
 							break;
 						case Data::EquipmentOverrideConditionType::Variable:
 
-							it = a_entry.emplace(it, result.entryType, result.desc);
+							it = a_entry.list.emplace(it, result.entryType, result.desc);
 
 							a_updFunc();
 
@@ -1200,7 +1205,7 @@ namespace IED
 
 							if (result.excond != Data::ExtraConditionType::kNone)
 							{
-								it = a_entry.emplace(
+								it = a_entry.list.emplace(
 									it,
 									result.excond);
 
@@ -1214,7 +1219,7 @@ namespace IED
 
 					case UIEquipmentOverrideAction::Swap:
 
-						if (IterSwap(a_entry, it, result.dir))
+						if (IterSwap(a_entry.list, it, result.dir))
 						{
 							a_updFunc();
 						}
@@ -1231,7 +1236,7 @@ namespace IED
 
 						if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
 						{
-							it = a_entry.emplace(
+							it = a_entry.list.emplace(
 								it,
 								*clipData);
 
@@ -1252,7 +1257,7 @@ namespace IED
 						break;
 					}
 
-					if (it != a_entry.end())
+					if (it != a_entry.list.end())
 					{
 						auto& e = *it;
 
@@ -1267,7 +1272,7 @@ namespace IED
 							ImGui::PushID("cond_grp");
 
 							DrawEquipmentOverrideConditionHeaderContextMenu(
-								e.group.conditions,
+								e.group.conditions.list,
 								a_updFunc);
 
 							DrawEquipmentOverrideEntryConditionTable(
@@ -1872,6 +1877,11 @@ namespace IED
 			}
 
 			ImGui::PopStyleVar();
+
+			if (!a_isnested)
+			{
+				OnConditionListDrawn(a_entry);
+			}
 		}
 
 		void UIEquipmentOverrideConditionsWidget::UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType a_type)

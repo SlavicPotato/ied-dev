@@ -26,7 +26,7 @@ namespace IED
 			{
 				Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
 
-				if (!mlParser.Parse(cond, a_out.conditions))
+				if (!mlParser.Parse(cond, a_out.conditions.list))
 				{
 					return false;
 				}
@@ -55,11 +55,11 @@ namespace IED
 			data["flags"] = a_data.flags.underlying();
 			data["desc"]  = a_data.description;
 
-			if (!a_data.conditions.empty())
+			if (!a_data.conditions.list.empty())
 			{
 				Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
 
-				mlParser.Create(a_data.conditions, data["cond"]);
+				mlParser.Create(a_data.conditions.list, data["cond"]);
 			}
 
 			if (!a_data.data.empty())

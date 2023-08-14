@@ -43,7 +43,7 @@ namespace IED
 			{
 				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
 
-				if (!parser.Parse(d, a_out.itemFilterCondition))
+				if (!parser.Parse(d, a_out.itemFilterConditions.list))
 				{
 					return false;
 				}
@@ -74,11 +74,11 @@ namespace IED
 
 			pfset.Create(a_in.itemFilter, a_out["iflt"]);
 
-			if (!a_in.itemFilterCondition.empty())
+			if (!a_in.itemFilterConditions.list.empty())
 			{
 				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
 
-				parser.Create(a_in.itemFilterCondition, a_out["ifc"]);
+				parser.Create(a_in.itemFilterConditions.list, a_out["ifc"]);
 			}
 
 			a_out["sflags"] = stl::underlying(a_in.slotFlags.value);

@@ -114,6 +114,9 @@ namespace IED
 			virtual entrySlotData_t GetCurrentData(
 				Game::FormID a_handle) override;
 
+			virtual void OnConditionListDrawn(
+				const Data::equipmentOverrideConditionSet_t& a_condition) override;
+
 			Controller& m_controller;
 		};
 

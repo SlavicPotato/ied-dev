@@ -219,7 +219,7 @@ namespace IED
 
 			stl::flag<EffectShaderHolderFlags>                                    flags{ DEFAULT_FLAGS };
 			std::string                                                           description;
-			equipmentOverrideConditionList_t                                      conditions;
+			equipmentOverrideConditionSet_t                                       conditions;
 			stl::boost_unordered_map<stl::fixed_string, configEffectShaderData_t> data;
 
 		private:
@@ -228,7 +228,7 @@ namespace IED
 			{
 				a_ar& flags.value;
 				a_ar& description;
-				a_ar& conditions;
+				a_ar& conditions.list;
 				a_ar& data;
 			}
 		};

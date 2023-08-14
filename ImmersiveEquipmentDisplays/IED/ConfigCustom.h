@@ -129,7 +129,7 @@ namespace IED
 
 						if (a_version >= DataVersion4)
 						{
-							a_ar& lastEquipped.filterConditions;
+							a_ar& lastEquipped.filterConditions.list;
 						}
 					}
 				}
