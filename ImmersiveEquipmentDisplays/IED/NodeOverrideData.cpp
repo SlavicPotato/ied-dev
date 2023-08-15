@@ -241,8 +241,7 @@ namespace IED
 
 									  { "MOV WeaponDaggerDefault", { "Dagger" } },
 									  { "MOV WeaponDaggerBackHip", { "Dagger Back Hip" } },
-									  { "MOV WeaponDaggerAnkle", { "Dagger Ankle" } },
-									  { "MOV WeaponDaggerOnBack", { "Dagger On Back" } }
+									  { "MOV WeaponDaggerAnkle", { "Dagger Ankle" } }
 
 								  }
 
@@ -261,8 +260,7 @@ namespace IED
 
 										  { "MOV WeaponDaggerLeftDefault", { "Dagger Left" } },
 										  { "MOV WeaponDaggerLeftBackHip", { "Dagger Back Hip Left" } },
-										  { "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left" } },
-										  { "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left" } }
+										  { "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left" } }
 
 									  }
 
@@ -919,6 +917,15 @@ namespace IED
 					for (auto& h : g.objMatch)
 					{
 						v.objMatch.emplace_back(h.first.c_str(), h.second);
+					}
+
+					for (auto& h : g.validChildNodes)
+					{
+						auto itg = m_gearNodes.find(h);
+						if (itg != m_gearNodes.end())
+						{
+							itg->second.movs.try_emplace(mov, f.desc);
+						}
 					}
 				}
 

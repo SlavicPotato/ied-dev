@@ -49,6 +49,14 @@ namespace IED
 						}
 					}
 
+					if (auto& d = e["valid_mov_child_nodes"])
+					{
+						for (auto& f : d)
+						{
+							v.validChildNodes.emplace_back(f["name"].asString());
+						}
+					}
+
 					if (auto& d = e["parent"])
 					{
 						v.ovr_parent = d.asString();

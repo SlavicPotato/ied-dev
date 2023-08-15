@@ -39,7 +39,7 @@ namespace IED
 
 		struct weaponNodeListEntry_t
 		{
-			const char* desc;
+			std::string desc;
 		};
 
 		using nodeList_t = stl::cache_aligned::vectormap<stl::fixed_string, weaponNodeListEntry_t>;

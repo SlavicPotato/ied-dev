@@ -47,7 +47,7 @@ namespace IED
 
 		void I3DIMOVNode::DrawTooltip(I3DICommonData& a_data)
 		{
-			ImGui::Text("Target: %s [%s]", m_nodeInfo.desc, m_name.c_str());
+			ImGui::Text("Target: %s [%s]", m_nodeInfo.desc.c_str(), m_name.c_str());
 
 			if (auto& dragContext = a_data.objectController.GetDragContext())
 			{

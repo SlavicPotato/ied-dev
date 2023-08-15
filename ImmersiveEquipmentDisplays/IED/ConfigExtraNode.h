@@ -35,6 +35,7 @@ namespace IED
 		{
 			configSkeletonMatch_t                              match;
 			std::vector<std::pair<stl::fixed_string, bool>>    objMatch;
+			std::vector<stl::fixed_string>                     validChildNodes;
 			std::array<configExtraNodeEntrySkelTransform_t, 2> sxfrms;
 			stl::fixed_string                                  ovr_parent;
 		};
@@ -45,7 +46,7 @@ namespace IED
 			stl::fixed_string                     ovr_cme_name;
 			stl::fixed_string                     ovr_mov_name;
 			stl::fixed_string                     parent;
-			stl::fixed_string                     desc;
+			std::string                           desc;
 			stl::list<configExtraNodeEntrySkel_t> skel;
 			WeaponPlacementID                     placementID;
 		};
