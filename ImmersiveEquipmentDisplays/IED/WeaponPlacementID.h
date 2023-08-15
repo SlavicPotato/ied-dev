@@ -14,6 +14,7 @@ namespace IED
 		Frostfall   = 6,
 		BowShoulder = 7,
 		Reverse     = 8,
+		Hand        = 9,
 	};
 
 }
