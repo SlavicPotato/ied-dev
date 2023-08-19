@@ -73,8 +73,6 @@ namespace IED
 					mov->AttachChild(replacedObject, true);
 
 					UpdateDownwardPass(cme);
-
-					gLog.Debug("%s", replacedObject->m_name.c_str());
 				}
 			}
 		}
