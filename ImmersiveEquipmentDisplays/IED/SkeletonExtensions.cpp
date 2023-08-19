@@ -3,12 +3,14 @@
 #include "SkeletonExtensions.h"
 
 #include "ConvertNodes.h"
+#include "ConvertNodes2.h"
 #include "ExtraNodes.h"
 #include "TransformOverrides.h"
 
 #include "NodeOverrideData.h"
 #include "SkeletonID.h"
 #include "StringHolder.h"
+#include "ConvertNodes2.h"
 
 namespace IED
 {
@@ -41,6 +43,8 @@ namespace IED
 			}
 
 			SkeletonID id(root);
+
+			RunConvertNodes2(root, id);
 
 			if (NodeOverrideData::GetConvertNodes().test(id))
 			{

@@ -7,6 +7,7 @@
 #include "IED/Parsers/JSONConfigExtraNodeListParser.h"
 #include "IED/Parsers/JSONConfigNodeMonitorEntryListParser.h"
 #include "IED/Parsers/JSONConvertNodesListParser.h"
+#include "IED/Parsers/JSONConfigConvertNodes2Parser.h"
 
 #include "IED/SkeletonID.h"
 
@@ -355,84 +356,84 @@ namespace IED
 								}
 
 							} },
-							
+
 			{ "WeaponBackLeft", {
 
-								"WeaponBackLeft",
-								"MOV WeaponBackLeft",
-								"Two-Handed Left",
-								AnimationWeaponSlot::None,
-								I3DIModelID::kTwoHanded,
-								GearNodeID::kTwoHandedLeft,
-								true,
-								{
+									"WeaponBackLeft",
+									"MOV WeaponBackLeft",
+									"Two-Handed Left",
+									AnimationWeaponSlot::None,
+									I3DIModelID::kTwoHanded,
+									GearNodeID::kTwoHandedLeft,
+									true,
+									{
 
-									{ "MOV WeaponBackLeft", { "Two-Handed Left" } }
+										{ "MOV WeaponBackLeft", { "Two-Handed Left" } }
 
-								}
+									}
 
-							} },
-							
+								} },
+
 			{ "WeaponBackAxeMace", {
 
-								"WeaponBackAxeMace",
-								"MOV WeaponBackAxeMaceDefault",
-								"Two-Handed Axe/Mace",
-								AnimationWeaponSlot::None,
-								I3DIModelID::kTwoHanded,
-								GearNodeID::kTwoHandedAxeMace,
-								true,
-								{
+									   "WeaponBackAxeMace",
+									   "MOV WeaponBackAxeMaceDefault",
+									   "Two-Handed Axe/Mace",
+									   AnimationWeaponSlot::None,
+									   I3DIModelID::kTwoHanded,
+									   GearNodeID::kTwoHandedAxeMace,
+									   true,
+									   {
 
-									{ "MOV WeaponBackDefault", { "Two-Handed" } },
-									{ "MOV WeaponBackSWP", { "Two-Handed SWP" } },
-									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } },
-									{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
-									{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
-									{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+										   { "MOV WeaponBackDefault", { "Two-Handed" } },
+										   { "MOV WeaponBackSWP", { "Two-Handed SWP" } },
+										   { "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+										   { "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+										   { "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+										   { "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
 
-								}
+									   }
 
-							} },
-							
+								   } },
+
 			{ "WeaponBackAxeMaceLeft", {
 
-								"WeaponBackAxeMaceLeft",
-								"MOV WeaponBackAxeMaceLeft",
-								"Two-Handed Axe/Mace Left",
-								AnimationWeaponSlot::None,
-								I3DIModelID::kTwoHanded,
-								GearNodeID::kTwoHandedAxeMaceLeft,
-								true,
-								{
+										   "WeaponBackAxeMaceLeft",
+										   "MOV WeaponBackAxeMaceLeft",
+										   "Two-Handed Axe/Mace Left",
+										   AnimationWeaponSlot::None,
+										   I3DIModelID::kTwoHanded,
+										   GearNodeID::kTwoHandedAxeMaceLeft,
+										   true,
+										   {
 
-									{ "MOV WeaponBackAxeMaceLeft", { "Two-Handed Axe/Mace Left" } },
+											   { "MOV WeaponBackAxeMaceLeft", { "Two-Handed Axe/Mace Left" } },
 
-								}
+										   }
 
-							} },
+									   } },
 
 			{ "WeaponBackIED", {
 
-									 "WeaponBackIED",
-									 "MOV WeaponBackDefault",
-									 "Two-Handed IED",
-									 AnimationWeaponSlot::None,
-									 I3DIModelID::kTwoHanded,
-									 GearNodeID::kNone,
-									 false,
-									 {
+								   "WeaponBackIED",
+								   "MOV WeaponBackDefault",
+								   "Two-Handed IED",
+								   AnimationWeaponSlot::None,
+								   I3DIModelID::kTwoHanded,
+								   GearNodeID::kNone,
+								   false,
+								   {
 
-										 { "MOV WeaponBackDefault", { "Two-Handed" } },
-										 { "MOV WeaponBackSWP", { "Two-Handed SWP" } },
-										 { "MOV WeaponBackFSM", { "Two-Handed FSM" } },
-										 { "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
-										 { "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
-										 { "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+									   { "MOV WeaponBackDefault", { "Two-Handed" } },
+									   { "MOV WeaponBackSWP", { "Two-Handed SWP" } },
+									   { "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+									   { "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+									   { "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+									   { "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
 
-									 }
+								   }
 
-								 } },
+							   } },
 
 			{ "WeaponBow", {
 
@@ -476,23 +477,23 @@ namespace IED
 
 			{ "WeaponBowIED", {
 
-									"WeaponBowIED",
-									"MOV WeaponBowDefault",
-									"Bow IED",
-									AnimationWeaponSlot::None,
-									I3DIModelID::kBow,
-									GearNodeID::kNone,
-									false,
-									{
-										{ "MOV WeaponBowDefault", { "Bow" } },
-										{ "MOV WeaponBowChesko", { "Bow Chesko" } },
-										{ "MOV WeaponBowBetter", { "Bow Better" } },
-										{ "MOV WeaponBowFSM", { "Bow FSM" } },
-										{ "MOV WeaponCrossbowDefault", { "Crossbow" } },
-										{ "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
-									}
+								  "WeaponBowIED",
+								  "MOV WeaponBowDefault",
+								  "Bow IED",
+								  AnimationWeaponSlot::None,
+								  I3DIModelID::kBow,
+								  GearNodeID::kNone,
+								  false,
+								  {
+									  { "MOV WeaponBowDefault", { "Bow" } },
+									  { "MOV WeaponBowChesko", { "Bow Chesko" } },
+									  { "MOV WeaponBowBetter", { "Bow Better" } },
+									  { "MOV WeaponBowFSM", { "Bow FSM" } },
+									  { "MOV WeaponCrossbowDefault", { "Crossbow" } },
+									  { "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
+								  }
 
-								} },
+							  } },
 
 			{ "QUIVER", {
 
@@ -666,6 +667,15 @@ namespace IED
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddConvertNodesData(data);
+		}
+	}
+
+	void NodeOverrideData::LoadAndAddConvertNodes2(const char* a_path)
+	{
+		stl::list<Data::configConvertNodesList2_t> data;
+		if (m_Instance->LoadEntryList(a_path, data))
+		{
+			m_Instance->AddConvertNodes2Data(data);
 		}
 	}
 
@@ -1018,6 +1028,18 @@ namespace IED
 				{
 					m_convertNodes.signatures.emplace(g);
 				}
+			}
+		}
+	}
+
+	void NodeOverrideData::AddConvertNodes2Data(
+		const stl::list<Data::configConvertNodesList2_t>& a_data)
+	{
+		for (auto& e : a_data)
+		{
+			for (auto& f : e)
+			{
+				m_convertNodes2.emplace_back(f);
 			}
 		}
 	}

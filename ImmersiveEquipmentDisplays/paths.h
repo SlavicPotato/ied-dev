@@ -27,6 +27,7 @@ namespace IED
 		static constexpr auto FONT_META_USER_PATH                  = "Data\\SKSE\\Plugins\\IED\\Fonts\\user";
 		static constexpr auto EXTRA_NODES                          = "Data\\SKSE\\Plugins\\IED\\SkeletonExtensions\\ExtraGearNodes";
 		static constexpr auto CONVERT_NODES                        = "Data\\SKSE\\Plugins\\IED\\SkeletonExtensions\\ConvertNodes";
+		static constexpr auto CONVERT_NODES2                        = "Data\\SKSE\\Plugins\\IED\\SkeletonExtensions\\ConvertNodes2";
 		static constexpr auto NODE_MONITOR                         = "Data\\SKSE\\Plugins\\IED\\NodeMonitor";
 		static constexpr auto ADDITIONAL_CME_NODES                 = "Data\\SKSE\\Plugins\\IED\\AdditionalCMENodes";
 		static constexpr auto KEY_BINDS                            = "Data\\SKSE\\Plugins\\IED\\KeyBinds.json";

@@ -259,6 +259,7 @@ namespace IED
 			NodeOverrideData::Create();
 			NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
 			NodeOverrideData::LoadAndAddConvertNodes(PATHS::CONVERT_NODES);
+			NodeOverrideData::LoadAndAddConvertNodes2(PATHS::CONVERT_NODES2);
 			NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
 			NodeOverrideData::LoadAndAddAdditionalCMENodes(PATHS::ADDITIONAL_CME_NODES);
 

@@ -726,6 +726,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigColor.h" />
     <ClInclude Include="IED\ConfigConditionalVars.h" />
     <ClInclude Include="IED\ConfigConvertNodes.h" />
+    <ClInclude Include="IED\ConfigConvertNodes2.h" />
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
     <ClInclude Include="IED\ConfigEquipmentOverrideCondition.h" />
@@ -783,6 +784,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\SoundDescriptor.h" />
     <ClInclude Include="IED\Controller\WeaponNodeEntry.h" />
     <ClInclude Include="IED\ConvertNodes.h" />
+    <ClInclude Include="IED\ConvertNodes2.h" />
     <ClInclude Include="IED\D3D\D3DAssets.h" />
     <ClInclude Include="IED\D3D\D3DBoundingOrientedBox.h" />
     <ClInclude Include="IED\D3D\D3DBoundingSphere.h" />
@@ -843,6 +845,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableValueDataParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2ListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2Parser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraLight.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformParser.h" />
@@ -868,6 +872,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigVariableSource.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2EntryListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConvertNodesListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderDataParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderFunctionListParser.h" />
@@ -880,6 +885,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONImGuiStyleParser.h" />
     <ClInclude Include="IED\Parsers\JSONImVec2Parser.h" />
     <ClInclude Include="IED\Parsers\JSONImVec4Parser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2EntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsI3DIParser.h" />
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\Physics\SimComponent.h" />
@@ -1310,6 +1316,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConditionEvalPreviewManager.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
+    <ClCompile Include="IED\ConvertNodes2.cpp" />
     <ClCompile Include="IED\EquipmentOverrideCondtionSet.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
     <ClCompile Include="IED\ConfigSkeletonMatch.cpp" />
@@ -1385,6 +1392,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableValueDataParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2ListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2Parser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraLight.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntrySkelTransformParser.cpp" />
@@ -1410,6 +1419,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigVariableSource.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2EntryListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConvertNodesListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderDataParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderFunctionListParser.cpp" />
@@ -1422,6 +1432,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONImGuiStyleParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONImVec2Parser.cpp" />
     <ClCompile Include="IED\Parsers\JSONImVec4Parser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2EntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsI3DIParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\Physics\SimComponent.cpp" />

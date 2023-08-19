@@ -306,6 +306,9 @@
     <Filter Include="Source\IED\UI\Widgets\Common">
       <UniqueIdentifier>{400f43c3-b91f-4d2a-b2cd-454f0ae8f809}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\ConvertNodes">
+      <UniqueIdentifier>{1b2786fe-2429-4fb7-8976-6a7fef5df219}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -2030,6 +2033,24 @@
     <ClInclude Include="IED\FormSlotPair.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConfigConvertNodes2.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2EntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2EntryListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2Parser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConvertNodes2.h">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2ListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3240,6 +3261,21 @@
     </ClCompile>
     <ClCompile Include="IED\FormSlotPair.cpp">
       <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2EntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2EntryListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2Parser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConvertNodes2.cpp">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2ListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

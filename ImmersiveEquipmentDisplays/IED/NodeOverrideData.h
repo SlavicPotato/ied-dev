@@ -2,6 +2,7 @@
 
 #include "IED/ConfigAdditionalCMENode.h"
 #include "IED/ConfigConvertNodes.h"
+#include "IED/ConfigConvertNodes2.h"
 #include "IED/ConfigExtraNode.h"
 #include "IED/ConfigNodeMonitor.h"
 #include "IED/ConfigTransform.h"
@@ -413,10 +414,16 @@ namespace IED
 		{
 			return m_Instance->m_convertNodes;
 		}
+		
+		static SKMP_143_CONSTEXPR const auto& GetConvertNodes2() noexcept
+		{
+			return m_Instance->m_convertNodes2;
+		}
 
 		static void LoadAndAddExtraNodes(const char* a_path);
 		static void LoadAndAddNodeMonitor(const char* a_path);
 		static void LoadAndAddConvertNodes(const char* a_path);
+		static void LoadAndAddConvertNodes2(const char* a_path);
 		static void LoadAndAddAdditionalCMENodes(const char* a_path);
 
 		FN_NAMEPROC("NodeOverrideData");
@@ -440,19 +447,23 @@ namespace IED
 		void AddConvertNodesData(
 			const stl::list<Data::configConvertNodesList_t>& a_data);
 
+		void AddConvertNodes2Data(
+			const stl::list<Data::configConvertNodesList2_t>& a_data);
+
 		void AddAdditionalCMENodeData(
 			const stl::list<Data::configAdditionalCMENodeList_t>& a_data);
 
-		cm_data_type             m_cme;
-		cm_data_type             m_mov;
-		mon_data_type            m_monitor;
-		gear_node_data_type      m_gearNodes;
-		exn_data_type            m_extramov;
-		exn_copy_data_type       m_extraCopy;
-		xfrm_override_data_type  m_transformOverride;
-		rand_placement_data_type m_randPlacement;
-		node_mon_data_type       m_nodeMonEntries;
-		convert_nodes_data_type  m_convertNodes;
+		cm_data_type                                            m_cme;
+		cm_data_type                                            m_mov;
+		mon_data_type                                           m_monitor;
+		gear_node_data_type                                     m_gearNodes;
+		exn_data_type                                           m_extramov;
+		exn_copy_data_type                                      m_extraCopy;
+		xfrm_override_data_type                                 m_transformOverride;
+		rand_placement_data_type                                m_randPlacement;
+		node_mon_data_type                                      m_nodeMonEntries;
+		convert_nodes_data_type                                 m_convertNodes;
+		stl::cache_aligned::vector<Data::configConvertNodes2_t> m_convertNodes2;
 
 		stl::cache_aligned::flat_set<std::uint64_t> m_humanoidSkeletonSignatures;
 		stl::cache_aligned::flat_set<std::uint64_t> m_humanoidSkeletonSignaturesXp32;
