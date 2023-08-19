@@ -928,14 +928,14 @@ namespace IED
 					{
 						v.objMatch.emplace_back(h.first.c_str(), h.second);
 					}
+				}
 
-					for (auto& h : g.validChildNodes)
+				for (auto& h : f.validChildNodes)
+				{
+					auto itg = m_gearNodes.find(h);
+					if (itg != m_gearNodes.end())
 					{
-						auto itg = m_gearNodes.find(h);
-						if (itg != m_gearNodes.end())
-						{
-							itg->second.movs.try_emplace(mov, f.desc);
-						}
+						itg->second.movs.try_emplace(mov, f.desc);
 					}
 				}
 

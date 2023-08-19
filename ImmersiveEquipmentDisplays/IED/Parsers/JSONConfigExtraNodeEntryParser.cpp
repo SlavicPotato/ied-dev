@@ -27,6 +27,14 @@ namespace IED
 			a_out.parent       = a_in["parent"].asString();
 			a_out.placementID  = static_cast<WeaponPlacementID>(a_in["placement_id"].asUInt());
 
+			if (auto& d = a_in["valid_mov_child_nodes"])
+			{
+				for (auto& f : d)
+				{
+					a_out.validChildNodes.emplace_back(f.asString());
+				}
+			}
+
 			if (auto& skel = a_in["skeleton"])
 			{
 				Parser<Data::configSkeletonMatch_t>               smparser(m_state);
@@ -46,14 +54,6 @@ namespace IED
 						for (auto& f : d)
 						{
 							v.objMatch.emplace_back(f["name"].asString(), f["is_node"].asBool());
-						}
-					}
-
-					if (auto& d = e["valid_mov_child_nodes"])
-					{
-						for (auto& f : d)
-						{
-							v.validChildNodes.emplace_back(f["name"].asString());
 						}
 					}
 
