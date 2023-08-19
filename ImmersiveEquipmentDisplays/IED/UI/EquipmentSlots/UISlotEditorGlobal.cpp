@@ -62,7 +62,7 @@ namespace IED
 						sep = true;
 					}
 
-					if (!m_controller.SkeletonCheck(Data::IData::GetPlayerRefID()))
+					/*if (!m_controller.SkeletonCheck(Data::IData::GetPlayerRefID()))
 					{
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
@@ -72,7 +72,7 @@ namespace IED
 						ImGui::Spacing();
 
 						sep = true;
-					}
+					}*/
 				}
 
 				if (settings.data.disableNPCSlots &&

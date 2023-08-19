@@ -44,7 +44,7 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				if (settings.data.ui.transformEditor.globalType == Data::GlobalConfigType::Player)
+				/*if (settings.data.ui.transformEditor.globalType == Data::GlobalConfigType::Player)
 				{
 					if (!m_controller.SkeletonCheck(Data::IData::GetPlayerRefID()))
 					{
@@ -56,7 +56,7 @@ namespace IED
 						ImGui::Spacing();
 						ImGui::Separator();
 					}
-				}
+				}*/
 
 				DrawNodeOverrideEditor(0, m_data);
 			}

@@ -64,7 +64,7 @@ namespace IED
 						sep = true;
 					}
 
-					if (!m_controller.SkeletonCheck(m_listCurrent->handle))
+					/*if (!m_controller.SkeletonCheck(m_listCurrent->handle))
 					{
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
@@ -74,7 +74,7 @@ namespace IED
 						ImGui::Spacing();
 
 						sep = true;
-					}
+					}*/
 
 					auto& settings = m_controller.GetSettings();
 

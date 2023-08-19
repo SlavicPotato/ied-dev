@@ -50,7 +50,7 @@ namespace IED
 					{
 						DrawPlayerDisabledWarning();
 					}
-					else
+					/*else
 					{
 						if (!m_controller.SkeletonCheck(m_listCurrent->handle))
 						{
@@ -62,7 +62,7 @@ namespace IED
 							ImGui::Spacing();
 							ImGui::Separator();
 						}
-					}
+					}*/
 
 					UICommon::PushDisabled(disabled);
 
