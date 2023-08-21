@@ -116,10 +116,10 @@ namespace IED
 			{ "MOV WeaponCrossbowChesko", { "Crossbow Chesko", "MOV WeaponCrossbowChesko" } },
 			{ "MOV QUIVERDefault", { "Quiver", "MOV QUIVERDefault" } },
 			{ "MOV QUIVERChesko", { "Quiver Chesko", "MOV QUIVERChesko", WeaponPlacementID::Frostfall } },
-			{ "MOV QUIVERLeftHipBolt", { "Quiver Left-Hip Bolt", "MOV QUIVERLeftHipBolt" } },
+			{ "MOV QUIVERLeftHipBolt", { "Quiver Left-Hip Bolt", "MOV QUIVERLeftHipBolt", WeaponPlacementID::AtHip } },
 			{ "MOV BOLTDefault", { "Bolt", "MOV BOLTDefault" } },
 			{ "MOV BOLTChesko", { "Bolt Chesko", "MOV BOLTChesko" } },
-			{ "MOV BOLTLeftHipBolt", { "Bolt Left-Hip", "MOV BOLTLeftHipBolt" } },
+			{ "MOV BOLTLeftHipBolt", { "Bolt Left-Hip", "MOV BOLTLeftHipBolt", WeaponPlacementID::AtHip } },
 			{ "MOV BOLTABQ", { "Bolt ABQ", "MOV BOLTABQ" } },
 			{ "MOV BOLTXP32", { "Bolt XP32", "MOV BOLTXP32", WeaponPlacementID::Frostfall } },
 			{ "MOV ShieldBackDefault", { "Shield Back", "MOV ShieldBackDefault" } }
