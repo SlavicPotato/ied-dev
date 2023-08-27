@@ -327,6 +327,12 @@ namespace IED
 						result.action    = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Cell;
 					}
+					
+					if (ImGui::MenuItem(UIL::LS(CommonStrings::Voice, "O")))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Voice;
+					}
 
 					if (UIL::LCG_BM(CommonStrings::Extra, "Y"))
 					{
@@ -794,6 +800,16 @@ namespace IED
 
 						result = NodeOverrideCommonAction::Insert;
 					}
+					
+					if (UIL::LCG_MI(CommonStrings::Voice, "O"))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Voice);
+
+						a_updateFunc();
+
+						result = NodeOverrideCommonAction::Insert;
+					}
 
 					if (UIL::LCG_BM(CommonStrings::Extra, "Y"))
 					{
@@ -1085,6 +1101,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Skeleton:
 						case Data::NodeOverrideConditionType::Effect:
 						case Data::NodeOverrideConditionType::Cell:
+						case Data::NodeOverrideConditionType::Voice:
 						case Data::NodeOverrideConditionType::Hand:
 
 							it = a_entry.emplace(
@@ -1614,6 +1631,16 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = UIL::LS(CommonStrings::Cell);
+
+								break;
+								
+							case Data::NodeOverrideConditionType::Voice:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = UIL::LS(CommonStrings::Voice);
 
 								break;
 

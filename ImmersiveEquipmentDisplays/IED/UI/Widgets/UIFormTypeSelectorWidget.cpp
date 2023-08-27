@@ -64,6 +64,7 @@ namespace IED
 			std::make_pair(TESObjectCELL::kTypeID, UIFormTypeSelectorWidgetStrings::Cell),
 			std::make_pair(TESLevItem::kTypeID, UIFormTypeSelectorWidgetStrings::LevItem),
 			std::make_pair(TESObjectARMA::kTypeID, UIFormTypeSelectorWidgetStrings::ArmorAddon),
+			std::make_pair(BGSVoiceType::kTypeID, UIFormTypeSelectorWidgetStrings::VoiceType),
 			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form));
 
 		bool UIFormTypeSelectorWidget::DrawFormTypeSelector(
@@ -245,6 +246,8 @@ namespace IED
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::LevItem);
 			case TESObjectARMA::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::ArmorAddon);
+			case BGSVoiceType::kTypeID:
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::VoiceType);
 			case TESForm::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Form);
 			default:

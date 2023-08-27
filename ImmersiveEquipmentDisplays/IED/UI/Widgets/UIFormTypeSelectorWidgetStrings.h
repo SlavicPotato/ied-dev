@@ -63,6 +63,7 @@ namespace IED
 			Cell             = 6352,
 			LevItem          = 6353,
 			ArmorAddon       = 6354,
+			VoiceType        = 6355,
 		};
 	}
 }

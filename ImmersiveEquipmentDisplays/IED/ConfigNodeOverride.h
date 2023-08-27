@@ -124,6 +124,7 @@ namespace IED
 			Cell       = 24,
 			Hand       = 25,
 			Quest      = 26,
+			Voice      = 27,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -245,6 +246,8 @@ namespace IED
 				case NodeOverrideConditionType::Effect:
 				case NodeOverrideConditionType::Cell:
 				case NodeOverrideConditionType::Hand:
+				case NodeOverrideConditionType::Voice:
+
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{

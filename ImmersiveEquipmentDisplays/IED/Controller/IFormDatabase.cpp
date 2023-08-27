@@ -207,6 +207,7 @@ namespace IED
 			detail::populate(*result, dh->arrHAZD);
 			detail::populate(*result, dh->arrEQUP);
 			detail::populate(*result, dh->arrLGTM);
+			detail::populate(*result, dh->arrVTYP);
 
 #if defined(IED_ENABLE_OUTFIT)
 

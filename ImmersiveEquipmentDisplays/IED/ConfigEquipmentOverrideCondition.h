@@ -95,6 +95,7 @@ namespace IED
 			Perk       = 24,
 			Cell       = 25,
 			Hand       = 26,
+			Voice      = 27,
 		};
 
 		enum class PresenceEquippedHandMatch : std::uint32_t
@@ -303,6 +304,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Effect:
 				case EquipmentOverrideConditionType::Cell:
 				case EquipmentOverrideConditionType::Hand:
+				case EquipmentOverrideConditionType::Voice:
 
 					switch (a_matchType)
 					{

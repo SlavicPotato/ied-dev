@@ -340,6 +340,12 @@ namespace IED
 						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Cell;
 					}
+					
+					if (UIL::LCG_MI(CommonStrings::Voice, "R"))
+					{
+						result.action    = UIEquipmentOverrideAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Voice;
+					}
 
 					if (UIL::LCG_BM(CommonStrings::Extra, "X"))
 					{
@@ -873,6 +879,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Effect:
 					case Data::EquipmentOverrideConditionType::Cell:
 					case Data::EquipmentOverrideConditionType::Hand:
+					case Data::EquipmentOverrideConditionType::Voice:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1174,6 +1181,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Effect:
 						case Data::EquipmentOverrideConditionType::Cell:
 						case Data::EquipmentOverrideConditionType::Hand:
+						case Data::EquipmentOverrideConditionType::Voice:
 
 							it = a_entry.list.emplace(
 								it,
@@ -1761,6 +1769,16 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = UIL::LS(CommonStrings::Cell);
+
+								break;
+								
+							case Data::EquipmentOverrideConditionType::Voice:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = UIL::LS(CommonStrings::Voice);
 
 								break;
 

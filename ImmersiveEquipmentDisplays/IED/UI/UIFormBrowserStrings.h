@@ -53,5 +53,6 @@ namespace IED
 		LightingTemplate  = 5244,
 		Outfit            = 5245,
 		LeveledItem       = 5246,
+		VoiceType         = 5247,
 	};
 }

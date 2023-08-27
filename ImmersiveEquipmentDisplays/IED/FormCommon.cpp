@@ -228,6 +228,8 @@ namespace IED
 			return GetStringImpl(static_cast<const TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:
 			return GetStringImpl(static_cast<const TESIdleForm*>(a_form));
+		case BGSVoiceType::kTypeID:
+			return GetStringImpl(static_cast<const BGSVoiceType*>(a_form));
 		case Actor::kTypeID:
 		case TESObjectREFR::kTypeID:
 			return static_cast<TESObjectREFR*>(a_form)->GetReferenceName();

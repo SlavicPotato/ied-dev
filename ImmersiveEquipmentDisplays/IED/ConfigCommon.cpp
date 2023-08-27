@@ -166,6 +166,7 @@ namespace IED
 			case TESObjectCELL::kTypeID:
 			case TESLevItem::kTypeID:
 			case BGSOutfit::kTypeID:
+			case BGSVoiceType::kTypeID:
 				return form;
 			default:
 				return nullptr;

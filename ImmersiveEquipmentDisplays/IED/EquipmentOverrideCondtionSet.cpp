@@ -883,6 +883,14 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
+
+			case EquipmentOverrideConditionType::Voice:
+
+				return Conditions::match_voice_type<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1213,6 +1221,14 @@ namespace IED
 			case EquipmentOverrideConditionType::Hand:
 
 				return Conditions::match_hand_item<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
+
+			case EquipmentOverrideConditionType::Voice:
+
+				return Conditions::match_voice_type<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(
 					a_params,
@@ -1624,6 +1640,14 @@ namespace IED
 			case EquipmentOverrideConditionType::Hand:
 
 				return Conditions::match_hand_item<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
+
+			case EquipmentOverrideConditionType::Voice:
+
+				return Conditions::match_voice_type<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(
 					a_params,

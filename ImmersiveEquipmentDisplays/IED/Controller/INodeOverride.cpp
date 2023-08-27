@@ -706,6 +706,14 @@ namespace IED
 				Data::NodeOverrideConditionFlags>(
 				a_params,
 				a_data);
+
+		case Data::NodeOverrideConditionType::Voice:
+
+			return Conditions::match_voice_type<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data);
 		}
 
 		return false;

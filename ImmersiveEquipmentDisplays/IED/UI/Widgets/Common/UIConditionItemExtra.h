@@ -114,27 +114,32 @@ namespace IED
 			case Tt::Idle:
 			case Tt::Cell:
 			case Tt::Hand:
+			case Tt::Voice:
 
-				if (a_item == ConditionParamItem::Form)
+				switch (a_item)
 				{
+				case ConditionParamItem::Form:
+
 					a_result |= ImGui::CheckboxFlagsT(
 						"!##ctl_neg_1",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Tf::kNegateMatch2));
 
 					ImGui::SameLine();
-				}
-				else if (a_item == ConditionParamItem::Keyword)
-				{
+
+					break;
+				case ConditionParamItem::Keyword:
+
 					a_result |= ImGui::CheckboxFlagsT(
 						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Tf::kNegateMatch1));
 
 					ImGui::SameLine();
-				}
-				else if (a_item == ConditionParamItem::LightingTemplateInheritanceFlags)
-				{
+
+					break;
+				case ConditionParamItem::LightingTemplateInheritanceFlags:
+
 					a_result |= ImGui::CheckboxFlagsT(
 						"!##ctl_neg_3",
 						stl::underlying(std::addressof(match->flags.value)),
@@ -153,6 +158,8 @@ namespace IED
 					}*/
 
 					ImGui::SameLine();
+
+					break;
 				}
 
 				break;
@@ -467,6 +474,10 @@ namespace IED
 				break;
 			case Tt::Hand:
 				a_cpeWidget.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::HandEquippable));
+				a_cpeWidget.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Tt::Voice:
+				a_cpeWidget.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::VoiceType));
 				a_cpeWidget.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

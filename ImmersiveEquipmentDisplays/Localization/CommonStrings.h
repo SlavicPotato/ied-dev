@@ -282,5 +282,6 @@ namespace IED
 		Addon           = 353,
 		Object          = 354,
 		Auto            = 355,
+		Voice           = 356,
 	};
 }

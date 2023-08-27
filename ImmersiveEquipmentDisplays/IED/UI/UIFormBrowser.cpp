@@ -62,7 +62,8 @@ namespace IED
 				{ UIFormBrowserStrings::EquipSlot, BGSEquipSlot::kTypeID },
 				{ UIFormBrowserStrings::LightingTemplate, BGSLightingTemplate::kTypeID },
 				{ UIFormBrowserStrings::Outfit, BGSOutfit::kTypeID },
-				{ UIFormBrowserStrings::LeveledItem, TESLevItem::kTypeID }
+				{ UIFormBrowserStrings::LeveledItem, TESLevItem::kTypeID },
+				{ UIFormBrowserStrings::VoiceType, BGSVoiceType::kTypeID }
 
 			} }
 

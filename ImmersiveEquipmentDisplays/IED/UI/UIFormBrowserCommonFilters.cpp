@@ -169,7 +169,12 @@ namespace IED
 			          IFormDatabase::EXTRA_TYPE_ARMOR }),
 
 				std::make_shared<
-					UIFormBrowser::tab_filter_type>(g_allowedModelTypes)
+					UIFormBrowser::tab_filter_type>(g_allowedModelTypes),
+
+				std::make_shared<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ BGSVoiceType::kTypeID }),
 
 			}
 		{

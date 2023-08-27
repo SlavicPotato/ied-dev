@@ -36,6 +36,7 @@ namespace IED
 			HandEquippable,
 			Common,
 			ModelTypes,
+			VoiceType,
 		};
 
 		class UIFormBrowserCommonFilters
@@ -49,7 +50,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 28> m_filters;
+			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 29> m_filters;
 
 			static const UIFormBrowserCommonFilters m_Instance;
 		};

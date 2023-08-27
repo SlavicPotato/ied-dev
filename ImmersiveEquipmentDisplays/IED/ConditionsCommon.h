@@ -1467,6 +1467,19 @@ namespace IED
 			return nullptr;
 		}
 
+		template <class Tm, class Tf>
+		constexpr bool match_voice_type(
+			CommonParams&         a_params,
+			const Tm&             a_match) noexcept
+		{
+			if (const auto voiceType = a_params.npc->voiceType)
+			{
+				return a_match.flags.test(Tf::kNegateMatch1) != (voiceType && voiceType->formID == a_match.form.get_id());
+			}
+
+			return false;
+		}
+
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept;
 #endif
