@@ -27,13 +27,13 @@ namespace IED
 				return;
 			}
 
-			auto root = a_root->AsNode();
+			const auto root = a_root->AsNode();
 			if (!root)
 			{
 				return;
 			}
 
-			auto npcroot = GetNodeByName(
+			const auto npcroot = GetNodeByName(
 				root,
 				BSStringHolder::GetSingleton()->m_npcroot);
 
@@ -42,9 +42,9 @@ namespace IED
 				return;
 			}
 
-			SkeletonID id(root);
+			const SkeletonID id(root);
 
-			RunConvertNodes2(root, id);
+			RunConvertNodes2(npcroot, id);
 
 			if (NodeOverrideData::GetConvertNodes().test(id))
 			{

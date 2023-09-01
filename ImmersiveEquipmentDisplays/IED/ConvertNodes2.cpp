@@ -14,9 +14,7 @@ namespace IED
 
 		void RunConvertNodes2(NiNode* a_root, const SkeletonID& a_id) noexcept
 		{
-			auto& data = NodeOverrideData::GetConvertNodes2();
-
-			for (auto& e : data)
+			for (auto& e : NodeOverrideData::GetConvertNodes2())
 			{
 				if (!e.match.test(a_id))
 				{
@@ -25,19 +23,19 @@ namespace IED
 
 				for (auto& f : BSStringHolder::GetSingleton()->GetSheathNodes())
 				{
-					auto it = e.entries.find(f.name.c_str());
+					const auto it = e.entries.find(f.name.c_str());
 					if (it == e.entries.end())
 					{
 						continue;
 					}
 
-					auto target = GetNodeByName(a_root, f.name);
+					const auto target = GetNodeByName(a_root, f.name);
 					if (!target)
 					{
 						continue;
 					}
 
-					auto parent = target->m_parent;
+					const auto parent = target->m_parent;
 					if (!parent)
 					{
 						continue;
@@ -54,7 +52,7 @@ namespace IED
 						continue;
 					}
 
-					auto cme = CreateAttachmentNode(f.cme);
+					const auto cme = CreateAttachmentNode(f.cme);
 
 					NiPointer<NiAVObject> replacedObject;
 
@@ -64,7 +62,7 @@ namespace IED
 						target == replacedObject &&
 						target->m_parent == nullptr);
 
-					auto mov = CreateAttachmentNode(f.mov);
+					const auto mov = CreateAttachmentNode(f.mov);
 
 					mov->m_localTransform            = it->second.xfrmMOV.to_nitransform();
 					replacedObject->m_localTransform = it->second.xfrmNode.to_nitransform();

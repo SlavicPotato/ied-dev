@@ -18,13 +18,13 @@ namespace IED
 
 			for (auto& e : BSStringHolder::GetSingleton()->GetSheathNodes())
 			{
-				auto target = GetNodeByName(a_root, e.name);
+				const auto target = GetNodeByName(a_root, e.name);
 				if (!target)
 				{
 					continue;
 				}
 
-				auto parent = target->m_parent;
+				const auto parent = target->m_parent;
 				if (!parent)
 				{
 					continue;
@@ -41,7 +41,7 @@ namespace IED
 					continue;
 				}
 
-				auto cme = CreateAttachmentNode(e.cme);
+				const auto cme = CreateAttachmentNode(e.cme);
 
 				NiPointer<NiAVObject> replacedObject;
 
