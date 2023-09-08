@@ -113,5 +113,10 @@ namespace IED
 		{
 			detail::clean_form_list(e.lastSlotted, m_maxFormsPerSlot);
 		}
+
+		for (auto& e : a_entry.data->acquired)
+		{
+			detail::clean_form_list(e.forms, m_maxFormsPerSlot);
+		}
 	}
 }

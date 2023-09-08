@@ -364,8 +364,8 @@ namespace IED
 
 			template <class T>
 			concept accept_clear = requires(T a_data) {
-									   a_data.clear();
-								   };
+				a_data.clear();
+			};
 		}
 
 		template <concepts::accept_clear T>
@@ -698,8 +698,9 @@ namespace IED
 			stl::fixed_string_less_equal_ptr,
 			stl::boost_container_allocator<stl::fixed_string>>;
 
-		using configFixedStringList_t = stl::boost_vector<stl::fixed_string>;
-		using configObjectSlotList_t  = stl::boost_vector<Data::ObjectSlot>;
+		using configFixedStringList_t     = stl::boost_vector<stl::fixed_string>;
+		using configObjectSlotList_t      = stl::boost_vector<Data::ObjectSlot>;
+		using configObjectTypeExtraList_t = stl::boost_vector<Data::ObjectTypeExtra>;
 
 	}
 
@@ -708,7 +709,7 @@ namespace IED
 		requires(T a_data) {
 			{
 				std::addressof(a_data.find(typename T::key_type())->second)
-				} -> std::convertible_to<const typename T::mapped_type*>;
+			} -> std::convertible_to<const typename T::mapped_type*>;
 		};
 
 	template <class T>

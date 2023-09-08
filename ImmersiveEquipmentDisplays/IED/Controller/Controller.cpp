@@ -4944,8 +4944,8 @@ namespace IED
 	}
 
 	auto Controller::LookupCachedActorInfo2(
-		Actor*             a_actor,
-		ActorObjectHolder& a_holder) noexcept
+		Actor*                   a_actor,
+		const ActorObjectHolder& a_holder) noexcept
 		-> std::optional<cachedActorInfo2_t>
 	{
 		auto npc = a_actor->GetActorBase();
@@ -5074,6 +5074,58 @@ namespace IED
 				slot.slotState.lastEquipped     = item->formID;
 				slot.slotState.lastSeenEquipped = c;
 			}
+		}
+	}
+
+	void Controller::PostAddContainerItem(
+		Game::FormID a_actor,
+		Game::FormID a_form) noexcept
+	{
+		const stl::lock_guard lock(m_lock);
+
+		const auto it = m_actorMap.find(a_actor);
+
+		if (it != m_actorMap.end())
+		{
+			UpdateAcquiredItemCache(it->second, a_form);
+			it->second.RequestEvalDefer();
+		}
+	}
+
+	void Controller::UpdateAcquiredItemCache(
+		ActorObjectHolder& a_holder,
+		Game::FormID       a_form) noexcept
+	{
+		const auto form = a_form.Lookup();
+		const auto type = form ? Data::ItemData::GetItemTypeExtra(form) : Data::ObjectTypeExtra::kNone;
+
+		if (type >= Data::ObjectTypeExtra::kMax)
+		{
+			return;
+		}
+
+		auto& entry = a_holder.GetBipedSlotData()->get(type);
+		auto& forms = entry.forms;
+
+		if (forms.empty() || forms.front() != a_form)
+		{
+			if (auto iti = std::find(forms.begin(), forms.end(), a_form); iti != forms.end())
+			{
+				forms.erase(iti);
+			}
+
+			forms.emplace(forms.begin(), a_form);
+
+			if (forms.size() > m_bipedCache.max_forms())
+			{
+				forms.pop_back();
+			}
+
+			entry.lastAcquired = GetCounterValue();
+		}
+		else if (!forms.empty() && forms.front() == a_form)
+		{
+			entry.lastAcquired = GetCounterValue();
 		}
 	}
 
@@ -5262,7 +5314,12 @@ namespace IED
 			    a_evn->oldContainer != a_evn->newContainer &&  // ?
 			    a_evn->newContainer.As<Actor>())
 			{
-				QueueRequestEvaluate(a_evn->newContainer, true, false);
+				ITaskPool::AddTask(
+					[this,
+				     actor   = a_evn->newContainer,
+				     baseObj = a_evn->baseObj] {
+						PostAddContainerItem(actor, baseObj);
+					});
 			}
 		}
 
@@ -5674,7 +5731,7 @@ namespace IED
 	{
 		const stl::lock_guard lock(m_lock);
 
-		const auto& actorMap = GetActorMap();
+		auto& actorMap = GetActorMap();
 
 		const auto it = actorMap.find(a_task->GetActor());
 		if (it == actorMap.end())
@@ -5682,30 +5739,45 @@ namespace IED
 			return;
 		}
 
-		const auto handle = it->second.GetHandle();
+		const auto func = [this](ActorObjectHolder& a_holder) {
+			const auto handle = a_holder.GetHandle();
 
-		if (const auto refr = handle.get_ptr())
-		{
-			const auto actor = refr->As<Actor>();
-
-			if (IsREFRValid(actor) &&
-			    it->second.GetActor().get() == actor)
+			if (const auto refr = handle.get_ptr())
 			{
-				const auto cell = actor->GetParentCell();
-				if (!cell || !cell->IsAttached())
-				{
-					EvaluateImpl(
-						actor,
-						handle,
-						ControllerUpdateFlags::kPlayEquipSound |
-							ControllerUpdateFlags::kImmediateTransformUpdate);
+				const auto actor = refr->As<Actor>();
 
-					return;
+				if (IsREFRValid(actor) &&
+				    a_holder.GetActor().get() == actor)
+				{
+					const auto cell = actor->GetParentCell();
+					if (!cell || !cell->IsAttached())
+					{
+						if (const auto actorInfo = LookupCachedActorInfo2(actor, a_holder))
+						{
+							EvaluateImpl(
+								actorInfo->root,
+								actorInfo->npcRoot,
+								actor,
+								actorInfo->npc,
+								actorInfo->race,
+								handle,
+								a_holder,
+								ControllerUpdateFlags::kPlayEquipSound |
+									ControllerUpdateFlags::kImmediateTransformUpdate);
+
+							return true;
+						}
+					}
 				}
 			}
-		}
 
-		it->second.RequestEval();
+			return false;
+		};
+
+		if (!func(it->second))  // immediate eval if actors' parent cell isn't attached
+		{
+			it->second.RequestEval();
+		}
 	}
 
 	bool Controller::IsWeaponNodeSharingDisabled() const

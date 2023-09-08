@@ -11,12 +11,14 @@ namespace IED
 		{
 			kNone = 0,
 
-			kPrioritizeRecentBipedSlots   = 1u << 0,
-			kDisableIfSlotOccupied        = 1u << 1,
-			kSkipOccupiedBipedSlots       = 1u << 2,
-			kFallBackToSlotted            = 1u << 3,
-			kPrioritizeRecentDisplaySlots = 1u << 4,
-			kSkipOccupiedDisplaySlots     = 1u << 5,
+			kPrioritizeRecentBipedSlots    = 1u << 0,
+			kDisableIfSlotOccupied         = 1u << 1,
+			kSkipOccupiedBipedSlots        = 1u << 2,
+			kFallBackToSlotted             = 1u << 3,
+			kPrioritizeRecentDisplaySlots  = 1u << 4,
+			kSkipOccupiedDisplaySlots      = 1u << 5,
+			kFallBackToAcquired            = 1u << 6,
+			kPrioritizeRecentAcquiredTypes = 1u << 7,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(LastEquippedFlags);
@@ -29,18 +31,21 @@ namespace IED
 			static constexpr auto DEFAULT_FLAGS =
 				LastEquippedFlags::kPrioritizeRecentBipedSlots |
 				LastEquippedFlags::kPrioritizeRecentDisplaySlots |
-				LastEquippedFlags::kDisableIfSlotOccupied;
+				LastEquippedFlags::kDisableIfSlotOccupied |
+				LastEquippedFlags::kPrioritizeRecentAcquiredTypes;
 
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1,
 				DataVersion2 = 2,
+				DataVersion3 = 3,
 			};
 
 			stl::flag<LastEquippedFlags>    flags{ DEFAULT_FLAGS };
 			configBipedObjectList_t         bipedSlots;
 			equipmentOverrideConditionSet_t filterConditions;
-			Data::configObjectSlotList_t    slots;
+			configObjectSlotList_t          slots;
+			configObjectTypeExtraList_t     acqList;
 
 		private:
 			template <class Archive>
@@ -50,6 +55,7 @@ namespace IED
 				a_ar& bipedSlots;
 				a_ar& filterConditions.list;
 				a_ar& slots;
+				a_ar& acqList;
 			}
 
 			template <class Archive>
@@ -62,6 +68,11 @@ namespace IED
 				if (a_version >= DataVersion2)
 				{
 					a_ar& slots;
+
+					if (a_version >= DataVersion3)
+					{
+						a_ar& acqList;
+					}
 				}
 				else
 				{
@@ -82,4 +93,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configLastEquipped_t,
-	::IED::Data::configLastEquipped_t::Serialization::DataVersion2);
+	::IED::Data::configLastEquipped_t::Serialization::DataVersion3);

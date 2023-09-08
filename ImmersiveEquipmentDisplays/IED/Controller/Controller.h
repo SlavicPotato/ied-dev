@@ -791,6 +791,14 @@ namespace IED
 			const EquippedItemInfo& a_info,
 			ActorObjectHolder&      a_objectHolder) noexcept;
 
+		void PostAddContainerItem(
+			Game::FormID a_actor,
+			Game::FormID a_form) noexcept;
+
+		void UpdateAcquiredItemCache(
+			ActorObjectHolder& a_holder,
+			Game::FormID       a_form) noexcept;
+
 		bool GetVisibilitySwitch(
 			Actor*                     a_actor,
 			stl::flag<Data::BaseFlags> a_flags,
@@ -809,8 +817,8 @@ namespace IED
 			ActorObjectHolder& a_holder) noexcept;
 
 		std::optional<cachedActorInfo2_t> LookupCachedActorInfo2(
-			Actor*             a_actor,
-			ActorObjectHolder& a_holder) noexcept;
+			Actor*                   a_actor,
+			const ActorObjectHolder& a_holder) noexcept;
 
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
 			ActorObjectHolder& a_holder) noexcept;

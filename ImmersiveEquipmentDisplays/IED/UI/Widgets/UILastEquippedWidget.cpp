@@ -109,7 +109,7 @@ namespace IED
 
 			if (a_data.flags.test(Data::LastEquippedFlags::kFallBackToSlotted))
 			{
-				if (DrawObjectSlotListTree(
+				if (UIObjectSlotList<Data::ObjectSlot>::DrawObjectSlotListTree(
 						"esl_tree",
 						a_data.slots,
 						[&] {
@@ -132,6 +132,34 @@ namespace IED
 							ImGui::Columns();
 
 							ImGui::Spacing();
+
+							return result;
+						}))
+				{
+					a_updateFunc();
+				}
+			}
+
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UICustomEditorString::FallBackToAcquired, "ctl_2"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::LastEquippedFlags::kFallBackToAcquired)))
+			{
+				a_updateFunc();
+			}
+
+			if (a_data.flags.test(Data::LastEquippedFlags::kFallBackToAcquired))
+			{
+				if (UIObjectSlotList<Data::ObjectTypeExtra>::DrawObjectSlotListTree(
+						"acq_tree",
+						a_data.acqList,
+						[&] {
+							bool result = false;
+
+							result |= ImGui::CheckboxFlagsT(
+								UIL::LS(UICustomEditorString::PrioritizeRecentlyAcqTypes, "1"),
+								stl::underlying(std::addressof(a_data.flags.value)),
+								stl::underlying(Data::LastEquippedFlags::kPrioritizeRecentAcquiredTypes));
 
 							return result;
 						}))

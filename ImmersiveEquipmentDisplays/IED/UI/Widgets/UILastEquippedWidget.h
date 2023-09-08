@@ -17,7 +17,8 @@ namespace IED
 	{
 		class UILastEquippedWidget :
 			public UIBipedObjectList,
-			public UIObjectSlotList,
+			public UIObjectSlotList<Data::ObjectSlot>,
+			public UIObjectSlotList<Data::ObjectTypeExtra>,
 			public virtual UIEquipmentOverrideConditionsWidget
 		{
 		public:

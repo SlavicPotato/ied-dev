@@ -134,6 +134,7 @@ namespace IED
 			WeaponType                          = 2127,
 			ReceiveActorEvents                  = 2128,
 			BoundWeapon                         = 2129,
+			EquipmentTypes                      = 2130,
 		};
 	}
 }

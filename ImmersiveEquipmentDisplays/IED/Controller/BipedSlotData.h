@@ -93,6 +93,31 @@ namespace IED
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};
 
+	struct AcquiredCacheEntry
+	{
+	public:
+		friend class boost::serialization::access;
+
+	public:
+		static constexpr std::size_t DEFAULT_MAX_FORMS = 16;
+
+		enum Serialization : unsigned int
+		{
+			DataVersion1 = 1,
+		};
+
+		stl::boost_vector<Data::configFormZeroMissing_t> forms;
+		std::uint64_t                                    lastAcquired{ 0 };
+
+	private:
+		template <class Archive>
+		void serialize(Archive& a_ar, const unsigned int a_version)
+		{
+			a_ar& forms;
+			a_ar& lastAcquired;
+		}
+	};
+
 	struct BipedSlotData
 	{
 	public:
@@ -103,6 +128,7 @@ namespace IED
 		{
 			DataVersion1 = 1,
 			DataVersion2 = 2,
+			DataVersion3 = 3,
 		};
 
 		using biped_data_type = std::array<
@@ -112,6 +138,10 @@ namespace IED
 		using display_slot_data_type = std::array<
 			DisplaySlotCacheEntry,
 			stl::underlying(Data::ObjectSlot::kMax)>;
+
+		using acq_data_type = std::array<
+			AcquiredCacheEntry,
+			stl::underlying(Data::ObjectTypeExtra::kMax)>;
 
 		[[nodiscard]] constexpr auto& get(BIPED_OBJECT a_object) noexcept
 		{
@@ -137,9 +167,22 @@ namespace IED
 			return displays[stl::underlying(a_slot)];
 		}
 
+		[[nodiscard]] constexpr auto& get(Data::ObjectTypeExtra a_type) noexcept
+		{
+			assert(a_slot < Data::ObjectType::kMax);
+			return acquired[stl::underlying(a_type)];
+		}
+
+		[[nodiscard]] constexpr auto& get(Data::ObjectTypeExtra a_type) const noexcept
+		{
+			assert(a_slot < Data::ObjectType::kMax);
+			return acquired[stl::underlying(a_type)];
+		}
+
 		std::uint64_t          accessed{ 0 };
 		biped_data_type        biped;
 		display_slot_data_type displays;
+		acq_data_type          acquired;
 
 	private:
 		template <class Archive>
@@ -151,6 +194,11 @@ namespace IED
 			if (a_version >= DataVersion2)
 			{
 				a_ar& displays;
+
+				if (a_version >= DataVersion3)
+				{
+					a_ar& acquired;
+				}
 			}
 		}
 	};
@@ -168,4 +216,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::BipedSlotData,
-	::IED::BipedSlotData::Serialization::DataVersion2);
+	::IED::BipedSlotData::Serialization::DataVersion3);

@@ -49,33 +49,33 @@ namespace IED
 			const Actor* a_actor) noexcept;
 
 		static SelectedItem SelectSlotItem(
-			ProcessParams&          a_params,
+			ProcessParams&            a_params,
 			const Data::configSlot_t& a_config,
 			SlotItemCandidates&       a_candidates,
 			const ObjectEntrySlot&    a_slot) noexcept;
 
 		static bool CustomEntryValidateInventoryForm(
-			ProcessParams&                     a_params,
+			ProcessParams&                       a_params,
 			const Data::CollectorData::ItemData& a_itemData,
 			const Data::configCustom_t&          a_config,
 			bool&                                a_hasMinCount) noexcept;
 
 		template <class Tf>
 		static auto DoLastEquippedSelection(
-			ProcessParams&                  a_params,
+			ProcessParams&                    a_params,
 			const Data::configLastEquipped_t& a_config,
 			Tf                                a_validationFunc) noexcept;
 
 	private:
 		static Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormGroup(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount) noexcept;
 
 		template <class Tf>
 		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormDefault(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount,
@@ -83,7 +83,7 @@ namespace IED
 
 	public:
 		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryForm(
-			ProcessParams&            a_params,
+			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount) noexcept;
@@ -91,36 +91,35 @@ namespace IED
 	private:
 		template <class Tf>
 		static auto SelectInventoryFormLastEquipped(
-			ProcessParams&                  a_params,
+			ProcessParams&                    a_params,
 			const Data::configLastEquipped_t& a_config,
 			const Tf&                         a_validationFunc) noexcept;
 
 		template <class Tf>
 		static auto SelectInventoryFormLastSlotted(
-			ProcessParams&                  a_params,
+			ProcessParams&                    a_params,
 			const Data::configLastEquipped_t& a_config,
 			const Tf&                         a_validationFunc) noexcept;
 
 		template <class Tf>
-		static auto SelectBipedSlotEntryForm(
-			ProcessParams&                  a_params,
+		static auto SelectInventoryFormLastAcquired(
+			ProcessParams&                    a_params,
 			const Data::configLastEquipped_t& a_config,
-			const BipedSlotCacheEntry&        a_slotEntry,
 			const Tf&                         a_validationFunc) noexcept;
 
 		template <class Tf>
-		static auto SelectDisplaySlotEntryForm(
-			ProcessParams&                  a_params,
-			const Data::configLastEquipped_t& a_config,
-			const ObjectEntrySlot&            a_slotEntry,
-			const Tf&                         a_validationFunc) noexcept;
+		static auto SelectEntryForm(
+			ProcessParams&                                          a_params,
+			const Data::configLastEquipped_t&                       a_config,
+			const stl::boost_vector<Data::configFormZeroMissing_t>& a_forms,
+			const Tf&                                               a_validationFunc) noexcept;
 
 		RandomNumberGeneratorBase& m_rng;
 	};
 
 	template <class Tf>
 	auto IEquipment::DoLastEquippedSelection(
-		ProcessParams&                  a_params,
+		ProcessParams&                    a_params,
 		const Data::configLastEquipped_t& a_config,
 		Tf                                a_validationFunc) noexcept
 	{
@@ -129,10 +128,27 @@ namespace IED
 			a_config,
 			a_validationFunc);
 
-		if (it == a_params.collector.data.forms.end() &&
-		    a_config.flags.test(Data::LastEquippedFlags::kFallBackToSlotted))
+		if (it != a_params.collector.data.forms.end())
+		{
+			return it;
+		}
+
+		if (a_config.flags.test(Data::LastEquippedFlags::kFallBackToSlotted))
 		{
 			it = SelectInventoryFormLastSlotted(
+				a_params,
+				a_config,
+				a_validationFunc);
+
+			if (it != a_params.collector.data.forms.end())
+			{
+				return it;
+			}
+		}
+
+		if (a_config.flags.test(Data::LastEquippedFlags::kFallBackToAcquired))
+		{
+			it = SelectInventoryFormLastAcquired(
 				a_params,
 				a_config,
 				a_validationFunc);
@@ -143,7 +159,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::SelectInventoryFormLastEquipped(
-		ProcessParams&                  a_params,
+		ProcessParams&                    a_params,
 		const Data::configLastEquipped_t& a_config,
 		const Tf&                         a_validationFunc) noexcept
 	{
@@ -172,7 +188,7 @@ namespace IED
 		if (a_config.flags.test(Data::LastEquippedFlags::kPrioritizeRecentBipedSlots) &&
 		    a_config.bipedSlots.size() > 1)
 		{
-			auto& bipedSlots = a_params.objects.GetTempData().le;
+			auto& bipedSlots = a_params.objects.GetTempData().pc;
 
 			bipedSlots.clear();
 
@@ -200,15 +216,16 @@ namespace IED
 				bipedSlots.begin(),
 				bipedSlots.end(),
 				[](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
-					return a_lhs->seen > a_rhs->seen;
+					return reinterpret_cast<const BipedSlotCacheEntry*>(a_lhs)->seen >
+				           reinterpret_cast<const BipedSlotCacheEntry*>(a_rhs)->seen;
 				});
 
 			for (auto& e : bipedSlots)
 			{
-				const auto it = SelectBipedSlotEntryForm(
+				const auto it = SelectEntryForm(
 					a_params,
 					a_config,
-					*e,
+					reinterpret_cast<const BipedSlotCacheEntry*>(e)->forms,
 					a_validationFunc);
 
 				if (it != formData.end())
@@ -236,10 +253,10 @@ namespace IED
 					continue;
 				}
 
-				const auto it = SelectBipedSlotEntryForm(
+				const auto it = SelectEntryForm(
 					a_params,
 					a_config,
-					v,
+					v.forms,
 					a_validationFunc);
 
 				if (it != formData.end())
@@ -254,7 +271,7 @@ namespace IED
 
 	template <class Tf>
 	auto IEquipment::SelectInventoryFormLastSlotted(
-		ProcessParams&                  a_params,
+		ProcessParams&                    a_params,
 		const Data::configLastEquipped_t& a_config,
 		const Tf&                         a_validationFunc) noexcept
 	{
@@ -262,7 +279,7 @@ namespace IED
 
 		if (a_config.flags.test(Data::LastEquippedFlags::kPrioritizeRecentDisplaySlots))
 		{
-			auto& tmpSlots = a_params.objects.GetTempData().sl;
+			auto& tmpSlots = a_params.objects.GetTempData().pc;
 
 			tmpSlots.clear();
 
@@ -288,16 +305,16 @@ namespace IED
 				tmpSlots.begin(),
 				tmpSlots.end(),
 				[](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
-					return a_lhs->slotState.lastOccupied >
-				           a_rhs->slotState.lastOccupied;
+					return reinterpret_cast<const ObjectEntrySlot*>(a_lhs)->slotState.lastOccupied >
+				           reinterpret_cast<const ObjectEntrySlot*>(a_rhs)->slotState.lastOccupied;
 				});
 
 			for (auto& e : tmpSlots)
 			{
-				const auto it = SelectDisplaySlotEntryForm(
+				const auto it = SelectEntryForm(
 					a_params,
 					a_config,
-					*e,
+					reinterpret_cast<const ObjectEntrySlot*>(e)->slotState.lastSlotted,
 					a_validationFunc);
 
 				if (it != formData.end())
@@ -323,10 +340,10 @@ namespace IED
 					continue;
 				}
 
-				const auto it = SelectDisplaySlotEntryForm(
+				const auto it = SelectEntryForm(
 					a_params,
 					a_config,
-					slot,
+					slot.slotState.lastSlotted,
 					a_validationFunc);
 
 				if (it != formData.end())
@@ -340,33 +357,73 @@ namespace IED
 	}
 
 	template <class Tf>
-	auto IEquipment::SelectBipedSlotEntryForm(
-		ProcessParams&                  a_params,
+	auto IEquipment::SelectInventoryFormLastAcquired(
+		ProcessParams&                    a_params,
 		const Data::configLastEquipped_t& a_config,
-		const BipedSlotCacheEntry&        a_slotEntry,
 		const Tf&                         a_validationFunc) noexcept
 	{
 		const auto& formData = a_params.collector.data.forms;
+		const auto& bsd      = a_params.objects.GetBipedSlotData();
 
-		for (auto& formid : a_slotEntry.forms)
+		if (a_config.flags.test(Data::LastEquippedFlags::kPrioritizeRecentAcquiredTypes))
 		{
-			const auto it = formData.find(formid);
-			if (it == formData.end())
+			auto& tmpSlots = a_params.objects.GetTempData().pc;
+
+			tmpSlots.clear();
+
+			for (auto& e : a_config.acqList)
 			{
-				continue;
+				if (e >= Data::ObjectTypeExtra::kMax)
+				{
+					continue;
+				}
+
+				tmpSlots.emplace_back(std::addressof(bsd->get(e)));
 			}
 
-			if (!a_config.filterConditions.evaluate_sfp(
-					{ it->second.form },
+			std::sort(
+				tmpSlots.begin(),
+				tmpSlots.end(),
+				[](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
+					return reinterpret_cast<const AcquiredCacheEntry*>(a_lhs)->lastAcquired >
+				           reinterpret_cast<const AcquiredCacheEntry*>(a_rhs)->lastAcquired;
+				});
+
+			for (auto& e : tmpSlots)
+			{
+				const auto it = SelectEntryForm(
 					a_params,
-					true))
-			{
-				continue;
-			}
+					a_config,
+					reinterpret_cast<const AcquiredCacheEntry*>(e)->forms,
+					a_validationFunc);
 
-			if (a_validationFunc(*it))
+				if (it != formData.end())
+				{
+					return it;
+				}
+			}
+		}
+		else
+		{
+			for (auto& e : a_config.acqList)
 			{
-				return it;
+				if (e >= Data::ObjectTypeExtra::kMax)
+				{
+					continue;
+				}
+
+				const auto& entry = bsd->get(e);
+
+				const auto it = SelectEntryForm(
+					a_params,
+					a_config,
+					entry.forms,
+					a_validationFunc);
+
+				if (it != formData.end())
+				{
+					return it;
+				}
 			}
 		}
 
@@ -374,17 +431,17 @@ namespace IED
 	}
 
 	template <class Tf>
-	auto IEquipment::SelectDisplaySlotEntryForm(
-		ProcessParams&                  a_params,
-		const Data::configLastEquipped_t& a_config,
-		const ObjectEntrySlot&            a_slotEntry,
-		const Tf&                         a_validationFunc) noexcept
+	auto IEquipment::SelectEntryForm(
+		ProcessParams&                                          a_params,
+		const Data::configLastEquipped_t&                       a_config,
+		const stl::boost_vector<Data::configFormZeroMissing_t>& a_forms,
+		const Tf&                                               a_validationFunc) noexcept
 	{
 		const auto& formData = a_params.collector.data.forms;
 
-		for (const auto& form : a_slotEntry.slotState.lastSlotted)
+		for (auto& formid : a_forms)
 		{
-			const auto it = formData.find(form);
+			const auto it = formData.find(formid);
 			if (it == formData.end())
 			{
 				continue;

@@ -10,32 +10,36 @@ namespace IED
 		class UIObjectSlotSelectorWidget
 		{
 		public:
-			template <class T>
+			template <Data::concepts::is_valid_slot_id T>
 			static bool DrawObjectSlotSelector(
 				const char* a_label,
 				T&          a_data,
-				bool        a_allowNone = false) requires(  //
-				stl::is_any_same_v<T, Data::ObjectSlot, Data::ObjectSlotExtra>);
+				bool        a_allowNone = false);
 		};
 
-		template <class T>
+		template <Data::concepts::is_valid_slot_id T>
 		bool UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
 			const char* a_label,
 			T&          a_data,
-			bool        a_allowNone) requires(  //
-			stl::is_any_same_v<T, Data::ObjectSlot, Data::ObjectSlotExtra>)
+			bool        a_allowNone)
 		{
+			constexpr bool is_extra_type =
+				stl::is_any_same_v<
+					T,
+					Data::ObjectSlotExtra,
+					Data::ObjectTypeExtra>;
+
 			bool result = false;
 
 			ImGui::PushID("os_sel");
 
 			const char* preview;
 
-			if constexpr (std::is_same_v<T, Data::ObjectSlotExtra>)
+			if constexpr (is_extra_type)
 			{
 				preview = a_data != T::kNone ?
-				              Data::GetSlotName(a_data) :
-                              "None";
+				              Data::GetObjectName(a_data) :
+				              "None";
 			}
 			else
 			{
@@ -44,7 +48,7 @@ namespace IED
 
 			if (ImGui::BeginCombo(a_label, preview, ImGuiComboFlags_HeightLarge))
 			{
-				if constexpr (std::is_same_v<T, Data::ObjectSlotExtra>)
+				if constexpr (is_extra_type)
 				{
 					ImGui::PushID("header");
 
@@ -68,7 +72,7 @@ namespace IED
 
 				for (enum_type i = 0; i < stl::underlying(T::kMax); i++)
 				{
-					auto e = static_cast<T>(i);
+					const auto e = static_cast<T>(i);
 
 					ImGui::PushID(i);
 
@@ -81,7 +85,7 @@ namespace IED
 						}
 					}
 
-					auto desc = Data::GetSlotName(e);
+					auto desc = Data::GetObjectName(e);
 
 					if (ImGui::Selectable(desc, selected))
 					{
@@ -92,7 +96,7 @@ namespace IED
 					ImGui::PopID();
 				}
 
-				if constexpr (std::is_same_v<T, Data::ObjectSlotExtra>)
+				if constexpr (is_extra_type)
 				{
 					ImGui::PopID();
 				}
@@ -104,5 +108,6 @@ namespace IED
 
 			return result;
 		}
+
 	}
 }

@@ -1041,6 +1041,31 @@ namespace IED
 			}
 		}
 
+		namespace concepts
+		{
+			template <class T>
+			concept is_valid_slot_id = stl::is_any_same_v<
+				T,
+				Data::ObjectSlot,
+				Data::ObjectSlotExtra,
+				Data::ObjectType,
+				Data::ObjectTypeExtra>;
+		}
+
+		template <concepts::is_valid_slot_id T>
+		[[nodiscard]] constexpr const char* GetObjectName(T a_obj) noexcept 
+		{
+			if constexpr (stl::is_any_same_v<T, Data::ObjectSlot, Data::ObjectSlotExtra>)
+			{
+				return GetSlotName(a_obj);
+			}
+
+			if constexpr (stl::is_any_same_v<T, Data::ObjectType, Data::ObjectTypeExtra>)
+			{
+				return GetObjectTypeName(a_obj);
+			}
+		}
+
 		[[nodiscard]] constexpr const char* GetConfigClassName(ConfigClass a_class) noexcept
 		{
 			switch (a_class)
