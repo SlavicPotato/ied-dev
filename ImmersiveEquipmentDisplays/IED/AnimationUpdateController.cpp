@@ -92,7 +92,8 @@ namespace IED
 		}
 	}
 
-	static constexpr BSBehaviorGraphExtraData* get_bged(NiAVObject* a_object) noexcept
+	static constexpr BSBehaviorGraphExtraData* get_bged(
+		const NiPointer<NiNode>& a_object) noexcept
 	{
 		const auto bged = a_object->GetExtraDataSafe<BSBehaviorGraphExtraData>(
 			BSStringHolder::GetSingleton()->m_bged);
@@ -101,7 +102,7 @@ namespace IED
 	}
 
 	bool AnimationUpdateController::CreateWeaponBehaviorGraph(
-		NiAVObject*                               a_object,
+		const NiPointer<NiNode>&                  a_object,
 		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 		std::function<bool(const char*)>          a_allowFunc)
 	{
@@ -131,7 +132,7 @@ namespace IED
 		{
 			gLog.Warning(
 				__FUNCTION__ ": binding animation object failed [0x%p | %s]",
-				a_object,
+				a_object.get(),
 				a_object->m_name.c_str());
 		}
 
@@ -141,7 +142,7 @@ namespace IED
 	}
 
 	bool AnimationUpdateController::LoadWeaponBehaviorGraph(
-		NiAVObject*                                                         a_object,
+		const NiPointer<NiNode>&                                            a_object,
 		std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr>& a_out)
 	{
 		const auto bged = get_bged(a_object);
@@ -167,7 +168,7 @@ namespace IED
 	}
 
 	bool AnimationUpdateController::CreateWeaponBehaviorGraph(
-		NiAVObject*                               a_object,
+		const NiPointer<NiNode>&                  a_object,
 		ObjectCloningTask&                        a_in,
 		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 		std::function<bool(const char*)>          a_allowFunc)
@@ -183,7 +184,7 @@ namespace IED
 		{
 			gLog.Warning(
 				__FUNCTION__ ": binding animation object failed [0x%p | %s]",
-				a_object,
+				a_object.get(),
 				a_object->m_name.c_str());
 		}
 

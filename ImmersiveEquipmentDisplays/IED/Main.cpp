@@ -97,40 +97,7 @@ namespace IED
 		OM::PersistentOutfitFormManager::GetSingleton().Install();
 #endif
 
-		bool uiEnabled = false;
-
-		if (config->m_enableUI)
-		{
-			Debug("Initializing render driver..");
-
-			if (Drivers::Render::Initialize(true))
-			{
-				Debug("Installing priority input hook..");
-
-				Drivers::Input::InstallPriorityHook();
-
-				Debug("Initializing UI driver..");
-
-				Drivers::UI::Initialize();
-				Drivers::UI::SetImGuiIni(PATHS::IMGUI_INI);
-
-				uiEnabled = true;
-
-				Message("Graphical user interface enabled");
-
-				if (config->m_dpiAwareness)
-				{
-					ImGui_ImplWin32_EnableDpiAwareness();
-					Debug("Enabled process DPI awareness");
-				}
-			}
-			else
-			{
-				WinApi::MessageBoxErrorLog(
-					PLUGIN_NAME_FULL,
-					"Failed initializing render driver, UI disabled");
-			}
-		}
+		const bool uiEnabled = config->m_enableUI ? InitUI(config->m_dpiAwareness) : false;
 
 		Debug("Initializing controller input handlers..");
 
@@ -176,6 +143,41 @@ namespace IED
 		return true;
 	}
 
+	bool Initializer::InitUI(bool a_enableDPIAwarness) const
+	{
+		Debug("Initializing render driver..");
+
+		if (Drivers::Render::Initialize(true))
+		{
+			Debug("Installing priority input hook..");
+
+			Drivers::Input::InstallPriorityHook();
+
+			Debug("Initializing UI driver..");
+
+			Drivers::UI::Initialize();
+			Drivers::UI::SetImGuiIni(PATHS::IMGUI_INI);
+
+			Message("Graphical user interface enabled");
+
+			if (a_enableDPIAwarness)
+			{
+				ImGui_ImplWin32_EnableDpiAwareness();
+				Debug("Enabled process DPI awareness");
+			}
+
+			return true;
+		}
+		else
+		{
+			WinApi::MessageBoxErrorLog(
+				PLUGIN_NAME_FULL,
+				"Failed initializing render driver, UI disabled");
+
+			return false;
+		}
+	}
+
 	void Initializer::RunChecks()
 	{
 #if defined(_XM_AVX2_INTRINSICS_) || defined(BT_USE_AVX)
@@ -211,7 +213,7 @@ namespace IED
 	}
 
 	void Initializer::SetupSKSEEventHandlers(
-		const SKSEInterface* a_skse)
+		const SKSEInterface* a_skse) const
 	{
 		const auto& skse = ISKSE::GetSingleton();
 

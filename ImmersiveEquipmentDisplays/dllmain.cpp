@@ -96,6 +96,7 @@ extern "C"
 			GET_EXE_VERSION_SUB(a_skse->runtimeVersion));
 
 #if defined(IED_MIMALLOC_IN_USE)
+
 		gLog.Message(
 			"mimalloc %u.%u, boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
 			MI_MALLOC_VERSION / 100,
@@ -108,6 +109,7 @@ extern "C"
 			JSONCPP_VERSION_PATCH,
 			IMGUI_VERSION,
 			IMGUI_VERSION_NUM);
+
 #else
 
 		gLog.Message(
@@ -120,6 +122,7 @@ extern "C"
 			JSONCPP_VERSION_PATCH,
 			IMGUI_VERSION,
 			IMGUI_VERSION_NUM);
+
 #endif
 
 		if (!IAL::IsLoaded())
@@ -134,7 +137,8 @@ extern "C"
 		{
 			WinApi::MessageBoxErrorLog(
 				PLUGIN_NAME_FULL,
-				"One or more addresses could not be retrieved from the address library");
+				"One or more addresses could not be retrieved from the address library\n\nLast bad ID: '%llu'",
+				IAL::GetLastBadQueryID());
 			return false;
 		}
 

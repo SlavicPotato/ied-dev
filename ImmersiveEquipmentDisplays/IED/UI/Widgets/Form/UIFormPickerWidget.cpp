@@ -322,7 +322,7 @@ namespace IED
 
 			auto fb_result = formBrowser.DrawImpl();
 
-			if (fb_result.result)
+			if (fb_result)
 			{
 				auto& entry = formBrowser.GetSelectedEntry();
 

@@ -33,11 +33,12 @@ namespace IED
 		FN_NAMEPROC("Init");
 
 	private:
+		bool InitUI(bool a_enableDPIAwarness) const;
 		void RunChecks();
 
 		static const char* GetLanguage();
 
-		void SetupSKSEEventHandlers(const SKSEInterface* a_skse);
+		void SetupSKSEEventHandlers(const SKSEInterface* a_skse) const;
 
 		virtual void Receive(const SKSEMessagingEvent& a_evn) override;
 

@@ -286,7 +286,7 @@ namespace IED
 			HALT(__FUNCTION__ ": failed to install player load 3D hook");
 		}
 	}
-
+	 
 	void EngineExtensions::Install_Armor_Update()
 	{
 		if (hook::call5(
@@ -306,7 +306,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Install_SetWeapAdjAnimVar()
+	void EngineExtensions::Install_SetWeapAdjAnimVar() const
 	{
 		VALIDATE_MEMORY(
 			m_weapAdj_a.get(),
@@ -424,7 +424,7 @@ namespace IED
 			m_toggleFav1_a.get());
 	}
 
-	void EngineExtensions::Install_UpdateReferenceBehaviorGraphs()
+	void EngineExtensions::Install_UpdateReferenceBehaviorGraphs() const
 	{
 		const auto addrRefUpdate    = m_animUpdateRef_a.get() + 0xAB;
 		const auto addrPlayerUpdate = m_animUpdatePlayer_a.get() + 0xD0;
@@ -555,7 +555,7 @@ namespace IED
 			"PlayerCharacter::UpdateRefLight");
 	}
 
-	void EngineExtensions::Install_EffectShaderPostResume()
+	void EngineExtensions::Install_EffectShaderPostResume() const
 	{
 		const auto addr = m_ShaderReferenceEffect_Resume_a.get() + 0x84;
 

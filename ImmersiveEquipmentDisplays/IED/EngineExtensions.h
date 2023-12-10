@@ -120,13 +120,13 @@ namespace IED
 		void Install_Actor_3DEvents();
 		void Install_PostLoad3DHooks();
 		void Install_Armor_Update();
-		void Install_SetWeapAdjAnimVar();
+		void Install_SetWeapAdjAnimVar() const;
 		void Install_CreateWeaponNodes();
 		void Install_WeaponAdjustDisable();
 		void Install_ToggleFav();
-		void Install_UpdateReferenceBehaviorGraphs();
+		void Install_UpdateReferenceBehaviorGraphs() const;
 		void Install_Lighting();
-		void Install_EffectShaderPostResume();
+		void Install_EffectShaderPostResume() const;
 		void Install_Actor_ActorValueOwner();
 		void Install_Player_OnMoveScene();
 

@@ -60,16 +60,16 @@ namespace IED
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
 		static bool CreateWeaponBehaviorGraph(
-			NiAVObject*                               a_object,
+			const NiPointer<NiNode>&                  a_object,
 			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 			std::function<bool(const char*)>          a_allowFunc = [](const char*) { return true; });
 
 		static bool LoadWeaponBehaviorGraph(
-			NiAVObject*                                                         a_object,
+			const NiPointer<NiNode>&                                            a_object,
 			std::pair<BSFixedString, RE::WeaponAnimationGraphManagerHolderPtr>& a_out);
 
 		static bool CreateWeaponBehaviorGraph(
-			NiAVObject*                               a_object,
+			const NiPointer<NiNode>&                  a_object,
 			ObjectCloningTask&                        a_in,
 			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 			std::function<bool(const char*)>          a_allowFunc = [](const char*) { return true; });
