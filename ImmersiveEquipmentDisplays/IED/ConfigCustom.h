@@ -4,7 +4,7 @@
 #include "ConfigBipedObjectList.h"
 #include "ConfigLastEquipped.h"
 #include "ConfigModelGroup.h"
-#include "ConfigVariableSource.h"
+#include "ConfigVariableSourceSelector.h"
 
 namespace IED
 {
@@ -67,17 +67,16 @@ namespace IED
 				lastEquipped.flags.set(LastEquippedFlags::kSkipOccupiedBipedSlots, customFlags.consume(CustomFlags::kUnused3));
 			}
 
-			stl::flag<CustomFlags>  customFlags{ DEFAULT_CUSTOM_FLAGS };
-			configCachedForm_t      form;
-			configCachedForm_t      modelForm;
-			configRange_t           countRange;
-			std::uint32_t           priority{ 0 };  // unused
-			float                   probability{ 100.0f };
-			configFormList_t        extraItems;
-			configModelGroup_t      group;
-			configLastEquipped_t    lastEquipped;
-			configVariableSource_t  varSource;
-			configFixedStringList_t formVars;
+			stl::flag<CustomFlags>         customFlags{ DEFAULT_CUSTOM_FLAGS };
+			configCachedForm_t             form;
+			configCachedForm_t             modelForm;
+			configRange_t                  countRange;
+			std::uint32_t                  priority{ 0 };  // unused
+			float                          probability{ 100.0f };
+			configFormList_t               extraItems;
+			configModelGroup_t             group;
+			configLastEquipped_t           lastEquipped;
+			configVariableSourceSelector_t vss;
 
 		private:
 			template <class Archive>
@@ -94,8 +93,8 @@ namespace IED
 				a_ar& extraItems;
 				a_ar& group;
 				a_ar& lastEquipped;
-				a_ar& varSource;
-				a_ar& formVars;
+				a_ar& vss.varSource;
+				a_ar& vss.formVars;
 			}
 
 			template <class Archive>
@@ -118,8 +117,8 @@ namespace IED
 					if (a_version >= DataVersion5)
 					{
 						a_ar& lastEquipped;
-						a_ar& varSource;
-						a_ar& formVars;
+						a_ar& vss.varSource;
+						a_ar& vss.formVars;
 					}
 					else if (a_version >= DataVersion3)
 					{
@@ -205,7 +204,7 @@ namespace IED
 		{
 		public:
 			template <class Tf>
-			void visit(Tf a_func)                              //
+			void visit(Tf a_func)                                         //
 				noexcept(noexcept(configCustomHolder_t().visit(a_func)))  //
 				requires(requires(configCustomHolder_t a_v, Tf a_func) { a_v.visit(a_func); })
 			{

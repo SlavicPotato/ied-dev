@@ -2051,6 +2051,12 @@
     <ClInclude Include="IED\Parsers\JSONConfigConvertNodes2ListParser.h">
       <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConfigVariableSourceSelector.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigVSSParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3276,6 +3282,9 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigConvertNodes2ListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ConvertNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigVSSParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

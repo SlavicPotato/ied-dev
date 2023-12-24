@@ -757,17 +757,23 @@ namespace IED
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
 
-		ActorObjectHolder* SelectCustomFormVariableSourceHolder(
+		ActorObjectHolder* SelectFormVariableSourceHolder(
 			Game::FormID   a_id,
 			ProcessParams& a_params) noexcept;
 
-		ActorObjectHolder* SelectCustomFormVariableSource(
-			ProcessParams&              a_params,
-			const Data::configCustom_t& a_config) noexcept;
+		ActorObjectHolder* SelectFormVariableSource(
+			ProcessParams&                      a_params,
+			const Data::configVariableSource_t& a_config) noexcept;
 
-		const Data::configCachedForm_t* SelectCustomForm(
-			ProcessParams&              a_params,
-			const Data::configCustom_t& a_config) noexcept;
+		const Data::configCachedForm_t* SelectFromFormVariable(
+			ProcessParams&                              a_params,
+			const Data::configVariableSourceSelector_t& a_config) noexcept;
+
+		const Data::configCachedForm_t* SelectForm(
+			ProcessParams&                              a_params,
+			const Data::configVariableSourceSelector_t& a_vss,
+			const Data::configCachedForm_t&             a_default,
+			const bool                                  a_useFormVar) noexcept;
 
 		AttachObjectResult ProcessCustomEntry(
 			ProcessParams&              a_params,

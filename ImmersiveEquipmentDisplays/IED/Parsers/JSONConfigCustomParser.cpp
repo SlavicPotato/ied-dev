@@ -92,14 +92,14 @@ namespace IED
 
 			Parser<Data::configVariableSource_t> vsparser(m_state);
 
-			if (!vsparser.Parse(a_in["vsrc"], a_out.varSource))
+			if (!vsparser.Parse(a_in["vsrc"], a_out.vss.varSource))
 			{
 				return false;
 			}
 
 			Parser<Data::configFixedStringList_t> fslparser(m_state);
 
-			if (!fslparser.Parse(a_in["fvars"], a_out.formVars))
+			if (!fslparser.Parse(a_in["fvars"], a_out.vss.formVars))
 			{
 				return false;
 			}
@@ -153,11 +153,11 @@ namespace IED
 
 			Parser<Data::configVariableSource_t> vsparser(m_state);
 
-			vsparser.Create(a_in.varSource, a_out["vsrc"]);
+			vsparser.Create(a_in.vss.varSource, a_out["vsrc"]);
 
 			Parser<Data::configFixedStringList_t> fslparser(m_state);
 
-			fslparser.Create(a_in.formVars, a_out["fvars"]);
+			fslparser.Create(a_in.vss.formVars, a_out["fvars"]);
 
 			gparser.Create(a_in.group, a_out["mgrp"]);
 

@@ -2920,7 +2920,7 @@ namespace IED
 		}
 	}
 
-	ActorObjectHolder* Controller::SelectCustomFormVariableSourceHolder(
+	ActorObjectHolder* Controller::SelectFormVariableSourceHolder(
 		Game::FormID   a_id,
 		ProcessParams& a_params) noexcept
 	{
@@ -2944,21 +2944,21 @@ namespace IED
 		}
 	}
 
-	ActorObjectHolder* Controller::SelectCustomFormVariableSource(
-		ProcessParams&              a_params,
-		const Data::configCustom_t& a_config) noexcept
+	ActorObjectHolder* Controller::SelectFormVariableSource(
+		ProcessParams&                      a_params,
+		const Data::configVariableSource_t& a_vss) noexcept
 	{
-		switch (a_config.varSource.source)
+		switch (a_vss.source)
 		{
 		case VariableSource::kActor:
 
-			return SelectCustomFormVariableSourceHolder(a_config.varSource.form, a_params);
+			return SelectFormVariableSourceHolder(a_vss.form, a_params);
 
 		case VariableSource::kPlayerHorse:
 
 			if (const auto& actor = a_params.get_last_ridden_player_horse())
 			{
-				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
+				return SelectFormVariableSourceHolder(actor->formID, a_params);
 			}
 
 			break;
@@ -2967,7 +2967,7 @@ namespace IED
 
 			if (const auto& actor = a_params.get_mounting_actor())
 			{
-				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
+				return SelectFormVariableSourceHolder(actor->formID, a_params);
 			}
 
 			break;
@@ -2976,62 +2976,55 @@ namespace IED
 
 			if (const auto& actor = a_params.get_mounted_actor())
 			{
-				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
+				return SelectFormVariableSourceHolder(actor->formID, a_params);
 			}
 
 			break;
 
 		case VariableSource::kSelf:
 
-			return SelectCustomFormVariableSourceHolder(a_params.objects.GetActorFormID(), a_params);
+			return SelectFormVariableSourceHolder(a_params.objects.GetActorFormID(), a_params);
 		}
 
 		return {};
 	}
 
-	const configCachedForm_t* Controller::SelectCustomForm(
-		ProcessParams&        a_params,
-		const configCustom_t& a_config) noexcept
+	const Data::configCachedForm_t* Controller::SelectFromFormVariable(
+		ProcessParams&                              a_params,
+		const Data::configVariableSourceSelector_t& a_vss) noexcept
 	{
-		if (a_config.customFlags.test(CustomFlags::kVariableMode))
+		if (const auto holder = SelectFormVariableSource(a_params, a_vss.varSource))
 		{
-			const auto holder = SelectCustomFormVariableSource(a_params, a_config);
-			if (!holder)
-			{
-				return nullptr;
-			}
-
 			auto& vars = holder->GetVariables();
 
-			for (auto& e : a_config.formVars)
+			for (auto& e : a_vss.formVars)
 			{
 				auto it = vars.find(e);
 				if (it != vars.end())
 				{
 					if (it->second.type == ConditionalVariableType::kForm)
 					{
-						auto& form = it->second.form;
-						if (form.get_id() &&
-						    !form.get_id().IsTemporary())
-						{
-							return std::addressof(form);
-						}
+						return std::addressof(it->second.form);
 					}
 				}
 			}
 		}
-		else
-		{
-			auto& result = a_config.form;
-
-			if (result.get_id() &&
-			    !result.get_id().IsTemporary())
-			{
-				return std::addressof(result);
-			}
-		}
 
 		return nullptr;
+	}
+
+	const Data::configCachedForm_t* Controller::SelectForm(
+		ProcessParams&                              a_params,
+		const Data::configVariableSourceSelector_t& a_vss,
+		const Data::configCachedForm_t&             a_default,
+		const bool                                  a_useFormVar) noexcept
+	{
+		const auto* result =
+			a_useFormVar ?
+				SelectFromFormVariable(a_params, a_vss) :
+				std::addressof(a_default);
+
+		return result && result->get_id() && !result->get_id().IsTemporary() ? result : nullptr;
 	}
 
 	AttachObjectResult Controller::ProcessCustomEntry(
@@ -3115,10 +3108,13 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
-			const auto modelForm =
-				usedBaseConf.forceModel.get_id() ?
-					usedBaseConf.forceModel.get_form() :
-					a_config.modelForm.get_form();
+			const auto mcf = SelectForm(
+				a_params,
+				usedBaseConf.fmVss,
+				usedBaseConf.forceModel,
+				usedBaseConf.flags.test(BaseFlags::kForceModelVariableSource));
+
+			const auto modelForm = mcf ? mcf->get_form() : a_config.modelForm.get_form();
 
 			if (a_objectEntry.data.state &&
 			    a_objectEntry.data.state->form == itemData.form)
@@ -3252,7 +3248,11 @@ namespace IED
 		}
 		else
 		{
-			const auto cform = SelectCustomForm(a_params, a_config);
+			const auto cform = SelectForm(
+				a_params,
+				a_config.vss,
+				a_config.form,
+				a_config.customFlags.test(CustomFlags::kVariableMode));
 
 			if (!cform)
 			{
@@ -3304,7 +3304,13 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
-			const auto modelForm = usedBaseConf.forceModel.get_form();
+			const auto mcf = SelectForm(
+				a_params,
+				usedBaseConf.fmVss,
+				usedBaseConf.forceModel,
+				usedBaseConf.flags.test(BaseFlags::kForceModelVariableSource));
+
+			const auto modelForm = mcf ? mcf->get_form() : nullptr;
 
 			if (a_objectEntry.data.state &&
 			    a_objectEntry.data.state->form == form)

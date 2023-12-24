@@ -28,12 +28,14 @@
 #include "UISimpleStringList.h"
 #include "UISimpleStringSet.h"
 #include "UITransformSliderWidget.h"
+#include "UIVariableSourceSelectorWidget.h"
 #include "UIWidgetsCommon.h"
 
 #include "IED/ConfigStore.h"
 #include "IED/StringHolder.h"
 
 #include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidgetStrings.h"
+#include "IED/UI/Custom/Widgets/UICustomEditorStrings.h"
 
 #include "BaseConfigEditorAction.h"
 
@@ -179,6 +181,10 @@ namespace IED
 				Data::equipmentOverrideList_t& a_list,
 				Data::BaseFlags                a_mask,
 				Data::BaseFlags                a_flags);
+
+			bool DrawVariableModePanel(
+				T                                     a_handle,
+				Data::configVariableSourceSelector_t& a_vss);
 
 		private:
 			void DrawBaseConfigGeneralFlags(
@@ -688,6 +694,60 @@ namespace IED
 		}
 
 		template <class T>
+		bool UIBaseConfigWidget<T>::DrawVariableModePanel(
+			T                                     a_handle,
+			Data::configVariableSourceSelector_t& a_vss)
+		{
+			bool result = false;
+
+			ImGui::PushID("vm_panel");
+
+			if (UIVariableSourceSelectorWidget::DrawVariableSourceSelectorWidget(a_vss.varSource.source))
+			{
+				result |= true;
+			}
+
+			switch (a_vss.varSource.source)
+			{
+			case Data::VariableSource::kActor:
+				{
+					auto& fp = m_condParamEditor.GetFormPicker();
+
+					fp.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
+					fp.SetFormBrowserEnabled(false);
+
+					if (fp.DrawFormPicker(
+							"ctl_1",
+							static_cast<Localization::StringID>(CommonStrings::Form),
+							a_vss.varSource.form))
+					{
+						result |= true;
+					}
+				}
+				break;
+			case Data::VariableSource::kPlayerHorse:
+
+				break;
+			}
+
+			ImGui::Spacing();
+
+			if (this->DrawStringListTree(
+					"ctl_2",
+					static_cast<Localization::StringID>(CommonStrings::Variables),
+					a_vss.formVars,
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				result |= true;
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
 		void UIBaseConfigWidget<T>::DrawBaseConfigValues(
 			T                         a_handle,
 			Data::configBaseValues_t& a_data,
@@ -887,7 +947,7 @@ namespace IED
 				}
 
 				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-				
+
 				if (ImGui::RadioButton(
 						UIL::LS(CommonStrings::Reference, "2"),
 						a_data.flags.test(Data::BaseFlags::kReferenceMode)))
@@ -1012,7 +1072,7 @@ namespace IED
 					"tree",
 					true,
 					"%s",
-					UIL::LS(CommonStrings::Other));
+					UIL::LS(UIWidgetCommonStrings::OverrideModel));
 			}
 			else
 			{
@@ -1021,7 +1081,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					UIL::LS(CommonStrings::Other));
+					UIL::LS(UIWidgetCommonStrings::OverrideModel));
 			}
 
 			if (r)
@@ -1030,19 +1090,51 @@ namespace IED
 
 				UICommon::PushDisabled(a_disabled);
 
-				if (m_formPicker.DrawFormPicker(
-						"fp_m",
-						static_cast<Localization::StringID>(UIWidgetCommonStrings::OverrideModel),
-						a_data.forceModel,
-						UITipsInterface::GetTipText(UITip::OverrideModel)))
+				if (ImGui::CheckboxFlagsT(
+						UIL::LS(UICustomEditorString::UseFormVariable, "fp_vc"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kForceModelVariableSource)))
 				{
-					PropagateMemberToEquipmentOverrides(
+					PropagateFlagToEquipmentOverrides(
 						a_baseConfig,
-						offsetof(Data::configBaseValues_t, forceModel),
-						a_data.forceModel,
-						[](auto&) {});
+						Data::BaseFlags::kForceModelVariableSource);
 
-					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+
+				if (a_data.flags.test(Data::BaseFlags::kForceModelVariableSource))
+				{
+					ImGui::Indent();
+
+					if (DrawVariableModePanel(a_handle, a_data.fmVss))
+					{
+						PropagateMemberToEquipmentOverrides(
+							a_baseConfig,
+							offsetof(Data::configBaseValues_t, fmVss),
+							a_data.fmVss,
+							[](auto&) {});
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					}
+
+					ImGui::Unindent();
+				}
+				else
+				{
+					if (m_formPicker.DrawFormPicker(
+							"fp_m",
+							static_cast<Localization::StringID>(CommonStrings::Form),
+							a_data.forceModel,
+							UITipsInterface::GetTipText(UITip::OverrideModel)))
+					{
+						PropagateMemberToEquipmentOverrides(
+							a_baseConfig,
+							offsetof(Data::configBaseValues_t, forceModel),
+							a_data.forceModel,
+							[](auto&) {});
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					}
 				}
 
 				UICommon::PopDisabled(a_disabled);

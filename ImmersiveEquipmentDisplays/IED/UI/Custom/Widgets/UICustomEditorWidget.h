@@ -15,7 +15,6 @@
 #include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UILastEquippedWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
-#include "IED/UI/Widgets/UIVariableSourceSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/ConfigStore.h"
@@ -120,10 +119,6 @@ namespace IED
 
 		private:
 			void DrawFormSelectors(
-				T                               a_handle,
-				SingleCustomConfigUpdateParams& a_params);
-
-			void DrawVariableModePanel(
 				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
@@ -755,7 +750,13 @@ namespace IED
 					{
 						ImGui::Indent();
 
-						DrawVariableModePanel(a_handle, a_params);
+						if (this->DrawVariableModePanel(a_handle, data.vss))
+						{
+							this->OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+						}
 
 						ImGui::Unindent();
 					}
@@ -783,67 +784,6 @@ namespace IED
 				}
 
 				break;
-			}
-
-			ImGui::PopID();
-		}
-
-		template <class T>
-		void UICustomEditorWidget<T>::DrawVariableModePanel(
-			T                               a_handle,
-			SingleCustomConfigUpdateParams& a_params)
-		{
-			auto& data = a_params.entry(a_params.sex);
-
-			ImGui::PushID("vm_panel");
-
-			if (UIVariableSourceSelectorWidget::DrawVariableSourceSelectorWidget(data.varSource.source))
-			{
-				this->OnBaseConfigChange(
-					a_handle,
-					std::addressof(a_params),
-					PostChangeAction::Evaluate);
-			}
-
-			switch (data.varSource.source)
-			{
-			case Data::VariableSource::kActor:
-				{
-					auto& fp = m_condParamEditor.GetFormPicker();
-
-					fp.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
-					fp.SetFormBrowserEnabled(false);
-
-					if (fp.DrawFormPicker(
-							"ctl_1",
-							static_cast<Localization::StringID>(CommonStrings::Form),
-							data.varSource.form))
-					{
-						this->OnBaseConfigChange(
-							a_handle,
-							std::addressof(a_params),
-							PostChangeAction::Evaluate);
-					}
-				}
-				break;
-			case Data::VariableSource::kPlayerHorse:
-
-				break;
-			}
-
-			ImGui::Spacing();
-
-			if (this->DrawStringListTree(
-					"ctl_2",
-					static_cast<Localization::StringID>(CommonStrings::Variables),
-					data.formVars,
-					ImGuiTreeNodeFlags_SpanAvailWidth |
-						ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				this->OnBaseConfigChange(
-					a_handle,
-					std::addressof(a_params),
-					PostChangeAction::Evaluate);
 			}
 
 			ImGui::PopID();

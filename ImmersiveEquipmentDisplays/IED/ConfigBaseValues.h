@@ -4,6 +4,7 @@
 #include "ConfigExtraLight.h"
 #include "ConfigNodePhysicsValues.h"
 #include "ConfigTransform.h"
+#include "ConfigVariableSourceSelector.h"
 #include "NodeDescriptor.h"
 
 namespace IED
@@ -45,6 +46,7 @@ namespace IED
 			kPlayLoopSound              = 1u << 28,
 			kHideGeometry               = 1u << 29,
 			kAttachSubGraphs            = 1u << 30,
+			kForceModelVariableSource   = 1u << 31,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kDisabled |
@@ -80,6 +82,7 @@ namespace IED
 				DataVersion5 = 5,
 				DataVersion6 = 6,
 				DataVersion7 = 7,
+				DataVersion8 = 8,
 			};
 
 			static constexpr auto DEFAULT_FLAGS =
@@ -98,6 +101,7 @@ namespace IED
 			configCopyableUniquePtr_t<configNodePhysicsValues_t> physicsValues;
 			configTransform_t                                    geometryTransform;
 			configExtraLight_t                                   extraLightConfig;
+			configVariableSourceSelector_t                       fmVss;
 
 		protected:
 			template <class Archive>
@@ -112,6 +116,7 @@ namespace IED
 				a_ar& physicsValues.data;
 				a_ar& geometryTransform;
 				a_ar& extraLightConfig;
+				a_ar& fmVss;
 			}
 
 			template <class Archive>
@@ -146,6 +151,11 @@ namespace IED
 									if (a_version >= DataVersion7)
 									{
 										a_ar& extraLightConfig;
+
+										if (a_version >= DataVersion8)
+										{
+											a_ar& fmVss;
+										}
 									}
 								}
 							}
@@ -161,4 +171,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion7);
+	IED::Data::configBaseValues_t::Serialization::DataVersion8);

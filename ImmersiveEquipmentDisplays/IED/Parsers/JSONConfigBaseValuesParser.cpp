@@ -6,6 +6,7 @@
 #include "JSONConfigExtraLight.h"
 #include "JSONConfigNodePhysicsValuesParser.h"
 #include "JSONConfigTransformParser.h"
+#include "JSONConfigVSSParser.h"
 #include "JSONNodeMapValueParser.h"
 
 namespace IED
@@ -94,6 +95,16 @@ namespace IED
 				}
 			}
 
+			if (auto& data = a_in["fm_vss"])
+			{
+				Parser<Data::configVariableSourceSelector_t> parser(m_state);
+
+				if (!parser.Parse(data, a_out.fmVss))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -150,6 +161,10 @@ namespace IED
 			Parser<Data::configExtraLight_t> parserexl(m_state);
 
 			parserexl.Create(a_data.extraLightConfig, a_out["exl"]);
+
+			Parser<Data::configVariableSourceSelector_t> vssparser(m_state);
+
+			vssparser.Create(a_data.fmVss, a_out["fm_vss"]);
 		}
 
 	}
