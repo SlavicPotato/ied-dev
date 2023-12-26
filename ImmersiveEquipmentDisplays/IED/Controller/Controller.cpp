@@ -2613,8 +2613,13 @@ namespace IED
 					usedBaseConf.flags,
 					a_params);
 
-				const auto itemData  = item->item;
-				const auto modelForm = usedBaseConf.forceModel.get_form();
+				const auto itemData = item->item;
+				const auto mcf      = SelectForm(
+                    a_params,
+                    usedBaseConf.fmVss,
+                    usedBaseConf.forceModel,
+                    usedBaseConf.flags.test(BaseFlags::kForceModelVariableSource));
+				const auto modelForm = mcf ? mcf->get_form() : nullptr;
 
 				if (objectEntry.data.state &&
 				    objectEntry.data.state->form == itemData->form)
