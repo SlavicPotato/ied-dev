@@ -133,8 +133,8 @@ namespace IED
 		bool IsExteriorDark(const RE::Sky* a_sky) noexcept
 		{
 			return a_sky ?
-				GetExteriorAmbientLightLevel(a_sky) < GetTorchLightLevel(a_sky):
-				false;
+			           GetExteriorAmbientLightLevel(a_sky) < GetTorchLightLevel(a_sky) :
+			           false;
 		}
 
 		float GetExteriorAmbientLightLevel(const RE::Sky* a_sky) noexcept
@@ -145,10 +145,16 @@ namespace IED
 
 		float GetTorchLightLevel(const RE::Sky* a_sky) noexcept
 		{
-			const bool isNightTime = detail::is_nighttime(a_sky);
+			const bool isNightTime = a_sky ? detail::is_nighttime(a_sky) : false;
 			auto&      sh          = SPtrHolder::GetSingleton();
 
-			return isNightTime ? (sh.fTorchLightLevelNight ? *sh.fTorchLightLevelNight : 1.2f) : 0.6f;
+			return isNightTime ? (sh.fTorchLightLevelNight ? *sh.fTorchLightLevelNight : 1.2f) : BASE_TORCH_LIGHT_LEVEL;
+		}
+
+		float GetTorchLightLevelRatio(const RE::Sky* a_sky) noexcept
+		{
+			const float torchLightLevel = GetTorchLightLevel(a_sky);
+			return BASE_TORCH_LIGHT_LEVEL / torchLightLevel;
 		}
 
 		bool IsInteriorDark(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept

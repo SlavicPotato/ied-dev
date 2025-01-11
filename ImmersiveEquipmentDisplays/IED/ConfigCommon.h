@@ -250,13 +250,13 @@ namespace IED
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				a_ar& id;
+				a_ar & id;
 			}
 
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& id;
+				a_ar & id;
 
 				if (id)
 				{
@@ -347,6 +347,7 @@ namespace IED
 			kLightingTemplate          = 64,
 			kInteriorAmbientLightLevel = 65,
 			kWaitingForPlayer          = 66,
+			kInDarkness                = 67,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -461,7 +462,7 @@ namespace IED
 			{
 				for (auto& e : data)
 				{
-					a_ar& e;
+					a_ar & e;
 				}
 			}
 		};
@@ -573,7 +574,7 @@ namespace IED
 				a_ar& data[stl::underlying(ConfigClass::Actor)];
 				a_ar& data[stl::underlying(ConfigClass::NPC)];
 				a_ar& data[stl::underlying(ConfigClass::Race)];
-				a_ar& global;
+				a_ar & global;
 			}
 
 			map_type  data[3];
@@ -646,9 +647,9 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& flags.value;
-				a_ar& allow;
-				a_ar& deny;
+				a_ar & flags.value;
+				a_ar & allow;
+				a_ar & deny;
 			}
 		};
 
@@ -687,8 +688,8 @@ namespace IED
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& static_cast<configFormFilterBase_t&>(*this);
-				a_ar& filterFlags.value;
-				a_ar& profile.name;
+				a_ar & filterFlags.value;
+				a_ar & profile.name;
 			}
 		};
 

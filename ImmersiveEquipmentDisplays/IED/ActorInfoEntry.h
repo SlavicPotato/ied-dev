@@ -55,8 +55,10 @@ namespace IED
 		std::uint16_t                            level{ 0 };
 		bool                                     pcLevelMult{ false };
 		long long                                ts{ 0 };
-		float                                    lightLevel{ 0 };
+		float                                    lightLevelGame{ 0 };
+		float                                    cldLightLevel{ 0 };
 		float                                    directionalAmbientLightLevel{ 0 };
+		float                                    characterLightLevel{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 

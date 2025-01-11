@@ -43,8 +43,7 @@ namespace IED
 		static float GetLightMagnitude(
 			Actor*               a_actor,
 			RE::ShadowSceneNode* a_shadowSceneNode,
-			const NiPoint3&      a_pos,
-			std::uint64_t        a_filterFlags) noexcept;
+			const NiPoint3&      a_pos) noexcept;
 
 		static float GetLightMagnitude(
 			Actor*                         a_actor,

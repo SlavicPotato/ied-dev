@@ -44,9 +44,9 @@ namespace IED
 
 		if (a_light->pointLight)
 		{
-			const float dx = (a_pos.x - niLight->m_worldTransform.pos.x);
-			const float dy = (a_pos.y - niLight->m_worldTransform.pos.y);
-			const float dz = (a_pos.z - niLight->m_worldTransform.pos.z);
+			const float dx = a_pos.x - niLight->m_worldTransform.pos.x;
+			const float dy = a_pos.y - niLight->m_worldTransform.pos.y;
+			const float dz = a_pos.z - niLight->m_worldTransform.pos.z;
 			const float m  = std::sqrtf(dx * dx + dy * dy + dz * dz) * 1.0f / niLight->radius.x;
 			const float n  = std::clamp(m, 0.0f, 1.0f);
 			c              = 1.0f - n * n;
@@ -81,18 +81,7 @@ namespace IED
 
 		if (a_actor == *g_thePlayer)
 		{
-			std::uint64_t filterFlags = std::numeric_limits<std::uint64_t>::max();
-
-			for (std::uint32_t i = 0; i < shadowSceneNode->unk148.size(); ++i)
-			{
-				const auto& light = shadowSceneNode->unk148[i];
-				if (light && !IsLightHittingActor(nullptr, light, a_actor, pos))
-				{
-					filterFlags &= ~(1ui64 << i);
-				}
-			}
-
-			lm = GetLightMagnitude(a_actor, shadowSceneNode, pos, filterFlags);
+			lm = GetLightMagnitude(a_actor, shadowSceneNode, pos);
 
 			auto shadowDirLight = reinterpret_cast<RE::BSShadowLight*>(shadowSceneNode->shadowDirLight);
 
@@ -123,8 +112,7 @@ namespace IED
 	float CLD::GetLightMagnitude(
 		Actor*               a_actor,
 		RE::ShadowSceneNode* a_shadowSceneNode,
-		const NiPoint3&      a_pos,
-		std::uint64_t        a_filterFlags) noexcept
+		const NiPoint3&      a_pos) noexcept
 	{
 		float result = 0.0f;
 
@@ -139,19 +127,16 @@ namespace IED
 			}
 		}
 
-		std::uint64_t r14 = 0x1;
-
 		for (const auto& e : a_shadowSceneNode->unk148)
 		{
-			if (e && (a_filterFlags & r14) != 0)
+			if (e)
 			{
-				if (FilterLight(a_actor, e.get()))
+				if (FilterLight(a_actor, e.get()) && 
+					IsLightHittingActor(nullptr, e.get(), a_actor, a_pos))
 				{
 					result += GetLightDiffuseMagnitude(e.get(), a_pos);
 				}
 			}
-
-			r14 <<= 1;
 		}
 
 		return result;

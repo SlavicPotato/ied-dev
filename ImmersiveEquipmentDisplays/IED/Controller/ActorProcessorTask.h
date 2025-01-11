@@ -169,7 +169,6 @@ namespace IED
 			bool                  inFirstPerson{ false };
 			bool                  inDialogue{ false };
 			bool                  isExteriorDark{ false };
-			bool                  isPlayerInDarkInterior{ false };
 			bool                  isDaytime{ true };
 #if defined(IED_ENABLE_CONDITION_EN)
 			bool playerEnemiesNearby{ false };

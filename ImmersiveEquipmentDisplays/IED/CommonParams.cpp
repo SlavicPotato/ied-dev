@@ -218,6 +218,11 @@ namespace IED
 		return *isInDarkArea;
 	}
 
+	bool CommonParams::is_in_darkness() const noexcept
+	{
+		return objects.GetCachedData().actorInDarkness;
+	}
+
 	float CommonParams::get_interior_ambient_light_level() const noexcept
 	{
 		if (!interiorAmbientLightLevel)

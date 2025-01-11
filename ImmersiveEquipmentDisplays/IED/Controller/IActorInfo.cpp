@@ -3,7 +3,7 @@
 #include "IActorInfo.h"
 
 #include "IED/AreaLightingDetection.h"
-
+#include "IED/CharacterLightingDetection.h"
 #include "IED/FormCommon.h"
 
 #include <ext/GameCommon.h>
@@ -50,6 +50,8 @@ namespace IED
 			a_out.location = {};
 		}
 
+		a_out.cldLightLevel = CLD::GetLightLevel(a_actor);
+
 		if (auto cell = a_actor->GetParentCell())
 		{
 			a_out.cell = {
@@ -62,22 +64,27 @@ namespace IED
 			a_out.cellOwner  = owner ? owner->formID : Game::FormID{};
 			a_out.cellCoords = cell->GetCellCoordinates();
 
+			const bool intLighting = (cell->IsInterior() && !cell->cellFlags.test(TESObjectCELL::Flag::kShowSky | TESObjectCELL::Flag::kUseSkyLighting));
+
+			const auto sky = RE::TES::GetSingleton()->sky;
+
 			a_out.directionalAmbientLightLevel =
-				(cell->IsInterior() &&
-			     !cell->cellFlags.test(
-					 TESObjectCELL::Flag::kShowSky |
-					 TESObjectCELL::Flag::kUseSkyLighting)) ?
-					ALD::GetInteriorAmbientLightLevel(a_actor, RE::TES::GetSingleton()->sky, cell) :
+				intLighting ?
+					ALD::GetInteriorAmbientLightLevel(a_actor, sky, cell) :
 					-1.0f;
 
-			//a_out.cellLightingTemplate = cell->lightingTemplate ? cell->lightingTemplate->formID : Game::FormID{};
+			a_out.characterLightLevel =
+				intLighting ?
+					std::max(a_out.directionalAmbientLightLevel, 0.0f) + a_out.cldLightLevel :
+					(sky ? ALD::GetExteriorAmbientLightLevel(sky) : 0.0f) + a_out.cldLightLevel;
 		}
 		else
 		{
-			a_out.cell      = {};
-			a_out.cellOwner = {};
-			//a_out.cellLightingTemplate = {};
+			a_out.cell                         = {};
+			a_out.cellOwner                    = {};
 			a_out.directionalAmbientLightLevel = -1.0f;
+			const auto sky                     = RE::TES::GetSingleton()->sky;
+			a_out.characterLightLevel          = (sky ? ALD::GetExteriorAmbientLightLevel(sky) : 0.0f) + a_out.cldLightLevel;
 			a_out.cellCoords.reset();
 		}
 
@@ -197,11 +204,11 @@ namespace IED
 
 		if (auto pm = a_actor->processManager)
 		{
-			a_out.lightLevel = pm->high ? pm->high->lightLevel : 0.0f;
+			a_out.lightLevelGame = pm->high ? pm->high->lightLevel : 0.0f;
 		}
 		else
 		{
-			a_out.lightLevel = 0.0f;
+			a_out.lightLevelGame = 0.0f;
 		}
 
 		if (auto npc = a_actor->GetActorBase())

@@ -740,7 +740,12 @@ namespace IED
 				ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::LightLevel));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("%f / %f", data.lightLevel, data.directionalAmbientLightLevel);
+				ImGui::Text(
+					"%f / %f, %f, %f",
+					data.lightLevelGame,
+					data.characterLightLevel,
+					data.cldLightLevel,
+					data.directionalAmbientLightLevel);
 
 				ImGui::EndTable();
 			}

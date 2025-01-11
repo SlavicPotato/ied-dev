@@ -21,6 +21,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton),
 			std::make_pair(Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat),
 			std::make_pair(Data::ExtraConditionType::kInDarkArea, UIConditionExtraSelectorWidgetStrings::InDarkArea),
+			std::make_pair(Data::ExtraConditionType::kInDarkness, UIConditionExtraSelectorWidgetStrings::InDarkness),
 			std::make_pair(Data::ExtraConditionType::kInDialogue, UIConditionExtraSelectorWidgetStrings::InDialogue),
 			std::make_pair(Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson),
 			std::make_pair(Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior),
@@ -257,6 +258,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InteriorAmbientLightLevel);
 			case Data::ExtraConditionType::kWaitingForPlayer:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::WaitingForPlayer);
+			case Data::ExtraConditionType::kInDarkness:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InDarkness);
 			default:
 				return nullptr;
 			}

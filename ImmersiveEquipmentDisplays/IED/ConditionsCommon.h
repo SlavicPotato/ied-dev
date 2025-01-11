@@ -189,6 +189,8 @@ namespace IED
 				return a_params.objects.HasXP32Skeleton();
 			case Data::ExtraConditionType::kInDarkArea:
 				return a_params.is_in_dark_area();
+			case Data::ExtraConditionType::kInDarkness:
+				return a_params.is_in_darkness();
 			case Data::ExtraConditionType::kInPublicCell:
 				return a_params.actor->InPublicCell();
 			case Data::ExtraConditionType::kIsCellOwner:
@@ -1469,8 +1471,8 @@ namespace IED
 
 		template <class Tm, class Tf>
 		constexpr bool match_voice_type(
-			CommonParams&         a_params,
-			const Tm&             a_match) noexcept
+			CommonParams& a_params,
+			const Tm&     a_match) noexcept
 		{
 			if (const auto voiceType = a_params.npc->voiceType)
 			{

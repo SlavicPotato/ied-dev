@@ -2,8 +2,13 @@
 
 #include "CachedActorData.h"
 
+#include "Common/VectorMath.h"
+#include "IED/AreaLightingDetection.h"
+#include "IED/CharacterLightingDetection.h"
+
 namespace IED
 {
+	static constexpr float LD_THROTTLE_RATE = 3.0f;
 
 	CachedPerkData::CachedPerkData(Actor* a_actor) noexcept :
 		currentSignature(GetSignature(a_actor))
@@ -260,6 +265,10 @@ namespace IED
 		flying(a_actor->IsFlying()),
 		sneaking(a_actor->IsSneaking())
 	{
+		const bool interior = lighting_interior();
+		currentDll          = GetLightLevel(a_actor, interior);
+		lastDll             = currentDll;
+		actorInDarkness          = GetActorInDarkness(a_actor, currentDll, interior);
 	}
 
 	template <class Tv>
@@ -305,6 +314,8 @@ namespace IED
 				result);
 		}
 
+		tAccum1 = std::min(tAccum1 + *Game::g_frameTimerSlow, LD_THROTTLE_RATE + 1.0f);
+
 		return result;
 	}
 
@@ -332,7 +343,8 @@ namespace IED
 		return result;
 	}
 
-	bool CachedActorData::DoLFUpdates(Actor* a_actor) noexcept
+	bool CachedActorData::DoLFUpdates(
+		Actor* a_actor) noexcept
 	{
 		bool result = false;
 
@@ -344,7 +356,82 @@ namespace IED
 
 		state_var_update(level, a_actor->GetLevel(), result);
 
+		UpdateActorInDarkness(a_actor, result);
+
 		return result;
+	}
+
+	void CachedActorData::UpdateActorInDarkness(
+		Actor* a_actor,
+		bool&  a_result)
+	{
+		const bool interior = lighting_interior();
+		currentDll += (GetLightLevel(a_actor, interior) - currentDll) * 0.5f;
+		if (std::fabsf(currentDll - lastDll) > 0.075f)
+		{
+			const bool ida = GetActorInDarkness(a_actor, currentDll, interior);
+			if ((queuedDarknessVal && *queuedDarknessVal != ida) || actorInDarkness != ida)
+			{
+				if (!queuedDarknessVal)
+				{
+					tAccum1 = 0.0f;
+				}
+				queuedDarknessVal.emplace(ida);
+				lastDll = currentDll;
+			}
+		}
+
+		if (queuedDarknessVal)
+		{
+			const bool val = *queuedDarknessVal;
+			if (val || tAccum1 > LD_THROTTLE_RATE)
+			{
+				if (val != actorInDarkness)
+				{
+					actorInDarkness = val;
+					a_result   = true;
+				}
+				queuedDarknessVal.reset();
+			}
+		}
+	}
+
+	bool CachedActorData::GetActorInDarkness(
+		Actor* a_actor,
+		float  a_lightLevel,
+		bool   a_interior) const noexcept
+	{
+		if (a_interior)
+		{
+			return a_lightLevel < ALD::GetInteriorAmbientLightThreshold();
+		}
+		else
+		{
+			return a_lightLevel < ALD::GetTorchLightLevel(RE::TES::GetSingleton()->sky);
+		}
+	}
+
+	float CachedActorData::GetLightLevel(
+		Actor* a_actor,
+		bool   a_interior) const noexcept
+	{
+		auto sky = RE::TES::GetSingleton()->sky;
+		const auto diffuseLightLevel = CLD::GetLightLevel(a_actor);
+
+		if (a_interior)
+		{
+			const float interiorAmbientLightLevel = ALD::GetInteriorAmbientLightLevel(
+				a_actor,
+				sky,
+				cell);
+
+			return std::max(interiorAmbientLightLevel, 0.0f) + diffuseLightLevel;
+		}
+		else
+		{
+			const auto exteriorAmbientLightLevel = sky ? ALD::GetExteriorAmbientLightLevel(sky) : 0.0f;
+			return exteriorAmbientLightLevel + diffuseLightLevel;
+		}
 	}
 
 }

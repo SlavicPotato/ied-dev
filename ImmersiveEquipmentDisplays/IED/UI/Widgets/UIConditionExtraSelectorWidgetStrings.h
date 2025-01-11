@@ -75,6 +75,7 @@ namespace IED
 			LightingTemplate          = 5464,
 			InteriorAmbientLightLevel = 5465,
 			WaitingForPlayer          = 5466,
+			InDarkness                = 5467,
 		};
 	}
 }

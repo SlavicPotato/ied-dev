@@ -109,6 +109,7 @@ namespace IED
 		[[nodiscard]] stl::flag<WeatherClassificationFlags> get_weather_class() const noexcept;
 		[[nodiscard]] Data::TimeOfDay                       get_time_of_day() const noexcept;
 		[[nodiscard]] bool                                  is_in_dark_area() const noexcept;
+		[[nodiscard]] bool                                  is_in_darkness() const noexcept;
 		[[nodiscard]] float                                 get_interior_ambient_light_level() const noexcept;
 		[[nodiscard]] bool                                  is_daytime() const noexcept;
 		[[nodiscard]] float                                 get_sun_angle() const noexcept;

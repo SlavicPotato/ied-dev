@@ -217,6 +217,7 @@ namespace IED
 		CachedActiveEffectData,
 		CachedPerkData
 	{
+	public:
 		CachedActorData(Actor* a_actor) noexcept;
 
 		bool UpdateState(const Actor* a_actor, TESObjectCELL* a_cell) noexcept;
@@ -247,5 +248,25 @@ namespace IED
 		bool                             arrested;
 		bool                             flying;
 		bool                             sneaking;
+		bool                             actorInDarkness;
+
+	private:
+		void  UpdateActorInDarkness(Actor* a_actor, bool& a_result);
+		bool  GetActorInDarkness(Actor* a_actor, float a_lightLevel, bool a_interior) const noexcept;
+		float GetLightLevel(Actor* a_actor, bool a_interior) const noexcept;
+
+		constexpr bool lighting_interior() const noexcept
+		{
+			return cell &&
+			       cell->IsInterior() &&
+			       !cell->cellFlags.test(
+					   TESObjectCELL::Flag::kShowSky |
+					   TESObjectCELL::Flag::kUseSkyLighting);
+		}
+
+		float               currentDll;
+		float               lastDll;
+		float               tAccum1{ 0 };
+		std::optional<bool> queuedDarknessVal;
 	};
 }
