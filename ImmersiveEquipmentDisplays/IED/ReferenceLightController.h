@@ -72,6 +72,8 @@ namespace IED
 			m_npcLightUpdates.store(a_switch, std::memory_order_relaxed);
 		}
 
+		bool HasBSLight(Game::FormID a_actor, const RE::BSLight* a_light) noexcept;
+
 	private:
 		template <class Tf>
 		constexpr void visit_lights(const Actor* a_actor, Tf a_func) const noexcept

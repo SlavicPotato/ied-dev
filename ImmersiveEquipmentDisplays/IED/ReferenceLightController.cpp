@@ -436,6 +436,27 @@ namespace IED
 		return i;
 	}
 
+	bool ReferenceLightController::HasBSLight(
+		Game::FormID a_actor,
+		const RE::BSLight* a_light) noexcept
+	{
+		const read_lock_guard lock(m_lock);
+
+		auto it = m_data.find(a_actor);
+		if (it != m_data.end())
+		{
+			for (auto& e : it->second)
+			{
+				if (e.data.bsObject.get() == a_light)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	void ReferenceLightController::ReAddActorExtraLight(Actor* a_actor) noexcept
 	{
 		const auto* const refrLight = GetExtraLight(a_actor);
