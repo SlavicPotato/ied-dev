@@ -116,7 +116,6 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
-#include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
