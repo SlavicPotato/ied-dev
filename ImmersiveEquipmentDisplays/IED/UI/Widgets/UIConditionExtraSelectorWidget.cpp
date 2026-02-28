@@ -49,6 +49,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsMountRidden, UIConditionExtraSelectorWidgetStrings::IsMountRidden),
 			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
+			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMountAttachedToCell, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMountAttachedToCell),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
 			std::make_pair(Data::ExtraConditionType::kIsSunAboveHorizon, UIConditionExtraSelectorWidgetStrings::IsSunAboveHorizon),
@@ -206,6 +207,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
+			case Data::ExtraConditionType::kIsPlayerLastRiddenMountAttachedToCell:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMountAttachedToCell);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled);
 			case Data::ExtraConditionType::kIsFlying:

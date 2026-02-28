@@ -27,6 +27,8 @@ namespace IED
 			return a_params.objects.GetHandle() == (*g_thePlayer)->lastRiddenHorseHandle;
 		}
 
+		bool is_player_last_ridden_mount_attached_to_cell(CommonParams& a_params) noexcept;
+
 		inline bool match_random_percent(
 			CommonParams&   a_params,
 			const luid_tag& a_luid,
@@ -154,6 +156,8 @@ namespace IED
 				return a_cached.lifeState == ActorState::ACTOR_LIFE_STATE::kUnconcious;
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
 				return is_player_last_ridden_mount(a_params);
+			case Data::ExtraConditionType::kIsPlayerLastRiddenMountAttachedToCell:
+				return is_player_last_ridden_mount_attached_to_cell(a_params);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
 				return is_sds_shield_on_back_enabled(a_params);
 			case Data::ExtraConditionType::kIsFlying:

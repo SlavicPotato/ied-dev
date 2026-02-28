@@ -109,6 +109,16 @@ namespace IED
 			}
 		}
 
+		bool is_player_last_ridden_mount_attached_to_cell(CommonParams& a_params) noexcept
+		{
+			if (const auto& actor = a_params.get_last_ridden_player_horse())
+			{
+				return actor->IsParentCellAttached();
+			}
+
+			return false;
+		}
+
 		bool is_in_dialogue(CommonParams& a_params) noexcept
 		{
 			if (a_params.objects.IsPlayer())
