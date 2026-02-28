@@ -3059,24 +3059,27 @@ namespace IED
 
 		if (a_config.customFlags.test_any(CustomFlags::kIsInInventoryMask))
 		{
-			bool hasMinCount;
-
 			auto it = CustomEntrySelectInventoryForm(
 				a_params,
 				a_config,
-				a_objectEntry,
-				hasMinCount);
+				a_objectEntry);
 
-			if (it == a_params.collector.data.forms.end())
+			const auto& formData = a_params.collector.data.forms;
+
+			const bool itemFound = (it != formData.end());
+
+			if (!itemFound &&
+			    a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) &&
+			    GetSettings().data.hideEquipped &&
+			    !a_config.customFlags.test(CustomFlags::kAlwaysUnload))
 			{
-				a_objectEntry.clear_chance_flags();
-				return AttachObjectResult::kFailed;
+				if (const auto& state = a_objectEntry.data.state)
+				{
+					it = formData.find(state->form->formID);
+				}
 			}
 
-			if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) &&
-			    !hasMinCount &&
-			    (!GetSettings().data.hideEquipped ||
-			     a_config.customFlags.test(CustomFlags::kAlwaysUnload)))
+			if (it == formData.end())
 			{
 				a_objectEntry.clear_chance_flags();
 				return AttachObjectResult::kFailed;
@@ -3127,7 +3130,7 @@ namespace IED
 				if (a_config.customFlags.test(CustomFlags::kGroupMode) ==
 				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode))
 				{
-					const bool _visible = hasMinCount && visible;
+					const bool _visible = itemFound && visible;
 
 					if (DoItemUpdate(
 							a_params,
@@ -3165,7 +3168,7 @@ namespace IED
 				}
 			}
 
-			if (!hasMinCount)
+			if (!itemFound)
 			{
 				return AttachObjectResult::kFailed;
 			}

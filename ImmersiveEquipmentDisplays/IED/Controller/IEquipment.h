@@ -57,8 +57,7 @@ namespace IED
 		static bool CustomEntryValidateInventoryForm(
 			ProcessParams&                       a_params,
 			const Data::CollectorData::ItemData& a_itemData,
-			const Data::configCustom_t&          a_config,
-			bool&                                a_hasMinCount) noexcept;
+			const Data::configCustom_t&          a_config) noexcept;
 
 		template <class Tf>
 		static auto DoLastEquippedSelection(
@@ -70,23 +69,20 @@ namespace IED
 		static Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormGroup(
 			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry,
-			bool&                       a_hasMinCount) noexcept;
+			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		template <class Tf>
 		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormDefault(
 			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
-			bool&                       a_hasMinCount,
 			Tf                          a_filter) noexcept;
 
 	public:
 		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryForm(
 			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry,
-			bool&                       a_hasMinCount) noexcept;
+			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 	private:
 		template <class Tf>

@@ -39,7 +39,7 @@ namespace IED
 	}
 
 	auto IEquipment::SelectSlotItem(
-		ProcessParams&          a_params,
+		ProcessParams&            a_params,
 		const Data::configSlot_t& a_config,
 		SlotItemCandidates&       a_candidates,
 		const ObjectEntrySlot&    a_slot) noexcept
@@ -142,10 +142,9 @@ namespace IED
 	}
 
 	bool IEquipment::CustomEntryValidateInventoryForm(
-		ProcessParams&               a_params,
+		ProcessParams&                 a_params,
 		const CollectorData::ItemData& a_itemData,
-		const configCustom_t&          a_config,
-		bool&                          a_hasMinCount) noexcept
+		const configCustom_t&          a_config) noexcept
 	{
 		const auto* const form = a_itemData.form;
 
@@ -188,38 +187,40 @@ namespace IED
 				}
 			}
 
+			bool hasMinCount;
+
 			if (isAmmo)
 			{
-				a_hasMinCount = !a_itemData.is_equipped() && a_itemData.sharedCount > 0;
+				hasMinCount = !a_itemData.is_equipped() && a_itemData.sharedCount > 0;
 			}
 			else
 			{
 				if (a_config.customFlags.test(CustomFlags::kDisableIfEquipped) &&
 				    a_itemData.is_equipped())
 				{
-					a_hasMinCount = false;
+					hasMinCount = false;
 				}
 				else
 				{
 					const std::int64_t sharedCount = a_itemData.sharedCount;
 
-					a_hasMinCount = (sharedCount - a_itemData.get_equip_count()) > 0;
+					hasMinCount = (sharedCount - a_itemData.get_equip_count()) > 0;
 				}
 			}
-		}
-		else
-		{
-			a_hasMinCount = true;
+
+			if (!hasMinCount)
+			{
+				return false;
+			}
 		}
 
 		return true;
 	}
 
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormGroup(
-		ProcessParams&            a_params,
+		ProcessParams&              a_params,
 		const Data::configCustom_t& a_config,
-		ObjectEntryCustom&          a_objectEntry,
-		bool&                       a_hasMinCount) noexcept
+		ObjectEntryCustom&          a_objectEntry) noexcept
 	{
 		const auto& formData = a_params.collector.data.forms;
 
@@ -230,8 +231,7 @@ namespace IED
 				if (CustomEntryValidateInventoryForm(
 						a_params,
 						it->second,
-						a_config,
-						a_hasMinCount))
+						a_config))
 				{
 					return it;
 				}
@@ -243,10 +243,9 @@ namespace IED
 
 	template <class Tf>
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormDefault(
-		ProcessParams&            a_params,
+		ProcessParams&              a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
-		bool&                       a_hasMinCount,
 		Tf                          a_filter) noexcept
 	{
 		const auto& formData = a_params.collector.data.forms;
@@ -271,8 +270,7 @@ namespace IED
 							if (CustomEntryValidateInventoryForm(
 									a_params,
 									it->second,
-									a_config,
-									a_hasMinCount))
+									a_config))
 							{
 								return it;
 							}
@@ -303,8 +301,7 @@ namespace IED
 							if (CustomEntryValidateInventoryForm(
 									a_params,
 									it->second,
-									a_config,
-									a_hasMinCount))
+									a_config))
 							{
 								return it;
 							}
@@ -326,8 +323,7 @@ namespace IED
 						if (CustomEntryValidateInventoryForm(
 								a_params,
 								it->second,
-								a_config,
-								a_hasMinCount))
+								a_config))
 						{
 							return it;
 						}
@@ -356,8 +352,7 @@ namespace IED
 				if (CustomEntryValidateInventoryForm(
 						a_params,
 						it->second,
-						a_config,
-						a_hasMinCount))
+						a_config))
 				{
 					return it;
 				}
@@ -368,10 +363,9 @@ namespace IED
 	}
 
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryForm(
-		ProcessParams&      a_params,
+		ProcessParams&        a_params,
 		const configCustom_t& a_config,
-		ObjectEntryCustom&    a_objectEntry,
-		bool&                 a_hasMinCount) noexcept
+		ObjectEntryCustom&    a_objectEntry) noexcept
 	{
 		if (a_config.customFlags.test(CustomFlags::kLastEquippedMode))
 		{
@@ -382,8 +376,7 @@ namespace IED
 					return CustomEntryValidateInventoryForm(
 						a_params,
 						a_itemEntry.second,
-						a_config,
-						a_hasMinCount);
+						a_config);
 				});
 
 			if (it != a_params.collector.data.forms.end())
@@ -396,7 +389,6 @@ namespace IED
 					a_params,
 					a_config,
 					a_objectEntry,
-					a_hasMinCount,
 					[&](const auto& a_item) noexcept {
 						return a_config.lastEquipped.filterConditions.evaluate_sfp(
 							{ a_item.form },
@@ -410,8 +402,7 @@ namespace IED
 			return CustomEntrySelectInventoryFormGroup(
 				a_params,
 				a_config,
-				a_objectEntry,
-				a_hasMinCount);
+				a_objectEntry);
 		}
 		else
 		{
@@ -419,7 +410,6 @@ namespace IED
 				a_params,
 				a_config,
 				a_objectEntry,
-				a_hasMinCount,
 				[](auto&) noexcept { return true; });
 		}
 	}
