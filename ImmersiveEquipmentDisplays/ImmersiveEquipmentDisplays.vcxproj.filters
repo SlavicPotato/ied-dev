@@ -2057,6 +2057,9 @@
     <ClInclude Include="IED\Parsers\JSONConfigVSSParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
+    <ClInclude Include="IED\CharacterLightingDetection.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3285,6 +3288,9 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigVSSParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\CharacterLightingDetection.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
