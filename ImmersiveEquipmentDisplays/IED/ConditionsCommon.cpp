@@ -113,7 +113,7 @@ namespace IED
 		{
 			if (const auto& actor = a_params.get_last_ridden_player_horse())
 			{
-				return actor->IsParentCellAttached();
+				return actor->Is3DLoaded() && actor->IsParentCellAttached();
 			}
 
 			return false;
