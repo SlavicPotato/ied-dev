@@ -100,7 +100,14 @@ namespace IED
 		{
 			const auto r = a_params.useCount.emplace(it->first, 0u);
 
+			if (it->second.extra.type == ObjectType::kAmmo)
+			{
+				r.first->second = std::max(it->second.itemCount, 0i32);
+			}
+			else
+			{
 			r.first->second++;
+			}
 
 			return it->first;
 		}
