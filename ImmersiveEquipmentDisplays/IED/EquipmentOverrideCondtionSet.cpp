@@ -2,17 +2,15 @@
 
 #include "ConfigEquipmentOverrideCondition.h"
 
-#include "ProcessParams.h"
 #include "ConditionsCommon.h"
 #include "Controller/ActorObjectHolder.h"
-
+#include "ProcessParams.h"
 
 namespace IED
 {
 	namespace Data
 	{
 
-		
 		static bool has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
 			ProcessParams&            a_params) noexcept
@@ -171,7 +169,6 @@ namespace IED
 			return nullptr;
 		}
 
-		
 		static bool match_presence_equipped(
 			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match,
@@ -295,6 +292,22 @@ namespace IED
 			}
 		}
 
+		template <class T>
+		[[nodiscard]] SKMP_FORCEINLINE static constexpr T presence_adjust_count(
+			const CollectorData::ItemData& a_itemData,
+			const T                        a_count) noexcept
+			requires(std::is_signed_v<T>)
+		{
+			if (a_itemData.extra.type == ObjectType::kAmmo)
+			{
+				return T(0);
+			}
+			else
+			{
+				return a_count - T(1);
+			}
+		}
+
 		static bool match_presence_available(
 			const ProcessParams&                a_params,
 			const equipmentOverrideCondition_t& a_match,
@@ -316,25 +329,25 @@ namespace IED
 
 			if (it->second.is_equipped_right())
 			{
-				count--;
+				count = presence_adjust_count(it->second, count);
 			}
 			else if (slot < ObjectSlot::kMax)
 			{
 				if (a_params.objects.GetSlot(slot).GetFormIfActive() == form)
 				{
-					count--;
+					count = presence_adjust_count(it->second, count);
 				}
 			}
 
 			if (it->second.is_equipped_left())
 			{
-				count--;
+				count = presence_adjust_count(it->second, count);
 			}
 			else if (const auto leftSlot = ItemData::GetLeftSlot(slot); leftSlot < ObjectSlot::kMax)
 			{
 				if (a_params.objects.GetSlot(leftSlot).GetFormIfActive() == form)
 				{
-					count--;
+					count = presence_adjust_count(it->second, count);
 				}
 			}
 
@@ -388,8 +401,6 @@ namespace IED
 			}
 		}
 
-		
-		
 		static bool match_equipped_type(
 			ProcessParams&                      a_params,
 			const equipmentOverrideCondition_t& a_match) noexcept
@@ -1615,7 +1626,8 @@ namespace IED
 						equipmentOverrideCondition_t,
 						EquipmentOverrideConditionFlags>(
 						a_params,
-						a_match);
+						a_match,
+						std::addressof(a_checkForm));
 				}
 
 				break;
@@ -1656,7 +1668,6 @@ namespace IED
 
 			return false;
 		}
-
 
 		bool equipmentOverrideConditionSet_t::evaluate(
 			ProcessParams& a_params,
@@ -1840,7 +1851,6 @@ namespace IED
 			}
 
 			return result;
-		
 		}
 	}
 }
