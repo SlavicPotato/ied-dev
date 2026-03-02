@@ -3,6 +3,7 @@
 #include "JSONConfigLastEquippedParser.h"
 
 #include "JSONConfigBipedObjectListParser.h"
+#include "JSONConfigObjectExtraTypeListParser.h"
 #include "JSONConfigObjectSlotListParser.h"
 #include "JSONEquipmentOverrideConditionListParser.h"
 
@@ -69,6 +70,16 @@ namespace IED
 				}
 			}
 
+			if (auto& d = data["acq"])
+			{
+				Parser<Data::configObjectTypeExtraList_t> parser(m_state);
+
+				if (!parser.Parse(d, a_out.acqList))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -100,6 +111,13 @@ namespace IED
 				Parser<Data::configObjectSlotList_t> parser(m_state);
 
 				parser.Create(a_in.slots, data["esl"]);
+			}
+
+			if (!a_in.acqList.empty())
+			{
+				Parser<Data::configObjectTypeExtraList_t> parser(m_state);
+
+				parser.Create(a_in.acqList, data["acq"]);
 			}
 
 			a_out["version"] = CURRENT_VERSION;
