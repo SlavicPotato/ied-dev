@@ -72,6 +72,10 @@ namespace IED
 		m_state(a_actor),
 		m_entriesSlot{ detail::make_object_slot_array(a_slotCache->displays) },
 		m_temp(std::make_unique_for_overwrite<ActorTempData>())
+#if 0
+		,
+		m_actorVMHandle(a_actor)
+#endif
 	{
 		m_flags.set(ActorObjectHolderFlags::kIsFemale, a_npc->GetSex() == 1);
 		m_flags.set(ActorObjectHolderFlags::kIsPlayer, a_actor == *g_thePlayer);
@@ -275,6 +279,9 @@ namespace IED
 				}
 			}
 		}*/
+
+		//InitMountDataForPlayer();
+		UpdateMountData();
 	}
 
 	ActorObjectHolder::~ActorObjectHolder() noexcept
@@ -849,6 +856,70 @@ namespace IED
 			}
 #endif
 		}
+	}
+
+	void ActorObjectHolder::InitMountDataForPlayer() noexcept
+	{
+		if (IsPlayer() && !m_slotCache->lastMount)
+		{
+			const auto handle = (*g_thePlayer)->lastRiddenHorseHandle;
+			if (handle && handle.IsValid())
+			{
+				NiPointer<Actor> actor;
+				if (handle.Lookup(actor))
+				{
+					const auto actorId = actor->formID;
+
+					m_slotCache->lastMount = actorId;
+					gLog.Debug("%.8X: existing mount: %.8X", m_actorid, actorId);
+
+					/*auto& m = m_owner.GetActorMap();
+					if (auto it = m.find(actorId); it != m.end())
+					{
+						auto& holder                         = it->second;
+						holder.GetBipedSlotData()->lastMount = m_actorid;
+						holder.RequestEvalDefer();
+						gLog.Debug("%.8X: existing mount: %.8X", it->first, m_actorid);
+					}*/
+				}
+			}
+		}
+	}
+
+	namespace detail
+	{
+		static constexpr Game::FormID get_new_mount(
+			const Game::ObjectRefHandle a_currentMount) noexcept
+		{
+			if (a_currentMount && a_currentMount.IsValid())
+			{
+				NiPointer<TESObjectREFR> refr;
+				if (a_currentMount.Lookup(refr))
+				{
+					if (const auto actor = refr->As<Actor>())
+					{
+						return actor->formID;
+					}
+				}
+			}
+
+			return {};
+		}
+	}
+
+	bool ActorObjectHolder::UpdateMountData() noexcept
+	{
+		if (m_state.UpdateMountData(m_actor.get()))
+		{
+			const auto newMount = detail::get_new_mount(m_state.currentMount);
+			if (newMount != m_slotCache->lastMount)
+			{
+				m_slotCache->lastMount = newMount;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(

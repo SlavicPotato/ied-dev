@@ -129,6 +129,7 @@ namespace IED
 			DataVersion1 = 1,
 			DataVersion2 = 2,
 			DataVersion3 = 3,
+			DataVersion4 = 4,
 		};
 
 		using biped_data_type = std::array<
@@ -184,6 +185,10 @@ namespace IED
 		display_slot_data_type displays;
 		acq_data_type          acquired;
 
+		/* for mounts: last actor that mounted this actor 
+		for all other actors: last mount this actor was on*/
+		Game::FormID lastMount; 
+
 	private:
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)
@@ -198,6 +203,11 @@ namespace IED
 				if (a_version >= DataVersion3)
 				{
 					a_ar& acquired;
+
+					if (a_version >= DataVersion4)
+					{
+						a_ar & lastMount;
+					}
 				}
 			}
 		}
@@ -216,4 +226,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::BipedSlotData,
-	::IED::BipedSlotData::Serialization::DataVersion3);
+	::IED::BipedSlotData::Serialization::DataVersion4);

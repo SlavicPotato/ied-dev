@@ -6,6 +6,8 @@
 #include "IED/AreaLightingDetection.h"
 #include "IED/CharacterLightingDetection.h"
 
+#include <ext/RefrInteraction.h>
+
 namespace IED
 {
 	static constexpr float LD_THROTTLE_RATE = 3.0f;
@@ -268,7 +270,7 @@ namespace IED
 		const bool interior = lighting_interior();
 		currentDll          = GetLightLevel(a_actor, interior);
 		lastDll             = currentDll;
-		actorInDarkness          = GetActorInDarkness(a_actor, currentDll, interior);
+		actorInDarkness     = GetActorInDarkness(a_actor, currentDll, interior);
 	}
 
 	template <class Tv>
@@ -361,6 +363,24 @@ namespace IED
 		return result;
 	}
 
+	bool CachedActorData::UpdateMountData(Actor* a_actor) noexcept
+	{
+		if (const auto* const extraData = a_actor->extraData.Get<ExtraInteraction>())
+		{
+			if (const auto& interaction = extraData->interaction)
+			{
+				const auto handle = a_actor->IsMount() ? interaction->targetRefr : Game::ObjectRefHandle(interaction->actor);
+				if (handle != currentMount)
+				{
+					currentMount = handle;
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	void CachedActorData::UpdateActorInDarkness(
 		Actor* a_actor,
 		bool&  a_result)
@@ -389,7 +409,7 @@ namespace IED
 				if (val != actorInDarkness)
 				{
 					actorInDarkness = val;
-					a_result   = true;
+					a_result        = true;
 				}
 				queuedDarknessVal.reset();
 			}
@@ -415,7 +435,7 @@ namespace IED
 		Actor* a_actor,
 		bool   a_interior) const noexcept
 	{
-		auto sky = RE::TES::GetSingleton()->sky;
+		auto       sky               = RE::TES::GetSingleton()->sky;
 		const auto diffuseLightLevel = CLD::GetLightLevel(a_actor);
 
 		if (a_interior)

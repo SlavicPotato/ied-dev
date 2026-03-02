@@ -471,6 +471,7 @@ namespace IED
 			bool wantEval = state.DoLFUpdates(actor);
 
 			wantEval |= a_holder.m_wantLFUpdate;
+			wantEval |= a_holder.UpdateMountData();
 
 			if (wantEval)
 			{

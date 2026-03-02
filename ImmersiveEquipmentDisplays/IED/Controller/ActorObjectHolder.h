@@ -735,7 +735,11 @@ namespace IED
 			return m_owner;
 		}
 
+		bool UpdateMountData() noexcept;
+
 	private:
+		void InitMountDataForPlayer() noexcept;
+
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,
 			NiNode*                                       a_npcroot,
@@ -775,6 +779,10 @@ namespace IED
 		stl::cache_aligned::vector<ObjectSyncEntry>                    m_syncObjects;
 
 		conditionalVariableMap_t m_variables;
+
+#if 0
+		Game::VMHandleScoped m_actorVMHandle;
+#endif
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;

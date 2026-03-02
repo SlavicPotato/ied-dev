@@ -224,6 +224,7 @@ namespace IED
 		bool UpdateStateLF(const Actor* a_actor) noexcept;
 		bool UpdateStateHF(const Actor* a_actor) noexcept;
 		bool DoLFUpdates(Actor* a_actor) noexcept;
+		bool UpdateMountData(Actor* a_actor) noexcept;
 
 		TESObjectCELL*                   cell;
 		TESWorldSpace*                   worldspace;
@@ -236,6 +237,7 @@ namespace IED
 		stl::flag<Actor::Flags2>         flagslf2;
 		stl::flag<ACTOR_BASE_DATA::Flag> baseFlags;
 		ActorState::ACTOR_LIFE_STATE     lifeState;
+		Game::ObjectRefHandle            currentMount;
 		std::uint16_t                    level;
 		bool                             active;
 		bool                             inCombat;
