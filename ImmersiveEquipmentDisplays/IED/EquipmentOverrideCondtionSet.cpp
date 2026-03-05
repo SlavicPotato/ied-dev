@@ -314,8 +314,7 @@ namespace IED
 			const FormSlotPair&                 a_checkForm) noexcept
 		{
 			const auto& fdata = a_params.collector.data;
-
-			auto form = a_checkForm.form;
+			const auto  form  = a_checkForm.form;
 
 			auto it = fdata.forms.find(form->formID);
 			if (it == fdata.forms.end())
@@ -631,7 +630,7 @@ namespace IED
 			}
 		}
 
-		bool match_carried_form(
+		static bool match_carried_form(
 			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match) noexcept
 		{

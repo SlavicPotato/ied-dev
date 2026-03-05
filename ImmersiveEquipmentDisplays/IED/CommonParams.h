@@ -194,6 +194,7 @@ namespace IED
 		[[nodiscard]] bool is_in_player_enemy_faction() const noexcept;
 
 		[[nodiscard]] NiPointer<Actor>& get_last_ridden_player_horse() const noexcept;
+		[[nodiscard]] NiPointer<Actor>& get_last_mount() const noexcept;
 
 		[[nodiscard]] constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
@@ -202,6 +203,8 @@ namespace IED
 
 		[[nodiscard]] bool is_horse() const noexcept;
 		[[nodiscard]] bool is_mounted_actor_horse() const noexcept;
+
+		[[nodiscard]] bool has_mount_mutual_reference() const noexcept;
 
 		[[nodiscard]] BGSVoiceType* get_voice_type() const noexcept;
 
@@ -220,6 +223,7 @@ namespace IED
 		mutable std::optional<NiPointer<Actor>>      mountedActor;
 		mutable std::optional<NiPointer<Actor>>      mountedByActor;
 		mutable std::optional<NiPointer<Actor>>      lastRiddenPlayerHorse;
+		mutable std::optional<NiPointer<Actor>>      lastMount;
 		mutable std::optional<bool>                  layingDown;
 		mutable std::optional<bool>                  canDualWield;
 		mutable std::optional<bool>                  isDead;
@@ -227,8 +231,9 @@ namespace IED
 		mutable std::optional<bool>                  isInPlayerEnemyFaction;
 		mutable std::optional<bool>                  isMounted;
 		mutable std::optional<bool>                  isHorse;
-		mutable std::optional<bool>                  isMountHorse;
+		mutable std::optional<bool>                  isMountedActorHorse;
 		mutable std::optional<bool>                  isInDarkArea;
+		mutable std::optional<bool>                  hasMountMutualReference;
 		mutable std::optional<TESForm*>              parentCellOwner;
 		mutable std::optional<float>                 interiorAmbientLightLevel;
 	};

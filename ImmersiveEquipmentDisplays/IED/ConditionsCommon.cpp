@@ -119,6 +119,16 @@ namespace IED
 			return false;
 		}
 
+		bool is_last_mount_attached_to_cell(CommonParams& a_params) noexcept
+		{
+			if (const auto& actor = a_params.get_last_mount())
+			{
+				return actor->Is3DLoaded() && actor->IsParentCellAttached();
+			}
+
+			return false;
+		}
+
 		bool is_in_dialogue(CommonParams& a_params) noexcept
 		{
 			if (a_params.objects.IsPlayer())

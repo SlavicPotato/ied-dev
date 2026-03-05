@@ -14,6 +14,7 @@ namespace IED
 			kPlayerHorse   = 5,
 			kMountedActor  = 6,
 			kMountingActor = 7,
+			kMount         = 8, // can be mountee or mounter, depending on the actor it runs on
 		};
 	}
 }

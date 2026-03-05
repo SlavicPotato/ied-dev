@@ -349,6 +349,8 @@ namespace IED
 			kWaitingForPlayer                      = 66,
 			kInDarkness                            = 67,
 			kIsPlayerLastRiddenMountAttachedToCell = 68,
+			kIsLastMountAttachedToCell             = 69,
+			kMountMutalReference                   = 70,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

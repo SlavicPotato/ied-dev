@@ -14,6 +14,7 @@
 #include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 #include "IED/TransformOverrides.h"
+#include "IED/Util/Common.h"
 
 #include <ext/BSAnimationUpdateData.h>
 #include <ext/Node.h>
@@ -22,6 +23,7 @@ namespace IED
 {
 	using namespace SkeletonExtensions;
 	using namespace ::Util::Node;
+	using namespace ::IED::Util::Common;
 
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_mf{ 0ull };
@@ -888,15 +890,15 @@ namespace IED
 
 	namespace detail
 	{
-		static constexpr Game::FormID get_new_mount(
-			const Game::ObjectRefHandle a_currentMount) noexcept
+		static constexpr Game::FormID get_mount_form_id(
+			const Game::ObjectRefHandle a_mount) noexcept
 		{
-			if (a_currentMount && a_currentMount.IsValid())
+			if (a_mount && a_mount.IsValid())
 			{
-				NiPointer<TESObjectREFR> refr;
-				if (a_currentMount.Lookup(refr))
+				if (const auto refr = a_mount.get_ptr())
 				{
-					if (const auto actor = refr->As<Actor>())
+					const auto actor = refr->As<Actor>();
+					if (IsREFRValid(actor))
 					{
 						return actor->formID;
 					}
@@ -911,10 +913,17 @@ namespace IED
 	{
 		if (m_state.UpdateMountData(m_actor.get()))
 		{
-			const auto newMount = detail::get_new_mount(m_state.currentMount);
+			const auto newMount = detail::get_mount_form_id(m_state.currentMount);
 			if (newMount != m_slotCache->lastMount)
 			{
+				const auto oldMount    = m_slotCache->lastMount;
 				m_slotCache->lastMount = newMount;
+
+				if (oldMount)
+				{
+					m_owner.QueueRequestEvaluateIfRequired(oldMount, false, false);
+				}
+
 				return true;
 			}
 		}

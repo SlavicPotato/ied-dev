@@ -13,6 +13,7 @@ namespace IED
 			kMountingActor = 2,
 			kMountedActor  = 3,
 			kSelf          = 4,
+			kMount         = 5,  // can be mountee or mounter, depending on the actor it runs on
 		};
 
 		enum class VariableSourceFlags : std::uint32_t

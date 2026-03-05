@@ -22,6 +22,25 @@ namespace IED
 		}
 	}
 
+	const BipedSlotData* BipedDataCache::Get(Game::FormID a_actor) const noexcept
+	{
+		if (a_actor == 0x14)
+		{
+			return m_playerEntry.data.get();
+		}
+		else
+		{
+			if (auto it = m_data.find(a_actor); it != m_data.end())
+			{
+				return it->second.data.get();
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+	}
+
 	void BipedDataCache::post_load(data_type&& a_input)
 	{
 		a_input.erase(0);

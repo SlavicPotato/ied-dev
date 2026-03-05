@@ -28,6 +28,7 @@ namespace IED
 		}
 
 		bool is_player_last_ridden_mount_attached_to_cell(CommonParams& a_params) noexcept;
+		bool is_last_mount_attached_to_cell(CommonParams& a_params) noexcept;
 
 		inline bool match_random_percent(
 			CommonParams&   a_params,
@@ -158,6 +159,10 @@ namespace IED
 				return is_player_last_ridden_mount(a_params);
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMountAttachedToCell:
 				return is_player_last_ridden_mount_attached_to_cell(a_params);
+			case Data::ExtraConditionType::kIsLastMountAttachedToCell:
+				return is_last_mount_attached_to_cell(a_params);
+			case Data::ExtraConditionType::kMountMutalReference:
+				return a_params.has_mount_mutual_reference();
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
 				return is_sds_shield_on_back_enabled(a_params);
 			case Data::ExtraConditionType::kIsFlying:
@@ -1223,7 +1228,8 @@ namespace IED
 			template <class Tm>
 			SKMP_FORCEINLINE constexpr bool do_var_match(
 				const conditionalVariableStorage_t& a_data,
-				const Tm&                           a_match) noexcept
+				const Tm&                           a_match,
+				const FormSlotPair*                 a_fsPair = nullptr) noexcept
 			{
 				switch (a_data.type)
 				{
@@ -1249,6 +1255,16 @@ namespace IED
 					if (a_match.condVarType == ConditionalVariableType::kForm)
 					{
 						return compare(a_match.compOperator, a_data.form.get_id().get(), a_match.form2.get_id().get());
+
+						/*const auto formId = a_match.form2.get_id();
+						if (!formId && a_fsPair != nullptr)
+						{
+							return compare(a_match.compOperator, a_data.form.get_id().get(), a_fsPair->form->formID.get());
+						}
+						else
+						{
+							return compare(a_match.compOperator, a_data.form.get_id().get(), formId.get());
+						}*/
 					}
 					break;
 				}
@@ -1258,9 +1274,10 @@ namespace IED
 
 			template <class Tm, class Tff>
 			constexpr bool do_var_match_all_filtered(
-				CommonParams& a_params,
-				const Tm&     a_match,
-				Tff           a_filter) noexcept
+				CommonParams&       a_params,
+				const Tm&           a_match,
+				Tff                 a_filter,
+				const FormSlotPair* a_fsPair = nullptr) noexcept
 			{
 				for (auto& e : get_actor_object_map(a_params))
 				{
@@ -1277,7 +1294,7 @@ namespace IED
 						continue;
 					}
 
-					if (do_var_match(it->second, a_match))
+					if (do_var_match(it->second, a_match, a_fsPair))
 					{
 						return true;
 					}
@@ -1288,9 +1305,10 @@ namespace IED
 
 			template <class Tm>
 			constexpr bool do_var_match_id(
-				CommonParams& a_params,
-				Game::FormID  a_id,
-				const Tm&     a_match) noexcept
+				CommonParams&       a_params,
+				Game::FormID        a_id,
+				const Tm&           a_match,
+				const FormSlotPair* a_fsPair = nullptr) noexcept
 			{
 				auto& data = get_actor_object_map(a_params);
 
@@ -1302,7 +1320,7 @@ namespace IED
 					auto it = vdata.find(a_match.s0);
 					if (it != vdata.end())
 					{
-						return do_var_match(it->second, a_match);
+						return do_var_match(it->second, a_match, a_fsPair);
 					}
 				}
 
@@ -1313,8 +1331,9 @@ namespace IED
 
 		template <class Tm, class Tf>
 		constexpr bool match_variable(
-			CommonParams& a_params,
-			const Tm&     a_match) noexcept
+			CommonParams&       a_params,
+			const Tm&           a_match,
+			const FormSlotPair* a_fsPair = nullptr) noexcept
 		{
 			switch (a_match.vcSource)
 			{
@@ -1323,7 +1342,8 @@ namespace IED
 				return detail::do_var_match_all_filtered(
 					a_params,
 					a_match,
-					[](auto&) { return true; });
+					[](auto&) { return true; },
+					a_fsPair);
 
 				break;
 
@@ -1336,7 +1356,8 @@ namespace IED
 						a_match,
 						[fid = a_params.objects.GetActorFormID()](auto& a_e) noexcept [[msvc::forceinline]] {
 							return a_e.first != fid;
-						});
+						},
+						a_fsPair);
 				}
 				else
 				{
@@ -1345,7 +1366,7 @@ namespace IED
 					auto it = vdata.find(a_match.s0);
 					if (it != vdata.end())
 					{
-						return detail::do_var_match(it->second, a_match);
+						return detail::do_var_match(it->second, a_match, a_fsPair);
 					}
 				}
 
@@ -1362,11 +1383,12 @@ namespace IED
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.first != fid;
-							});
+							},
+							a_fsPair);
 					}
 					else
 					{
-						return detail::do_var_match_id(a_params, fid, a_match);
+						return detail::do_var_match_id(a_params, fid, a_match, a_fsPair);
 					}
 				}
 
@@ -1383,7 +1405,8 @@ namespace IED
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetNPCTemplateFormID() != fid;
-							});
+							},
+							a_fsPair);
 					}
 					else
 					{
@@ -1392,7 +1415,8 @@ namespace IED
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetNPCTemplateFormID() == fid;
-							});
+							},
+							a_fsPair);
 					}
 				}
 
@@ -1409,7 +1433,8 @@ namespace IED
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetRaceFormID() != fid;
-							});
+							},
+							a_fsPair);
 					}
 					else
 					{
@@ -1418,7 +1443,8 @@ namespace IED
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetRaceFormID() == fid;
-							});
+							},
+							a_fsPair);
 					}
 				}
 
@@ -1428,7 +1454,7 @@ namespace IED
 
 				if (const auto& actor = a_params.get_last_ridden_player_horse())
 				{
-					return detail::do_var_match_id(a_params, actor->formID, a_match);
+					return detail::do_var_match_id(a_params, actor->formID, a_match, a_fsPair);
 				}
 
 				break;
@@ -1437,7 +1463,7 @@ namespace IED
 
 				if (const auto& actor = a_params.get_mounted_actor())
 				{
-					return detail::do_var_match_id(a_params, actor->formID, a_match);
+					return detail::do_var_match_id(a_params, actor->formID, a_match, a_fsPair);
 				}
 
 				break;
@@ -1446,7 +1472,16 @@ namespace IED
 
 				if (const auto& actor = a_params.get_mounting_actor())
 				{
-					return detail::do_var_match_id(a_params, actor->formID, a_match);
+					return detail::do_var_match_id(a_params, actor->formID, a_match, a_fsPair);
+				}
+
+				break;
+				
+			case Data::VariableConditionSource::kMount:
+
+				if (const auto &actor = a_params.get_last_mount())
+				{
+					return detail::do_var_match_id(a_params, actor->formID, a_match, a_fsPair);
 				}
 
 				break;

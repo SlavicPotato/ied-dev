@@ -344,6 +344,23 @@ namespace IED
 		return *lastRiddenPlayerHorse;
 	}
 
+	NiPointer<Actor>& CommonParams::get_last_mount() const noexcept
+	{
+		if (!lastMount)
+		{
+			lastMount.emplace();
+			if (const auto formId = objects.GetBipedSlotData()->lastMount)
+			{
+				if (const auto form = formId.Lookup())
+				{
+					*lastMount = form->As<Actor>();
+				}
+			}
+		}
+
+		return *lastMount;
+	}
+
 	bool CommonParams::is_horse() const noexcept
 	{
 		if (!isHorse)
@@ -356,19 +373,39 @@ namespace IED
 
 	bool CommonParams::is_mounted_actor_horse() const noexcept
 	{
-		if (!isMountHorse)
+		if (!isMountedActorHorse)
 		{
 			if (auto& e = get_mounted_actor())
 			{
-				isMountHorse.emplace(e->IsHorse());
+				isMountedActorHorse.emplace(e->IsHorse());
 			}
 			else
 			{
-				isMountHorse.emplace(false);
+				isMountedActorHorse.emplace(false);
 			}
 		}
 
-		return *isMountHorse;
+		return *isMountedActorHorse;
+	}
+
+	bool CommonParams::has_mount_mutual_reference() const noexcept
+	{
+		if (!hasMountMutualReference)
+		{
+			if (const auto mountId = objects.GetBipedSlotData()->lastMount)
+			{
+				if (const auto data = controller.GetBipedDataCache().Get(mountId))
+				{
+					const bool result = data->lastMount == objects.GetActorFormID();
+					hasMountMutualReference.emplace(result);
+					return result;
+				}
+			}
+
+			hasMountMutualReference.emplace(false);
+		}
+
+		return *hasMountMutualReference;
 	}
 
 	BGSVoiceType* CommonParams::get_voice_type() const noexcept

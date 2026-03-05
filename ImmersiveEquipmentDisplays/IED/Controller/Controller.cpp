@@ -2989,9 +2989,19 @@ namespace IED
 		case VariableSource::kSelf:
 
 			return SelectFormVariableSourceHolder(a_params.objects.GetActorFormID(), a_params);
+						
+		case VariableSource::kMount:
+
+			if (const auto& actor = a_params.get_last_mount())
+			{
+				return SelectFormVariableSourceHolder(actor->formID, a_params);
 		}
 
-		return {};
+			break;
+
+		}
+
+		return nullptr;
 	}
 
 	const Data::configCachedForm_t* Controller::SelectFromFormVariable(

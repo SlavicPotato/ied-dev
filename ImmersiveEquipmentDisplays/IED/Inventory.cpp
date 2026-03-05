@@ -252,7 +252,7 @@ namespace IED
 				continue;
 			}
 
-			const auto extra = (static_cast<std::int64_t>(e.itemCount) - e.get_equip_count()) - 1;
+			const auto extra = (static_cast<std::int64_t>(e.sharedCount) - e.get_equip_count()) - 1;
 
 			if (extra < 0)
 			{
