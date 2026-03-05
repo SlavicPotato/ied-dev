@@ -77,6 +77,8 @@ namespace IED
 			WaitingForPlayer                      = 5466,
 			InDarkness                            = 5467,
 			IsPlayerLastRiddenMountAttachedToCell = 5468,
+			IsLastMountAttachedToCell             = 5469,
+			HasMountMutualReference               = 5470
 		};
 	}
 }

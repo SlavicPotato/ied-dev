@@ -46,7 +46,7 @@ namespace IED
 				{
 					for (auto& i : h.second())
 					{
-						CleanFormList(i.extraItems);
+						CleanFormList(i.inv.extraItems);
 						if (i.filters)
 						{
 							i.filters->raceFilter.allow.erase(0);

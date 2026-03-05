@@ -6,14 +6,14 @@
 #include "BipedSlotData.h"
 #include "IRNG.h"
 
+#include "IED/Controller/Controller.h"
 #include "IED/ProcessParams.h"
 
 namespace IED
 {
 	using namespace Data;
 
-	IEquipment::IEquipment(RandomNumberGeneratorBase& a_rng) noexcept :
-		m_rng(a_rng)
+	IEquipment::IEquipment() noexcept
 	{
 	}
 
@@ -141,10 +141,10 @@ namespace IED
 		}
 	}
 
-	bool IEquipment::CustomEntryValidateInventoryForm(
-		ProcessParams&                 a_params,
-		const CollectorData::ItemData& a_itemData,
-		const configCustom_t&          a_config) noexcept
+	bool IEquipment::ValidateInventoryForm(
+		ProcessParams&                       a_params,
+		const Data::CollectorData::ItemData& a_itemData,
+		const Data::configInventory_t&       a_config) noexcept
 	{
 		const auto* const form = a_itemData.form;
 
@@ -164,19 +164,19 @@ namespace IED
 			return false;
 		}
 
-		if (a_config.customFlags.test(CustomFlags::kCheckFav) &&
+		if (a_config.flags.test(InventoryFlags::kCheckFav) &&
 		    a_params.objects.IsPlayer() &&
 		    !a_itemData.is_favorited())
 		{
 			return false;
 		}
 
-		if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
+		if (a_config.flags.test(InventoryFlags::kEquipmentMode))
 		{
 			const bool isAmmo = form->IsAmmo();
 
 			if (!isAmmo &&
-			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
+			    !a_config.flags.test(InventoryFlags::kIgnoreRaceEquipTypes) &&
 			    !is_non_shield_armor(form) &&
 			    !a_params.objects.IsPlayer())
 			{
@@ -195,7 +195,7 @@ namespace IED
 			}
 			else
 			{
-				if (a_config.customFlags.test(CustomFlags::kDisableIfEquipped) &&
+				if (a_config.flags.test(InventoryFlags::kDisableIfEquipped) &&
 				    a_itemData.is_equipped())
 				{
 					hasMinCount = false;
@@ -217,10 +217,113 @@ namespace IED
 		return true;
 	}
 
+	CollectorData::container_type::const_iterator IEquipment::ProcessInventoryForm(
+		ProcessParams&                 a_params,
+		const Data::configInventory_t& a_config,
+		const Game::FormID             a_formId,
+		const filter_func_t&           a_filter) noexcept
+	{
+		const auto& formData = a_params.collector.data.forms;
+
+		if (auto it = formData.find(a_formId); it != formData.end())
+		{
+			if (a_filter(*it))
+			{
+				if (ValidateInventoryForm(
+						a_params,
+						it->second,
+						a_config))
+				{
+					return it;
+				}
+			}
+		}
+
+		return formData.end();
+	}
+
+	Data::CollectorData::container_type::const_iterator IEquipment::SelectRandomForm(
+		ProcessParams&                 a_params,
+		const Data::configInventory_t& a_config,
+		const Game::FormID             a_primaryFormId,
+		const filter_func_t&           a_filter) noexcept
+	{
+		const auto& formData = a_params.collector.data.forms;
+
+		auto& tmp = a_params.objects.GetTempData().fl;
+
+		tmp.assign(a_config.extraItems.begin(), a_config.extraItems.end());
+		if (a_primaryFormId)
+		{
+			tmp.emplace_back(a_primaryFormId);
+		}
+
+		static thread_local std::mt19937 gen([] {
+			std::random_device rd;
+			return std::mt19937(rd());
+		}());
+
+		std::shuffle(tmp.begin(), tmp.end(), gen);
+
+		for (const auto& e : tmp)
+		{
+			if (const auto it = ProcessInventoryForm(
+					a_params,
+					a_config,
+					e,
+					a_filter);
+			    it != formData.end())
+			{
+				return it;
+			}
+		}
+
+		return formData.end();
+	}
+
+	Data::CollectorData::container_type::const_iterator IEquipment::SelectForm(
+		ProcessParams&                 a_params,
+		const Data::configInventory_t& a_config,
+		const Game::FormID             a_primaryFormId,
+		const filter_func_t&           a_filter) noexcept
+	{
+		const auto& formData = a_params.collector.data.forms;
+
+		if (a_primaryFormId)
+		{
+			if (const auto it = ProcessInventoryForm(
+					a_params,
+					a_config,
+					a_primaryFormId,
+					a_filter);
+			    it != formData.end())
+			{
+				return it;
+			}
+		}
+
+		for (auto& e : a_config.extraItems)
+		{
+			if (e)
+			{
+				if (const auto it = ProcessInventoryForm(
+						a_params,
+						a_config,
+						e,
+						a_filter);
+				    it != formData.end())
+				{
+					return it;
+				}
+			}
+		}
+
+		return formData.end();
+	}
+
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormGroup(
 		ProcessParams&              a_params,
-		const Data::configCustom_t& a_config,
-		ObjectEntryCustom&          a_objectEntry) noexcept
+		const Data::configCustom_t& a_config) noexcept
 	{
 		const auto& formData = a_params.collector.data.forms;
 
@@ -228,10 +331,10 @@ namespace IED
 		{
 			if (auto it = formData.find(fid); it != formData.end())
 			{
-				if (CustomEntryValidateInventoryForm(
+				if (ValidateInventoryForm(
 						a_params,
 						it->second,
-						a_config))
+						a_config.inv))
 				{
 					return it;
 				}
@@ -241,131 +344,54 @@ namespace IED
 		return formData.end();
 	}
 
-	template <class Tf>
-	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryFormDefault(
-		ProcessParams&              a_params,
-		const Data::configCustom_t& a_config,
-		ObjectEntryCustom&          a_objectEntry,
-		Tf                          a_filter) noexcept
+	CollectorData::container_type::const_iterator IEquipment::SelectInventoryFormDefault(
+		ProcessParams&                 a_params,
+		const Data::configInventory_t& a_config,
+		const Game::FormID             a_defaultTargetForm,
+		const Game::FormID             a_currentForm,
+		const filter_func_t&           a_filter) noexcept
 	{
-		const auto& formData = a_params.collector.data.forms;
-
-		if (a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
+		if (a_config.flags.test(InventoryFlags::kSelectInvRandom) &&
 		    !a_config.extraItems.empty())
 		{
-			if (a_objectEntry.data.state)
+			if (a_currentForm &&
+			    (a_currentForm == a_defaultTargetForm ||
+			     std::find(
+					 a_config.extraItems.begin(),
+					 a_config.extraItems.end(),
+					 a_currentForm) != a_config.extraItems.end()))
 			{
-				const auto fid = a_objectEntry.data.state->form->formID;
-
-				if (fid == a_config.form.get_id() ||
-				    std::find(
-						a_config.extraItems.begin(),
-						a_config.extraItems.end(),
-						fid) != a_config.extraItems.end())
+				if (const auto it = ProcessInventoryForm(
+						a_params,
+						a_config,
+						a_currentForm,
+						a_filter);
+				    it != a_params.collector.data.forms.end())
 				{
-					if (auto it = formData.find(fid); it != formData.end())
-					{
-						if (a_filter(it->second))
-						{
-							if (CustomEntryValidateInventoryForm(
-									a_params,
-									it->second,
-									a_config))
-							{
-								return it;
-							}
-						}
-					}
+					return it;
 				}
 			}
 
-			auto& tmp = a_params.objects.GetTempData().fl;
-
-			tmp.assign(a_config.extraItems.begin(), a_config.extraItems.end());
-			tmp.emplace_back(a_config.form.get_id());
-
-			while (tmp.cbegin() != tmp.cend())
-			{
-				using diff_type = configFormList_t::difference_type;
-
-				RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.cbegin(), tmp.cend()) - 1);
-
-				const auto ite = tmp.cbegin() + rng.Get(m_rng);
-
-				if (const auto& fid = *ite)
-				{
-					if (auto it = formData.find(fid); it != formData.end())
-					{
-						if (a_filter(it->second))
-						{
-							if (CustomEntryValidateInventoryForm(
-									a_params,
-									it->second,
-									a_config))
-							{
-								return it;
-							}
-						}
-					}
-				}
-
-				tmp.erase(ite);
-			}
+			return SelectRandomForm(
+				a_params,
+				a_config,
+				a_defaultTargetForm,
+				a_filter);
 		}
 		else
 		{
-			if (const auto& fid = a_config.form.get_id())
-			{
-				if (auto it = formData.find(fid); it != formData.end())
-				{
-					if (a_filter(it->second))
-					{
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config))
-						{
-							return it;
-						}
-					}
-				}
-			}
-
-			for (auto& e : a_config.extraItems)
-			{
-				if (!e)
-				{
-					continue;
-				}
-
-				const auto it = formData.find(e);
-				if (it == formData.end())
-				{
-					continue;
-				}
-
-				if (!a_filter(it->second))
-				{
-					continue;
-				}
-
-				if (CustomEntryValidateInventoryForm(
-						a_params,
-						it->second,
-						a_config))
-				{
-					return it;
-				}
-			}
+			return SelectForm(
+				a_params,
+				a_config,
+				a_defaultTargetForm,
+				a_filter);
 		}
-
-		return formData.end();
 	}
 
 	CollectorData::container_type::const_iterator IEquipment::CustomEntrySelectInventoryForm(
-		ProcessParams&        a_params,
-		const configCustom_t& a_config,
-		ObjectEntryCustom&    a_objectEntry) noexcept
+		ProcessParams&           a_params,
+		const configCustom_t&    a_config,
+		const ObjectEntryCustom& a_objectEntry) noexcept
 	{
 		if (a_config.customFlags.test(CustomFlags::kLastEquippedMode))
 		{
@@ -373,10 +399,10 @@ namespace IED
 				a_params,
 				a_config.lastEquipped,
 				[&](const auto& a_itemEntry) noexcept {
-					return CustomEntryValidateInventoryForm(
+					return ValidateInventoryForm(
 						a_params,
 						a_itemEntry.second,
-						a_config);
+						a_config.inv);
 				});
 
 			if (it != a_params.collector.data.forms.end())
@@ -385,13 +411,14 @@ namespace IED
 			}
 			else
 			{
-				return CustomEntrySelectInventoryFormDefault(
+				return SelectInventoryFormDefault(
 					a_params,
-					a_config,
-					a_objectEntry,
+					a_config.inv,
+					a_config.form.get_id(),
+					a_objectEntry.data.state ? a_objectEntry.data.state->form->formID : Game::FormID{},
 					[&](const auto& a_item) noexcept {
 						return a_config.lastEquipped.filterConditions.evaluate_sfp(
-							{ a_item.form },
+							{ a_item.second.form },
 							a_params,
 							true);
 					});
@@ -401,15 +428,15 @@ namespace IED
 		{
 			return CustomEntrySelectInventoryFormGroup(
 				a_params,
-				a_config,
-				a_objectEntry);
+				a_config);
 		}
 		else
 		{
-			return CustomEntrySelectInventoryFormDefault(
+			return SelectInventoryFormDefault(
 				a_params,
-				a_config,
-				a_objectEntry,
+				a_config.inv,
+				a_config.form.get_id(),
+				a_objectEntry.data.state ? a_objectEntry.data.state->form->formID : Game::FormID{},
 				[](auto&) noexcept { return true; });
 		}
 	}

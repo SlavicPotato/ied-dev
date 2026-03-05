@@ -12,7 +12,7 @@ namespace IED
 	using namespace Data;
 
 	bool IConditionalVariableProcessor::UpdateVariableMap(
-		ProcessParams&                          a_params,
+		ProcessParams&                            a_params,
 		const configConditionalVariablesHolder_t& a_config,
 		conditionalVariableMap_t&                 a_map) noexcept
 	{
@@ -50,8 +50,8 @@ namespace IED
 	}
 
 	constexpr const Data::configConditionalVariable_t* IConditionalVariableProcessor::GetOverrideVariable(
-		ProcessParams&                              a_params,
-		const Data::configConditionalVariablesList_t& a_list) noexcept
+		ProcessParams&                          a_params,
+		const configConditionalVariablesList_t& a_list) noexcept
 	{
 		for (auto& e : a_list)
 		{
@@ -81,9 +81,34 @@ namespace IED
 		return nullptr;
 	}
 
+	namespace detail
+	{
+		static constexpr void update_use_counts(
+			ProcessParams&                                       a_params,
+			const bool                                           a_consumeItem,
+			const CollectorData::container_type::const_iterator& a_it) noexcept
+		{
+			const auto r = a_params.useCount.emplace(a_it->first, 0u);
+
+			if (a_it->second.extra.type == ObjectType::kAmmo)
+			{
+				r.first->second = std::max(a_it->second.itemCount, 0i32);
+			}
+			else
+			{
+				r.first->second++;
+			}
+
+			if (a_consumeItem)
+			{
+				a_it->second.consume_one();
+			}
+		}
+	}
+
 	Game::FormID IConditionalVariableProcessor::GetLastEquippedForm(
-		ProcessParams&                                  a_params,
-		const Data::configConditionalVariableValueData_t& a_data) noexcept
+		ProcessParams&                              a_params,
+		const configConditionalVariableValueData_t& a_data) noexcept
 	{
 		auto& controller = a_params.controller;
 
@@ -98,16 +123,41 @@ namespace IED
 
 		if (it != a_params.collector.data.forms.end())
 		{
-			const auto r = a_params.useCount.emplace(it->first, 0u);
+			detail::update_use_counts(
+				a_params,
+				a_data.flags.test(ConditionalVariableValueDataFlags::kConsumeItem),
+				it);
 
-			if (it->second.extra.type == ObjectType::kAmmo)
-			{
-				r.first->second = std::max(it->second.itemCount, 0i32);
-			}
-			else
-			{
-			r.first->second++;
-			}
+			return it->first;
+		}
+		else
+		{
+			return {};
+		}
+	}
+
+	Game::FormID IConditionalVariableProcessor::GetInventoryForm(
+		ProcessParams&                              a_params,
+		const configConditionalVariableValueData_t& a_data,
+		const conditionalVariableStorage_t&         a_dst) noexcept
+	{
+		auto& controller = a_params.controller;
+
+		const auto it = controller.SelectInventoryFormDefault(
+			a_params,
+			a_data.inv,
+			a_data.value.form.get_id(),
+			a_dst.form.get_id(),
+			[](const auto& a_itemEntry) noexcept [[msvc::forceinline]] {
+				return true;
+			});
+
+		if (it != a_params.collector.data.forms.end())
+		{
+			detail::update_use_counts(
+				a_params,
+				a_data.inv.flags.test(InventoryFlags::kEquipmentMode),
+				it);
 
 			return it->first;
 		}
@@ -118,11 +168,11 @@ namespace IED
 	}
 
 	constexpr void IConditionalVariableProcessor::UpdateVariable(
-		ProcessParams&                                  a_params,
-		ConditionalVariableType                           a_type,
-		const Data::configConditionalVariableValueData_t& a_src,
-		conditionalVariableStorage_t&                     a_dst,
-		bool&                                             a_modified) noexcept
+		ProcessParams&                              a_params,
+		ConditionalVariableType                     a_type,
+		const configConditionalVariableValueData_t& a_src,
+		conditionalVariableStorage_t&               a_dst,
+		bool&                                       a_modified) noexcept
 	{
 		switch (a_type)
 		{
@@ -148,25 +198,44 @@ namespace IED
 			break;
 		case ConditionalVariableType::kForm:
 
-			if (a_src.flags.test(Data::ConditionalVariableValueDataFlags::kLastEquipped))
+			switch (a_src.flags.bf().selectionMode)
 			{
-				const auto v = GetLastEquippedForm(a_params, a_src);
-
-				if (v == a_dst.form.get_id())
+			case ConditionalVariableSelectionMode::LastEquipped:
 				{
-					return;
-				}
+					const auto v = GetLastEquippedForm(a_params, a_src);
 
-				a_dst.form = v;
-			}
-			else
-			{
+					if (v == a_dst.form.get_id())
+					{
+						return;
+					}
+
+					a_dst.form = v;
+				}
+				break;
+
+			case ConditionalVariableSelectionMode::Inventory:
+				{
+					const auto v = GetInventoryForm(a_params, a_src, a_dst);
+
+					if (v == a_dst.form.get_id())
+					{
+						return;
+					}
+
+					a_dst.form = v;
+				}
+				break;
+
+			default:
+
 				if (a_src.value.form == a_dst.form)
 				{
 					return;
 				}
 
 				a_dst.form = a_src.value.form;
+
+				break;
 			}
 
 			break;

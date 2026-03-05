@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/ConfigInventory.h"
 #include "IED/ConfigStore.h"
 #include "IED/Data.h"
 #include "IED/Inventory.h"
@@ -15,6 +16,9 @@ namespace IED
 
 	class IEquipment
 	{
+	private:
+		using filter_func_t = std::function<bool(const Data::CollectorData::container_type::value_type&)>;
+
 	protected:
 		struct SelectedItem
 		{
@@ -43,7 +47,7 @@ namespace IED
 			Data::ObjectSlot leftSlot;
 		};
 
-		IEquipment(RandomNumberGeneratorBase& a_rng) noexcept;
+		IEquipment() noexcept;
 
 		static EquippedItemInfo CreateEquippedItemInfo(
 			const Actor* a_actor) noexcept;
@@ -54,11 +58,6 @@ namespace IED
 			SlotItemCandidates&       a_candidates,
 			const ObjectEntrySlot&    a_slot) noexcept;
 
-		static bool CustomEntryValidateInventoryForm(
-			ProcessParams&                       a_params,
-			const Data::CollectorData::ItemData& a_itemData,
-			const Data::configCustom_t&          a_config) noexcept;
-
 		template <class Tf>
 		static auto DoLastEquippedSelection(
 			ProcessParams&                    a_params,
@@ -66,23 +65,46 @@ namespace IED
 			Tf                                a_validationFunc) noexcept;
 
 	private:
+		static bool ValidateInventoryForm(
+			ProcessParams&                       a_params,
+			const Data::CollectorData::ItemData& a_itemData,
+			const Data::configInventory_t&       a_config) noexcept;
+
+		static Data::CollectorData::container_type::const_iterator ProcessInventoryForm(
+			ProcessParams&                 a_params,
+			const Data::configInventory_t& a_config,
+			const Game::FormID             a_formId,
+			const filter_func_t&           a_filter) noexcept;
+
+		static Data::CollectorData::container_type::const_iterator SelectRandomForm(
+			ProcessParams&                 a_params,
+			const Data::configInventory_t& a_config,
+			const Game::FormID             a_primaryFormId,
+			const filter_func_t&           a_filter) noexcept;
+
+		static Data::CollectorData::container_type::const_iterator SelectForm(
+			ProcessParams&                 a_params,
+			const Data::configInventory_t& a_config,
+			const Game::FormID             a_primaryFormId,
+			const filter_func_t&           a_filter) noexcept;
+
 		static Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormGroup(
 			ProcessParams&              a_params,
-			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry) noexcept;
-
-		template <class Tf>
-		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryFormDefault(
-			ProcessParams&              a_params,
-			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry,
-			Tf                          a_filter) noexcept;
+			const Data::configCustom_t& a_config) noexcept;
 
 	public:
-		Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryForm(
+		static Data::CollectorData::container_type::const_iterator SelectInventoryFormDefault(
+			ProcessParams&                 a_params,
+			const Data::configInventory_t& a_config,
+			const Game::FormID             a_defaultTargetForm,
+			const Game::FormID             a_currentForm,
+			const filter_func_t&           a_filter) noexcept;
+
+	public:
+		static Data::CollectorData::container_type::const_iterator CustomEntrySelectInventoryForm(
 			ProcessParams&              a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry) noexcept;
+			const ObjectEntryCustom&    a_objectEntry) noexcept;
 
 	private:
 		template <class Tf>
@@ -109,8 +131,6 @@ namespace IED
 			const Data::configLastEquipped_t&                       a_config,
 			const stl::boost_vector<Data::configFormZeroMissing_t>& a_forms,
 			const Tf&                                               a_validationFunc) noexcept;
-
-		RandomNumberGeneratorBase& m_rng;
 	};
 
 	template <class Tf>

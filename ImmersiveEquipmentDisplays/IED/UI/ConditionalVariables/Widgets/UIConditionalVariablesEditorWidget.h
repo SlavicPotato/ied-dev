@@ -3,12 +3,14 @@
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 #include "IED/UI/Widgets/UIDescriptionPopup.h"
 #include "IED/UI/Widgets/UIEquipmentOverrideConditionsWidget.h"
+#include "IED/UI/Widgets/UIExtraItemsWidget.h"
 #include "IED/UI/Widgets/UILastEquippedWidget.h"
 #include "IED/UI/Widgets/UIVariableTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/UI/Controls/UICollapsibles.h"
 
+#include "IED/UI/UIConditionalVariablesEditorWidgetParams.h"
 #include "IED/UI/UIEditorInterface.h"
 #include "IED/UI/UILocalizationInterface.h"
 
@@ -56,6 +58,7 @@ namespace IED
 
 		class UIConditionalVariablesEditorWidget :
 			public UILastEquippedWidget,
+			public UIExtraItemsWidget<ConditionalVariablesEditorWidgetParams>,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UICollapsibles,
 			public UIEditorInterface
@@ -90,11 +93,17 @@ namespace IED
 
 			bool DrawVariableValue(
 				ConditionalVariableType                     a_type,
+				Data::configConditionalVariablesHolder_t&   a_holder,
 				Data::configConditionalVariableValueData_t& a_data);
-			
+
 			bool DrawVariableForm(
 				ConditionalVariableType                     a_type,
+				Data::configConditionalVariablesHolder_t&   a_holder,
 				Data::configConditionalVariableValueData_t& a_data);
+
+			bool DrawInventoryPanel(
+				Data::configConditionalVariablesHolder_t& a_holder,
+				Data::configInventory_t&                  a_data);
 
 			void DrawVariableTree(
 				Data::configConditionalVariablesHolder_t& a_holder,
@@ -131,6 +140,9 @@ namespace IED
 				const CondVarDataChangeParams& a_params) = 0;
 
 			virtual std::optional<std::reference_wrapper<Data::configConditionalVariablesHolder_t>> GetCurrentData() = 0;
+
+			Data::configInventory_t& GetInventoryConfig(const ConditionalVariablesEditorWidgetParams& a_params) override;
+			UIFormPickerWidget&      GetFormPicker() override;
 
 			ConditionalVariableType m_tmpType{ ConditionalVariableType::kInt32 };
 

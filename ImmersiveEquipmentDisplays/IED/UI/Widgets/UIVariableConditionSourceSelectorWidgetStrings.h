@@ -16,6 +16,7 @@ namespace IED
 			PlayerHorse   = 7205,
 			MountedActor  = 7206,
 			MountingActor = 7207,
+			Mount         = 7208,
 		};
 	}
 }

@@ -16,7 +16,8 @@ namespace IED
 			std::make_pair(Data::VariableConditionSource::kRace, UIVariableConditionSourceSelectorWidgetStrings::Race),
 			std::make_pair(Data::VariableConditionSource::kPlayerHorse, UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse),
 			std::make_pair(Data::VariableConditionSource::kMountedActor, UIVariableConditionSourceSelectorWidgetStrings::MountedActor),
-			std::make_pair(Data::VariableConditionSource::kMountingActor, UIVariableConditionSourceSelectorWidgetStrings::MountingActor)
+			std::make_pair(Data::VariableConditionSource::kMountingActor, UIVariableConditionSourceSelectorWidgetStrings::MountingActor),
+			std::make_pair(Data::VariableConditionSource::kMount, UIVariableConditionSourceSelectorWidgetStrings::Mount)
 
 		);
 
@@ -79,6 +80,8 @@ namespace IED
 				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::MountedActor);
 			case Data::VariableConditionSource::kMountingActor:
 				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::MountingActor);
+			case Data::VariableConditionSource::kMount:
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::Mount);
 			default:
 				return nullptr;
 			}

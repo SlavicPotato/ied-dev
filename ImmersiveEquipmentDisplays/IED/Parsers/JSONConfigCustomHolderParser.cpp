@@ -10,7 +10,7 @@ namespace IED
 	{
 		using namespace Data;
 
-		static constexpr std::uint32_t CURRENT_VERSION = 3;
+		static constexpr std::uint32_t CURRENT_VERSION = 4;
 
 		template <>
 		bool Parser<Data::configCustomHolder_t>::Parse(

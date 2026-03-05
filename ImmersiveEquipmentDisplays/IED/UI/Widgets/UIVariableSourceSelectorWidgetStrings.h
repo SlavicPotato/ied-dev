@@ -13,6 +13,7 @@ namespace IED
 			MountingActor = 7302,
 			MountedActor  = 7303,
 			Self          = 7304,
+			Mount         = 7305,
 		};
 	}
 }

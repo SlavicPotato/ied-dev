@@ -5,6 +5,7 @@
 #include "JSONConfigCachedFormParser.h"
 #include "JSONConfigCustomParser.h"
 #include "JSONConfigFixedStringListParser.h"
+#include "JSONConfigInventoryParser.h"
 #include "JSONConfigLastEquippedParser.h"
 #include "JSONConfigOverrideModelGroupParser.h"
 #include "JSONConfigVariableSource.h"
@@ -36,20 +37,39 @@ namespace IED
 			pform.Parse(a_in["item"], a_out.form);
 			pform.Parse(a_in["model"], a_out.modelForm);
 
-			if (!prange.Parse(a_in["cr"], a_out.countRange))
+			if (a_version >= 4)
 			{
-				return false;
-			}
+				Parser<Data::configInventory_t> pinv(m_state);
 
-			if (auto& extra = a_in["extra"])
-			{
-				Parser<Data::configFormList_t> pformList(m_state);
-
-				if (!pformList.Parse(extra, a_out.extraItems, a_version))
+				if (!pinv.Parse(a_in["inv"], a_out.inv))
 				{
 					return false;
 				}
 			}
+			else
+			{
+				if (auto& cr = a_in["cr"])
+				{
+					if (!prange.Parse(cr, a_out.inv.countRange))
+					{
+						return false;
+					}
+				}
+
+				if (auto& extra = a_in["extra"])
+				{
+					Parser<Data::configFormList_t> pformList(m_state);
+
+					if (!pformList.Parse(extra, a_out.inv.extraItems, a_version))
+					{
+						return false;
+					}
+				}
+
+				a_out.move_custom_flags_to_inv();
+			}
+
+			a_out.probability = a_in.get("chance", 100.0f).asFloat();
 
 			if (a_version >= 3)
 			{
@@ -106,9 +126,6 @@ namespace IED
 
 			a_out.customFlags = a_in.get("cflags", stl::underlying(Data::configCustom_t::DEFAULT_CUSTOM_FLAGS)).asUInt();
 
-			//a_out.priority = a_in.get("prio", 0u).asUInt();
-			a_out.probability = a_in.get("chance", 100.0f).asFloat();
-
 			return true;
 		}
 
@@ -133,19 +150,9 @@ namespace IED
 				pform.Create(a_in.modelForm.get_id(), a_out["model"]);
 			}
 
-			if (!a_in.countRange.empty())
-			{
-				Parser<Data::configRange_t> prange(m_state);
+			Parser<Data::configInventory_t> pinv(m_state);
 
-				prange.Create(a_in.countRange, a_out["cr"]);
-			}
-
-			if (!a_in.extraItems.empty())
-			{
-				Parser<Data::configFormList_t> pformList(m_state);
-
-				pformList.Create(a_in.extraItems, a_out["extra"]);
-			}
+			pinv.Create(a_in.inv, a_out["inv"]);
 
 			Parser<Data::configLastEquipped_t> leparser(m_state);
 
@@ -161,9 +168,10 @@ namespace IED
 
 			gparser.Create(a_in.group, a_out["mgrp"]);
 
+			a_out["chance"] = a_in.probability;
+
 			a_out["cflags"] = a_in.customFlags.underlying();
 			//a_out["prio"] = a_in.priority;
-			a_out["chance"] = a_in.probability;
 		}
 
 	}

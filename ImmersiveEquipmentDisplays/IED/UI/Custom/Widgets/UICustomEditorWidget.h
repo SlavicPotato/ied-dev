@@ -10,8 +10,10 @@
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
 #include "IED/UI/Widgets/UIBaseConfigWidget.h"
+#include "IED/UI/Widgets/UICountRangeWidget.h"
 #include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
+#include "IED/UI/Widgets/UIExtraItemsWidget.h"
 #include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UILastEquippedWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
@@ -64,17 +66,12 @@ namespace IED
 			stl::fixed_string newName;
 		};
 
-		enum class ExtraItemsAction : std::uint32_t
-		{
-			None,
-			Add
-		};
-
 		template <class T>
 		class UICustomEditorWidget :
 			public UIBaseConfigWidget<T>,
 			public UIModelGroupEditorWidget<T>,
 			public UILastEquippedWidget,
+			public UIExtraItemsWidget<SingleCustomConfigUpdateParams>,
 			public UIEditorPanelSettingsGear,
 			public virtual UIFormTypeSelectorWidget,
 			public UIEditorInterface
@@ -126,17 +123,9 @@ namespace IED
 				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
-			ExtraItemsAction DrawExtraItemsHeaderContextMenu(
-				T                               a_handle,
-				SingleCustomConfigUpdateParams& a_params);
-
 			void DrawExtraItems(
-				T                               a_handle,
-				SingleCustomConfigUpdateParams& a_params);
-
-			void DrawExtraItemsTable(
-				T                               a_handle,
-				SingleCustomConfigUpdateParams& a_params);
+				T                                     a_handle,
+				const SingleCustomConfigUpdateParams& a_params);
 
 			void DrawCustomEntry(
 				T                          a_handle,
@@ -148,10 +137,6 @@ namespace IED
 				entryCustomData_t& a_data);
 
 			void DrawItemHeaderControls(
-				T                                     a_handle,
-				const SingleCustomConfigUpdateParams& a_params);
-
-			void DrawCountRangeContextMenu(
 				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params);
 
@@ -195,6 +180,11 @@ namespace IED
 				const SingleCustomConfigUpdateParams& a_params,
 				ModelGroupEditorOnChangeEventType     a_type) override;
 
+			virtual Data::configInventory_t& GetInventoryConfig(
+				const SingleCustomConfigUpdateParams& a_params) override;
+
+			virtual UIFormPickerWidget& GetFormPicker() override;
+
 			UIGenericFilter m_itemFilter;
 
 			UIFormPickerWidget m_formPicker;
@@ -210,6 +200,7 @@ namespace IED
 			UIBaseConfigWidget<T>(a_controller),
 			UIModelGroupEditorWidget<T>(m_formPicker, a_controller),
 			UILastEquippedWidget(a_controller),
+			UIExtraItemsWidget<SingleCustomConfigUpdateParams>(a_controller),
 			m_itemFilter(true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_controller(a_controller)
@@ -929,8 +920,8 @@ namespace IED
 						{*/
 						if (ImGui::CheckboxFlagsT(
 								UIL::LS(UICustomEditorString::EquipmentMode, "4"),
-								stl::underlying(std::addressof(data.customFlags.value)),
-								stl::underlying(Data::CustomFlags::kEquipmentMode)))
+								stl::underlying(std::addressof(data.inv.flags.value)),
+								stl::underlying(Data::InventoryFlags::kEquipmentMode)))
 						{
 							this->OnBaseConfigChange(
 								a_handle,
@@ -943,7 +934,7 @@ namespace IED
 
 						UITipsInterface::DrawTip(UITip::CustomEquipmentMode);
 
-						cd = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
+						cd = !data.inv.flags.test(Data::InventoryFlags::kEquipmentMode);
 
 						UICommon::PushDisabled(cd);
 
@@ -964,8 +955,8 @@ namespace IED
 
 						if (ImGui::CheckboxFlagsT(
 								UIL::LS(UIWidgetCommonStrings::IsFavorited, "6"),
-								stl::underlying(std::addressof(data.customFlags.value)),
-								stl::underlying(Data::CustomFlags::kCheckFav)))
+								stl::underlying(std::addressof(data.inv.flags.value)),
+								stl::underlying(Data::InventoryFlags::kCheckFav)))
 						{
 							this->OnBaseConfigChange(
 								a_handle,
@@ -976,14 +967,14 @@ namespace IED
 
 						ImGui::NextColumn();
 
-						cd = !data.customFlags.test_any(Data::CustomFlags::kEquipmentModeMask);
+						cd = !data.inv.flags.test(Data::InventoryFlags::kEquipmentMode);
 
 						UICommon::PushDisabled(cd);
 
 						if (ImGui::CheckboxFlagsT(
 								UIL::LS(UICustomEditorString::IgnoreRaceEquipTypes, "8"),
-								stl::underlying(std::addressof(data.customFlags.value)),
-								stl::underlying(Data::CustomFlags::kIgnoreRaceEquipTypes)))
+								stl::underlying(std::addressof(data.inv.flags.value)),
+								stl::underlying(Data::InventoryFlags::kIgnoreRaceEquipTypes)))
 						{
 							this->OnBaseConfigChange(
 								a_handle,
@@ -995,8 +986,8 @@ namespace IED
 
 						if (ImGui::CheckboxFlagsT(
 								UIL::LS(UICustomEditorString::DisableIfEquipped, "9"),
-								stl::underlying(std::addressof(data.customFlags.value)),
-								stl::underlying(Data::CustomFlags::kDisableIfEquipped)))
+								stl::underlying(std::addressof(data.inv.flags.value)),
+								stl::underlying(Data::InventoryFlags::kDisableIfEquipped)))
 						{
 							this->OnBaseConfigChange(
 								a_handle,
@@ -1033,30 +1024,14 @@ namespace IED
 						UICommon::PopDisabled(cd);
 
 						ImGui::BeginGroup();
-						DrawCountRangeContextMenu(a_handle, a_params);
 
-						Data::configRange_t lim{
-							0,
-							UINT32_MAX
-						};
-
-						if (ImGui::DragScalarN(
-								UIL::LS(CommonStrings::Limits, "A"),
-								ImGuiDataType_U32,
-								std::addressof(data.countRange),
-								2,
-								0.175f,
-								std::addressof(lim.min),
-								std::addressof(lim.max),
-								"%u",
-								ImGuiSliderFlags_AlwaysClamp))
+						if (UICountRangeWidget::DrawCountRange(data.inv.countRange))
 						{
 							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
-								PostChangeAction::Evaluate);
+								PostChangeAction::Reset);
 						}
-						ImGui::EndGroup();
 
 						UITipsInterface::DrawTip(UITip::CustomCountRange);
 
@@ -1077,309 +1052,25 @@ namespace IED
 		}
 
 		template <class T>
-		ExtraItemsAction UICustomEditorWidget<T>::DrawExtraItemsHeaderContextMenu(
-			T                               a_handle,
-			SingleCustomConfigUpdateParams& a_params)
-		{
-			ExtraItemsAction result{ ExtraItemsAction ::None };
-
-			ImGui::PushID("context_area");
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
-
-			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
-			{
-				m_fsNew = {};
-			}
-
-			ImGui::PopStyleVar();
-
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				if (UIL::LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
-				{
-					if (m_formPicker.DrawFormSelector(m_fsNew))
-					{
-						auto& data = a_params.entry(a_params.sex);
-
-						if (std::find(
-								data.extraItems.begin(),
-								data.extraItems.end(),
-								m_fsNew) == data.extraItems.end())
-						{
-							data.extraItems.emplace_back(m_fsNew);
-
-							this->OnBaseConfigChange(
-								a_handle,
-								std::addressof(a_params),
-								PostChangeAction::Evaluate);
-
-							result = ExtraItemsAction::Add;
-
-							m_fsNew = {};
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					ImGui::EndMenu();
-				}
-
-				if (UIL::LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
-				{
-					if (m_formPicker.DrawFormSelectorMulti())
-					{
-						auto& data = a_params.entry(a_params.sex);
-
-						bool added = false;
-
-						for (auto& e : m_formPicker.GetSelectedEntries().getvec())
-						{
-							if (std::find(
-									data.extraItems.begin(),
-									data.extraItems.end(),
-									e->second.formid) == data.extraItems.end())
-							{
-								data.extraItems.emplace_back(e->second.formid);
-								added = true;
-							}
-						}
-
-						m_formPicker.ClearSelectedEntries();
-
-						if (added)
-						{
-							this->OnBaseConfigChange(
-								a_handle,
-								std::addressof(a_params),
-								PostChangeAction::Evaluate);
-
-							result = ExtraItemsAction::Add;
-						}
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					ImGui::EndMenu();
-				}
-
-				if (UIL::LCG_MI(UIWidgetCommonStrings::ClearAll, "3"))
-				{
-					auto& data = a_params.entry(a_params.sex);
-
-					data.extraItems.clear();
-
-					this->OnBaseConfigChange(
-						a_handle,
-						std::addressof(a_params),
-						PostChangeAction::Evaluate);
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopID();
-
-			return result;
-		}
-
-		template <class T>
 		void UICustomEditorWidget<T>::DrawExtraItems(
-			T                               a_handle,
-			SingleCustomConfigUpdateParams& a_params)
+			T                                     a_handle,
+			const SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
 
-			ImGui::PushID("extra_items");
+			ImGui::PushID("_extra");
 
 			bool disabled = data.customFlags.test_any(Data::CustomFlags::kGroupMode);
 
-			UICommon::PushDisabled(disabled);
-
-			const auto result = DrawExtraItemsHeaderContextMenu(a_handle, a_params);
-
-			bool treeDisabled = disabled || data.extraItems.empty();
-
-			if (!treeDisabled && !disabled)
+			if (DrawExtraItemsImpl(a_params, disabled))
 			{
-				if (result == ExtraItemsAction::Add)
-				{
-					ImGui::SetNextItemOpen(true);
-				}
+				this->OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Evaluate);
 			}
-
-			UICommon::PushDisabled(treeDisabled);
-
-			if (ImGui::TreeNodeEx(
-					"tree",
-					ImGuiTreeNodeFlags_DefaultOpen |
-						ImGuiTreeNodeFlags_SpanAvailWidth,
-					"%s",
-					UIL::LS(UIWidgetCommonStrings::AdditionalItems)))
-			{
-				if (!treeDisabled)
-				{
-					ImGui::Spacing();
-
-					if (ImGui::CheckboxFlagsT(
-							UIL::LS(UIWidgetCommonStrings::SelectRandomForm, "hctl_1"),
-							stl::underlying(std::addressof(data.customFlags.value)),
-							stl::underlying(Data::CustomFlags::kSelectInvRandom)))
-					{
-						this->OnBaseConfigChange(
-							a_handle,
-							std::addressof(a_params),
-							PostChangeAction::Reset);
-					}
-
-					ImGui::Spacing();
-
-					DrawExtraItemsTable(a_handle, a_params);
-
-					ImGui::Spacing();
-				}
-
-				ImGui::TreePop();
-			}
-
-			UICommon::PopDisabled(treeDisabled);
-
-			UICommon::PopDisabled(disabled);
 
 			ImGui::PopID();
-		}
-
-		template <class T>
-		void UICustomEditorWidget<T>::DrawExtraItemsTable(
-			T                               a_handle,
-			SingleCustomConfigUpdateParams& a_params)
-		{
-			auto& data = a_params.entry(a_params.sex);
-
-			if (data.extraItems.empty())
-			{
-				return;
-			}
-
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
-
-			constexpr int NUM_COLUMNS = 3;
-
-			if (ImGui::BeginTable(
-					"table",
-					NUM_COLUMNS,
-					ImGuiTableFlags_Borders |
-						ImGuiTableFlags_Resizable |
-						ImGuiTableFlags_NoSavedSettings |
-						ImGuiTableFlags_SizingStretchProp,
-					{ -1.0f, 0.f }))
-			{
-				auto w =
-					((ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 2.0f) + 2.0f +
-					ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f + 2.0f);
-
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn(UIL::LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
-				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
-
-				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
-
-				for (int column = 0; column < NUM_COLUMNS; column++)
-				{
-					ImGui::TableSetColumnIndex(column);
-					ImGui::TableHeader(ImGui::TableGetColumnName(column));
-				}
-
-				auto it = data.extraItems.begin();
-
-				int i = 0;
-
-				while (it != data.extraItems.end())
-				{
-					ImGui::PushID(i);
-
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-
-					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
-
-					if (ImGui::Button("X"))
-					{
-						it = data.extraItems.erase(it);
-
-						this->OnBaseConfigChange(
-							a_handle,
-							std::addressof(a_params),
-							PostChangeAction::Evaluate);
-					}
-
-					ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-					if (ImGui::ArrowButton("up", ImGuiDir_Up))
-					{
-						if (it != data.extraItems.end())
-						{
-							if (IterSwap(data.extraItems, it, SwapDirection::Up))
-							{
-								this->OnBaseConfigChange(
-									a_handle,
-									std::addressof(a_params),
-									PostChangeAction::Evaluate);
-							}
-						}
-					}
-
-					ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-					if (ImGui::ArrowButton("down", ImGuiDir_Down))
-					{
-						if (it != data.extraItems.end())
-						{
-							if (IterSwap(data.extraItems, it, SwapDirection::Down))
-							{
-								this->OnBaseConfigChange(
-									a_handle,
-									std::addressof(a_params),
-									PostChangeAction::Evaluate);
-							}
-						}
-					}
-
-					ImGui::PopStyleVar();
-
-					if (it != data.extraItems.end())
-					{
-						ImGui::TableSetColumnIndex(1);
-
-						ImGui::Text("%.8X", it->get());
-
-						ImGui::TableSetColumnIndex(2);
-
-						if (auto formInfo = this->LookupForm(*it))
-						{
-							if (auto typeDesc = form_type_to_desc(formInfo->form.type))
-							{
-								ImGui::Text("[%s] %s", typeDesc, formInfo->form.name.c_str());
-							}
-							else
-							{
-								ImGui::Text("[%hhu] %s", formInfo->form.type, formInfo->form.name.c_str());
-							}
-						}
-
-						++it;
-						i++;
-					}
-
-					ImGui::PopID();
-				}
-
-				ImGui::EndTable();
-			}
-
-			ImGui::PopStyleVar();
 		}
 
 		template <class T>
@@ -1470,34 +1161,6 @@ namespace IED
 			if (ImGui::BeginPopup("context_menu"))
 			{
 				DrawItemContextMenu(a_handle, a_params);
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopID();
-		}
-
-		template <class T>
-		void UICustomEditorWidget<T>::DrawCountRangeContextMenu(
-			T                                     a_handle,
-			const SingleCustomConfigUpdateParams& a_params)
-		{
-			ImGui::PushID("cr_context_area");
-
-			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				if (ImGui::MenuItem(UIL::LS(UIWidgetCommonStrings::ResetToZero, "1")))
-				{
-					a_params.entry(a_params.sex).countRange = {};
-
-					this->OnBaseConfigChange(
-						a_handle,
-						std::addressof(a_params),
-						PostChangeAction::Evaluate);
-				}
-
 				ImGui::EndPopup();
 			}
 
@@ -1622,6 +1285,19 @@ namespace IED
 
 				break;
 			}
+		}
+
+		template <class T>
+		inline Data::configInventory_t& UICustomEditorWidget<T>::GetInventoryConfig(
+			const SingleCustomConfigUpdateParams& a_params)
+		{
+			return a_params.entry(a_params.sex).inv;
+		}
+
+		template <class T>
+		inline UIFormPickerWidget& UICustomEditorWidget<T>::GetFormPicker()
+		{
+			return m_formPicker;
 		}
 
 	}

@@ -511,29 +511,29 @@ namespace IED
 					return false;
 				}
 
-				auto sz = e.extraItems.size();
+				auto sz = e.inv.extraItems.size();
 				if (!sz)
 				{
-					e.extraItems.emplace_back(a_form->formID);
+					e.inv.extraItems.emplace_back(a_form->formID);
 				}
 				else
 				{
 					if (std::find(
-							e.extraItems.begin(),
-							e.extraItems.end(),
-							a_form->formID) != e.extraItems.end())
+							e.inv.extraItems.begin(),
+							e.inv.extraItems.end(),
+							a_form->formID) != e.inv.extraItems.end())
 					{
 						return false;
 					}
 
 					if (a_index < 0 || a_index >= sz)
 					{
-						e.extraItems.emplace_back(a_form->formID);
+						e.inv.extraItems.emplace_back(a_form->formID);
 					}
 					else
 					{
-						e.extraItems.insert(
-							e.extraItems.begin() + a_index,
+						e.inv.extraItems.insert(
+							e.inv.extraItems.begin() + a_index,
 							a_form->formID);
 					}
 				}
@@ -565,16 +565,16 @@ namespace IED
 				auto& e = conf->get(a_sex);
 
 				auto it = std::find(
-					e.extraItems.begin(),
-					e.extraItems.end(),
+					e.inv.extraItems.begin(),
+					e.inv.extraItems.end(),
 					a_form->formID);
 
-				if (it == e.extraItems.end())
+				if (it == e.inv.extraItems.end())
 				{
 					return false;
 				}
 
-				e.extraItems.erase(it);
+				e.inv.extraItems.erase(it);
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
@@ -602,13 +602,13 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				auto sz = e.extraItems.size();
+				auto sz = e.inv.extraItems.size();
 				if (!sz || a_index < 0 || a_index >= sz)
 				{
 					return false;
 				}
 
-				e.extraItems.erase(e.extraItems.begin() + a_index);
+				e.inv.extraItems.erase(e.inv.extraItems.begin() + a_index);
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
@@ -635,10 +635,10 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				using size_type = decltype(e.extraItems)::size_type;
+				using size_type = decltype(e.inv.extraItems)::size_type;
 
 				return static_cast<std::int32_t>(std::clamp(
-					e.extraItems.size(),
+					e.inv.extraItems.size(),
 					size_type(0),
 					size_type(std::numeric_limits<std::int32_t>::max())));
 			}
@@ -727,7 +727,7 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				e.countRange = {
+				e.inv.countRange = {
 					static_cast<std::uint32_t>(std::clamp(a_min, 0, INT32_MAX)),
 					static_cast<std::uint32_t>(std::clamp(a_max, 0, INT32_MAX)),
 				};
@@ -760,9 +760,9 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				e.customFlags.set(Data::CustomFlags::kEquipmentMode, a_switch);
-				e.customFlags.set(Data::CustomFlags::kIgnoreRaceEquipTypes, a_ignoreRaceEquipTypes);
-				e.customFlags.set(Data::CustomFlags::kDisableIfEquipped, a_disableIfEquipped);
+				e.inv.flags.set(Data::InventoryFlags::kEquipmentMode, a_switch);
+				e.inv.flags.set(Data::InventoryFlags::kIgnoreRaceEquipTypes, a_ignoreRaceEquipTypes);
+				e.inv.flags.set(Data::InventoryFlags::kDisableIfEquipped, a_disableIfEquipped);
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
@@ -882,7 +882,7 @@ namespace IED
 
 				auto old = e.customFlags;
 
-				e.customFlags.set(CustomFlags::kIgnoreRaceEquipTypes, a_switch);
+				e.inv.flags.set(InventoryFlags::kIgnoreRaceEquipTypes, a_switch);
 
 				if (e.customFlags != old && !e.flags.test(BaseFlags::kDisabled))
 				{

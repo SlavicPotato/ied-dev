@@ -74,7 +74,7 @@ namespace IED
 			Game::FormID a_actor,
 			bool         a_defer,
 			bool         a_xfrmUpdate,
-			bool         a_xfrmUpdateNoDefer) const noexcept;
+			bool         a_xfrmUpdateNoDefer = false) const noexcept;
 
 		void RequestEvaluateLF(
 			Game::FormID a_actor) const noexcept;
@@ -85,6 +85,20 @@ namespace IED
 			bool         a_defer,
 			bool         a_xfrmUpdate,
 			bool         a_xfrmUpdateNoDefer = false) const noexcept;
+
+		template <class... Args>
+		constexpr void QueueRequestEvaluateIfRequired(
+			Args... a_args) const noexcept
+		{
+			if (ITaskPool::IsRunningOnCurrentThread())
+			{
+				RequestEvaluate(a_args...);
+			}
+			else
+			{
+				QueueRequestEvaluate(a_args...);
+			}
+		}
 
 		void QueueRequestEvaluateLF(
 			Game::FormID a_actor) const noexcept;
@@ -235,8 +249,8 @@ namespace IED
 			std::uint16_t p2;
 		};
 
-		using getObjectByName_t                  = NiAVObject* (*)(NiAVObject* a_root, const BSFixedString& a_name, bool a_recursiveLookup) noexcept;
-		inline static const auto GetObjectByName = IAL::Address<getObjectByName_t>(74481, 76207);
+		//using getObjectByName_t                  = NiAVObject* (*)(NiAVObject* a_root, const BSFixedString& a_name, bool a_recursiveLookup) noexcept;
+		//inline static const auto GetObjectByName = IAL::Address<getObjectByName_t>(74481, 76207);
 
 	public:
 		using applyTextureSwap_t                  = void (*)(TESModelTextureSwap* a_swap, NiAVObject* a_object) noexcept;

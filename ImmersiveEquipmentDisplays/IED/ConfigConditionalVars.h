@@ -2,6 +2,7 @@
 
 #include "ConfigCommon.h"
 #include "ConfigEquipment.h"
+#include "ConfigInventory.h"
 #include "ConfigLastEquipped.h"
 
 #include "ConditionalVariableStorage.h"
@@ -15,10 +16,25 @@ namespace IED
 		{
 			kNone = 0,
 
-			kLastEquipped = 1u << 0,
+			kSelectionModeMask = 0x3u,
+
+			kConsumeItem = 1u << 16,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConditionalVariableValueDataFlags);
+
+		enum class ConditionalVariableSelectionMode : std::uint32_t
+		{
+			Default      = 0,
+			LastEquipped = 1,
+			Inventory    = 2
+		};
+
+		struct ConditionalVariableValueDataFlagsBitfield
+		{
+			ConditionalVariableSelectionMode selectionMode: 2;
+			std::uint32_t                    unused1      : 30;
+		};
 
 		struct configConditionalVariableValueData_t
 		{
@@ -27,7 +43,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			configConditionalVariableValueData_t() = default;
@@ -38,18 +55,39 @@ namespace IED
 			{
 			}
 
-			stl::flag<ConditionalVariableValueDataFlags> flags{ ConditionalVariableValueDataFlags::kNone };
-			conditionalVariableStorage_t                 value;
-			Data::configLastEquipped_t                   lastEquipped;
+			stl::flag_bf<
+				ConditionalVariableValueDataFlags,
+				ConditionalVariableValueDataFlagsBitfield>
+										 flags{ ConditionalVariableValueDataFlags::kNone };
+			conditionalVariableStorage_t value;
+			configLastEquipped_t         lastEquipped;
+			configInventory_t            inv;
 
 		private:
+
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				a_ar& flags.value;
-				a_ar& value;
-				a_ar& lastEquipped;
+				a_ar & flags.value;
+				a_ar & value;
+				a_ar & lastEquipped;
+				a_ar & inv;
 			}
+
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar & flags.value;
+				a_ar & value;
+				a_ar & lastEquipped;
+
+				if (a_version >= Serialization::DataVersion2)
+				{
+					a_ar & inv;
+				}
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		enum class ConditionalVariableFlags : std::uint32_t
@@ -100,11 +138,11 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& flags.value;
-				a_ar& desc;
-				a_ar& value;
-				a_ar& conditions.list;
-				a_ar& group;
+				a_ar & flags.value;
+				a_ar & desc;
+				a_ar & value;
+				a_ar & conditions.list;
+				a_ar & group;
 			}
 		};
 
@@ -141,9 +179,9 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& flags.value;
-				a_ar& defaultValue;
-				a_ar& vars;
+				a_ar & flags.value;
+				a_ar & defaultValue;
+				a_ar & vars;
 			}
 		};
 
@@ -207,8 +245,8 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& flags.value;
-				a_ar& data;
+				a_ar & flags.value;
+				a_ar & data;
 			}
 		};
 	}
@@ -216,7 +254,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configConditionalVariableValueData_t,
-	::IED::Data::configConditionalVariableValueData_t::Serialization::DataVersion1);
+	::IED::Data::configConditionalVariableValueData_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configConditionalVariable_t,

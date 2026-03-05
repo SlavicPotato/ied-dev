@@ -15,18 +15,6 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(SlotPriorityFlags);
 
-		namespace detail
-		{
-			constexpr auto make_type_index_array() noexcept
-			{
-				return stl::make_array<
-					ObjectType,
-					stl::underlying(Data::ObjectType::kMax)>([&]<std::size_t I>() {
-					return static_cast<Data::ObjectType>(I);
-				});
-			}
-		}
-
 		struct configSlotPriority_t
 		{
 			friend class boost::serialization::access;
@@ -41,8 +29,19 @@ namespace IED
 				DataVersion1 = 1
 			};
 
+		private:
+			static constexpr auto make_type_index_array() noexcept
+			{
+				return stl::make_array<
+					ObjectType,
+					stl::underlying(Data::ObjectType::kMax)>([&]<std::size_t I>() {
+					return static_cast<Data::ObjectType>(I);
+				});
+			}
+
+		public:
 			constexpr configSlotPriority_t() noexcept :
-				order{ detail::make_type_index_array() }
+				order{ make_type_index_array() }
 			{
 			}
 
@@ -58,7 +57,7 @@ namespace IED
 				}
 				return result;
 			}
-			
+
 			constexpr ObjectType translate_type_safe(
 				ObjectType a_in) const noexcept
 			{
@@ -66,8 +65,7 @@ namespace IED
 			}
 
 			constexpr void clear()  //
-				noexcept(std::is_nothrow_move_assignable_v<configSlotPriority_t>&&
-			                 std::is_nothrow_default_constructible_v<configSlotPriority_t>)
+				noexcept(std::is_nothrow_move_assignable_v<configSlotPriority_t> && std::is_nothrow_default_constructible_v<configSlotPriority_t>)
 			{
 				*this = {};
 			}
@@ -112,9 +110,9 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& flags.value;
-				a_ar& limit;
-				a_ar& order;
+				a_ar & flags.value;
+				a_ar & limit;
+				a_ar & order;
 			}
 		};
 

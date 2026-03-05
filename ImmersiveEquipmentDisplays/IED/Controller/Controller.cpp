@@ -35,7 +35,6 @@ namespace IED
 
 	Controller::Controller(
 		const stl::smart_ptr<const ConfigINI>& a_config) :
-		IEquipment(m_rngBase),
 		IAnimationManager(m_configData.settings),
 		KeyBindEventHandler(stl::make_smart_for_overwrite<KB::KeyBindDataHolder>()),
 		m_iniconf(a_config),
@@ -2995,7 +2994,7 @@ namespace IED
 			if (const auto& actor = a_params.get_last_mount())
 			{
 				return SelectFormVariableSourceHolder(actor->formID, a_params);
-		}
+			}
 
 			break;
 
@@ -3079,7 +3078,7 @@ namespace IED
 			const bool itemFound = (it != formData.end());
 
 			if (!itemFound &&
-			    a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) &&
+			    a_config.inv.flags.test(InventoryFlags::kEquipmentMode) &&
 			    GetSettings().data.hideEquipped &&
 			    !a_config.customFlags.test(CustomFlags::kAlwaysUnload))
 			{
@@ -3156,7 +3155,7 @@ namespace IED
 
 						if (_visible)
 						{
-							if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
+							if (a_config.inv.flags.test(InventoryFlags::kEquipmentMode))
 							{
 								itemData.consume_one();
 							}
@@ -3254,7 +3253,7 @@ namespace IED
 
 			case AttachObjectResult::kPending:
 
-				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
+				if (a_config.inv.flags.test(InventoryFlags::kEquipmentMode) && visible)
 				{
 					itemData.consume_one();
 				}

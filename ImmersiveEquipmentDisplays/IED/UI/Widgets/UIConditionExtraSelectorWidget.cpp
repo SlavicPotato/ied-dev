@@ -18,6 +18,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle),
 			std::make_pair(Data::ExtraConditionType::kDayOfWeek, UIConditionExtraSelectorWidgetStrings::DayOfWeek),
 			std::make_pair(Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential),
+			std::make_pair(Data::ExtraConditionType::kMountMutalReference, UIConditionExtraSelectorWidgetStrings::HasMountMutualReference),
 			std::make_pair(Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton),
 			std::make_pair(Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat),
 			std::make_pair(Data::ExtraConditionType::kInDarkArea, UIConditionExtraSelectorWidgetStrings::InDarkArea),
@@ -50,6 +51,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMountAttachedToCell, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMountAttachedToCell),
+			std::make_pair(Data::ExtraConditionType::kIsLastMountAttachedToCell, UIConditionExtraSelectorWidgetStrings::IsLastMountAttachedToCell),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
 			std::make_pair(Data::ExtraConditionType::kIsSunAboveHorizon, UIConditionExtraSelectorWidgetStrings::IsSunAboveHorizon),
@@ -209,6 +211,10 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMountAttachedToCell:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMountAttachedToCell);
+			case Data::ExtraConditionType::kIsLastMountAttachedToCell:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsLastMountAttachedToCell);
+			case Data::ExtraConditionType::kMountMutalReference:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::HasMountMutualReference);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled);
 			case Data::ExtraConditionType::kIsFlying:

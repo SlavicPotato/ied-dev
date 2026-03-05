@@ -135,6 +135,8 @@ namespace IED
 			ReceiveActorEvents                  = 2128,
 			BoundWeapon                         = 2129,
 			EquipmentTypes                      = 2130,
+			Inventory                           = 2131,
+			Normal                              = 2132,
 		};
 	}
 }

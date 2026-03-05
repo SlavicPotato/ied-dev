@@ -4,9 +4,11 @@
 
 #include "UIConditionalVariablesEditorWidget.h"
 
+#include "IED/UI/Custom/Widgets/UICustomEditorStrings.h"
 #include "IED/UI/UIAllowedModelTypes.h"
 #include "IED/UI/UIClipboard.h"
 #include "IED/UI/UIFormBrowserCommonFilters.h"
+#include "IED/UI/Widgets/UICountRangeWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 
 #include "UIConditionalVariablesEditorWidgetStrings.h"
@@ -18,6 +20,7 @@ namespace IED
 		UIConditionalVariablesEditorWidget::UIConditionalVariablesEditorWidget(
 			Controller& a_controller) :
 			UILastEquippedWidget(a_controller),
+			UIExtraItemsWidget<ConditionalVariablesEditorWidgetParams>(a_controller),
 			m_controller(a_controller),
 			m_itemFilter(true)
 		{
@@ -303,6 +306,7 @@ namespace IED
 
 		bool UIConditionalVariablesEditorWidget::DrawVariableValue(
 			ConditionalVariableType                     a_type,
+			Data::configConditionalVariablesHolder_t&   a_holder,
 			Data::configConditionalVariableValueData_t& a_data)
 		{
 			bool result;
@@ -341,7 +345,7 @@ namespace IED
 
 			case ConditionalVariableType::kForm:
 
-				result = DrawVariableForm(a_type, a_data);
+				result = DrawVariableForm(a_type, a_holder, a_data);
 
 				break;
 
@@ -359,16 +363,42 @@ namespace IED
 
 		bool UIConditionalVariablesEditorWidget::DrawVariableForm(
 			ConditionalVariableType                     a_type,
+			Data::configConditionalVariablesHolder_t&   a_holder,
 			Data::configConditionalVariableValueData_t& a_data)
 		{
 			bool result = false;
 
-			result |= ImGui::CheckboxFlagsT(
-				UIL::LS(UIWidgetCommonStrings::LastEquipped, "0"),
-				stl::underlying(std::addressof(a_data.flags.value)),
-				stl::underlying(Data::ConditionalVariableValueDataFlags::kLastEquipped));
+			auto& bf = a_data.flags.bf();
 
-			if (a_data.flags.test(Data::ConditionalVariableValueDataFlags::kLastEquipped))
+			if (ImGui::RadioButton(
+					UIL::LS(UIWidgetCommonStrings::Normal, "0"),
+					bf.selectionMode == Data::ConditionalVariableSelectionMode::Default))
+			{
+				bf.selectionMode = Data::ConditionalVariableSelectionMode::Default;
+				result           = true;
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::RadioButton(
+					UIL::LS(UIWidgetCommonStrings::Inventory, "1"),
+					bf.selectionMode == Data::ConditionalVariableSelectionMode::Inventory))
+			{
+				bf.selectionMode = Data::ConditionalVariableSelectionMode::Inventory;
+				result           = true;
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::RadioButton(
+					UIL::LS(UIWidgetCommonStrings::LastEquipped, "2"),
+					bf.selectionMode == Data::ConditionalVariableSelectionMode::LastEquipped))
+			{
+				bf.selectionMode = Data::ConditionalVariableSelectionMode::LastEquipped;
+				result           = true;
+			}
+
+			if (bf.selectionMode == Data::ConditionalVariableSelectionMode::LastEquipped)
 			{
 				DrawLastEquippedPanel(a_data.lastEquipped, [&] {
 					result = true;
@@ -381,8 +411,92 @@ namespace IED
 				fp.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::ModelTypes));
 				fp.SetFormBrowserEnabled(true);
 
-				result |= fp.DrawFormPicker("1", static_cast<Localization::StringID>(CommonStrings::Form), a_data.value.form);
+				result |= fp.DrawFormPicker("fp", static_cast<Localization::StringID>(CommonStrings::Form), a_data.value.form);
+
+				if (bf.selectionMode == Data::ConditionalVariableSelectionMode::Inventory)
+				{
+					ImGui::Spacing();
+
+					result |= DrawInventoryPanel(a_holder, a_data.inv);
+
+					ImGui::Spacing();
+				}
 			}
+
+			return result;
+		}
+
+		bool UIConditionalVariablesEditorWidget::DrawInventoryPanel(
+			Data::configConditionalVariablesHolder_t& a_holder,
+			Data::configInventory_t&                  a_data)
+		{
+			bool result = false;
+
+			ImGui::PushID("ipl");
+
+			ImGui::Spacing();
+
+			result |= DrawExtraItemsImpl({ a_holder, a_data }, false);
+
+			ImGui::Spacing();
+
+			ImGui::PushID("f");
+
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UICustomEditorString::EquipmentMode, "1"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::InventoryFlags::kEquipmentMode)))
+			{
+				result = true;
+			}
+
+			UITipsInterface::DrawTip(UITip::CustomEquipmentMode);
+
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::IsFavorited, "2"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::InventoryFlags::kCheckFav)))
+			{
+				result = true;
+			}
+
+			UITipsInterface::DrawTip(UITip::IsFavorited);
+
+			bool cd = !a_data.flags.test(Data::InventoryFlags::kEquipmentMode);
+
+			UICommon::PushDisabled(cd);
+
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UICustomEditorString::IgnoreRaceEquipTypes, "3"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::InventoryFlags::kIgnoreRaceEquipTypes)))
+			{
+				result = true;
+			}
+
+			UITipsInterface::DrawTip(UITip::IgnoreRaceEquipTypes);
+
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UICustomEditorString::DisableIfEquipped, "4"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::InventoryFlags::kDisableIfEquipped)))
+			{
+				result = true;
+			}
+
+			UITipsInterface::DrawTip(UITip::DisableIfEquipped);
+
+			UICommon::PopDisabled(cd);
+
+			ImGui::PopID();
+
+			ImGui::Spacing();
+
+			result |= UICountRangeWidget::DrawCountRange(a_data.countRange);
+
+			UITipsInterface::DrawTip(UITip::CustomCountRange);
+
+			ImGui::PopID();
 
 			return result;
 		}
@@ -434,7 +548,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					if (DrawVariableValue(a_entry.defaultValue.value.type, a_var.value))
+					if (DrawVariableValue(a_entry.defaultValue.value.type, a_holder, a_var.value))
 					{
 						OnCondVarEntryChange(
 							{ a_holder,
@@ -833,6 +947,7 @@ namespace IED
 
 				if (DrawVariableValue(
 						a_data.second.defaultValue.value.type,
+						a_holder,
 						a_data.second.defaultValue))
 				{
 					OnCondVarEntryChange(
@@ -860,6 +975,17 @@ namespace IED
 		void UIConditionalVariablesEditorWidget::DrawMainHeaderControlsExtra(
 			Data::configConditionalVariablesHolder_t& a_data)
 		{
+		}
+
+		Data::configInventory_t& UIConditionalVariablesEditorWidget::GetInventoryConfig(
+			const ConditionalVariablesEditorWidgetParams& a_params)
+		{
+			return a_params.data;
+		}
+
+		UIFormPickerWidget& UIConditionalVariablesEditorWidget::GetFormPicker()
+		{
+			return m_condParamEditor.GetFormPicker();
 		}
 
 		void UIConditionalVariablesEditorWidget::EditorDrawMenuBarItems()
@@ -935,7 +1061,6 @@ namespace IED
 				}
 			}
 
-			
 			UICommon::PopDisabled(disabled);
 		}
 	}
